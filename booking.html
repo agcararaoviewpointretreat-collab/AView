@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Your Stay</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <style>
+      /* General Page Styling */
+      body {
+        background: url('jjk.jpg') no-repeat top center fixed; /* Image at the top */
+            background-size: cover; /* Ensures it covers the entire page */
+            line-height: 1.6;
+          font-family: 'Poppins', sans-serif;
+          margin: 0;
+          padding: 0;
+            display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          min-height: 100vh;
+          padding: 40px 20px;
+      }
+          
+      /* Page Title */
+      h1 {
+          color: #226135;
+          margin-bottom: 20px;
+            text-align: center;
+        }
+
+      /* Form Container */
+      form {
+          background: rgba(255, 255, 255, 0.3);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          padding: 30px;
+          border-radius: 15px;
+          box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+          max-width: 500px;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          gap: 15px;
+      }
+
+      /* Label Styling */
+      label {
+          display: block;
+          font-weight: 600;
+          color: #020202;
+          margin-bottom: 5px;
+      }
+
+      /* Input & Select Styling */
+      input, select {
+          width: 100%;
+          padding: 12px;
+          border: 1px solid rgba(0, 0, 0, 0.1);
+          border-radius: 8px;
+            font-size: 14px;
+          background: rgba(255, 255, 255, 0.7);
+          color: #0b0a0a;
+          transition: all 0.2s ease-in-out;
+          box-sizing: border-box;
+      }
+
+      input:focus, select:focus {
+          outline: none;
+          border: 2px solid #FF7EB3;
+          background: rgba(255, 255, 255, 0.9);
+      }
+
+      /* Two-Column Layout for Fields */
+      .form-group {
+          display: flex;
+          justify-content: space-between;
+          gap: 20px;
+          width: 100%;
+      }
+
+      .form-group div {
+          flex: 1;
+      }
+
+      /* Button Styling */
+      button {
+            width: 100%;
+          background: linear-gradient(to right, #407934, #2e733f);
+            color: white;
+            border: none;
+          padding: 14px;
+            cursor: pointer;
+          font-size: 16px;
+          font-weight: bold;
+          border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+      button:hover {
+          background: linear-gradient(to right, #0a6731, #135a1e);
+          transform: translateY(-2px);
+          box-shadow: 0px 4px 10px rgba(255, 117, 140, 0.4);
+      }
+
+      /* Back to Rooms Button */
+      .back-button {
+          position: fixed;
+          top: 20px;
+          left: 20px;
+          width: auto;
+          background: linear-gradient(to right, #2b6928, #3f9234);
+            color: white;
+            border: none;
+          padding: 10px 20px;
+            font-size: 14px;
+          font-weight: bold;
+          border-radius: 8px;
+          cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+      .back-button:hover {
+          background: linear-gradient(to right, #355e3f, #2e6d30);
+            transform: translateY(-2px);
+          box-shadow: 0px 4px 10px rgba(255, 117, 140, 0.4);
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 600px) {
+          .form-group {
+              flex-direction: column;
+              gap: 15px;
+          }
+          
+          form {
+            padding: 20px;
+          }
+      }
+
+      /* Add these styles to your existing CSS */
+      .unavailable {
+          background-color: #ffebee !important;
+          color: #c62828 !important;
+          cursor: not-allowed;
+      }
+      
+      .ui-datepicker {
+            background: white;
+          border: 1px solid #2c5530;
+          border-radius: 8px;
+          padding: 10px;
+      }
+      
+      .ui-datepicker-header {
+          background: #2c5530;
+          color: white;
+          border: none;
+            border-radius: 6px;
+      }
+      
+      .ui-datepicker-prev,
+      .ui-datepicker-next {
+          color: white;
+      }
+      
+      .ui-datepicker-calendar th {
+            color: #2c5530;
+      }
+      
+      .ui-state-default {
+          border: 1px solid #e0e0e0;
+          background: #f9f9f9;
+      }
+      
+      .ui-state-active {
+            background: #2c5530;
+            color: white;
+        }
+      
+      .ui-state-hover {
+          background: #e8f5e9;
+            color: #2c5530;
+        }
+    </style>
+
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getDatabase, ref, push, get } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyBAE0ieuAJRp_rF4I90qXP8zPr4TQW_rIg",
+          authDomain: "agcararaoret.firebaseapp.com",
+          databaseURL: "https://agcararaoret-default-rtdb.firebaseio.com",
+          projectId: "agcararaoret",
+          storageBucket: "agcararaoret.appspot.com",
+          messagingSenderId: "369964400118"
+        };
+    
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let unavailableDates = [];
+
+        async function fetchBookedDates() {
+            try {
+                const bookingsRef = ref(db, "bookings");
+                const snapshot = await get(bookingsRef);
+                if (snapshot.exists()) {
+                    unavailableDates = [];
+                    const selectedRoom = document.getElementById("selectedRoom").value;
+                    const numberOfRooms = parseInt(document.getElementById("numberOfRooms").value) || 1;
+                    
+                    // Create a map to track room bookings per date
+                    const roomBookingsPerDate = new Map();
+                    
+                    snapshot.forEach((childSnapshot) => {
+                        const booking = childSnapshot.val();
+                        if (booking.selectedRoom === selectedRoom) {
+                            let currentDate = new Date(booking.checkInDate);
+                            const checkOutDate = new Date(booking.checkOutDate);
+                            const roomsBooked = parseInt(booking.numberOfRooms) || 1;
+
+                            while (currentDate <= checkOutDate) {
+                                const dateStr = currentDate.toISOString().split("T")[0];
+                                const currentBookings = roomBookingsPerDate.get(dateStr) || 0;
+                                roomBookingsPerDate.set(dateStr, currentBookings + roomsBooked);
+                                currentDate.setDate(currentDate.getDate() + 1);
+                            }
+                        }
+                    });
+
+                    // For Casa De Amon, check if the requested number of rooms is available
+                    if (selectedRoom === "Casa De Amon") {
+                        roomBookingsPerDate.forEach((bookedRooms, date) => {
+                            if (bookedRooms + numberOfRooms > 3) {
+                                unavailableDates.push(date);
+                            }
+                        });
+                    } else {
+                        // For other rooms, mark dates as unavailable if any booking exists
+                        roomBookingsPerDate.forEach((_, date) => {
+                            unavailableDates.push(date);
+                        });
+                    }
+                }
+                initDatePicker();
+            } catch (error) {
+                console.error("Error fetching booked dates:", error);
+            }
+        }
+
+        function initDatePicker() {
+            flatpickr("#checkInDate", {
+                dateFormat: "Y-m-d",
+                disable: [
+                    ...unavailableDates.map(date => ({ from: date, to: date })), // Disable booked dates
+                    { from: "1900-01-01", to: new Date().toISOString().split("T")[0] } // Disable past dates
+                ],
+                onChange: function(selectedDates, dateStr, instance) {
+                    updateTotal();
+                    // Update check-out date picker min date
+                    if (selectedDates.length > 0) {
+                        const checkOutPicker = document.querySelector("#checkOutDate")._flatpickr;
+                        if (checkOutPicker) {
+                            // Set min date to the day after check-in
+                            const nextDay = new Date(selectedDates[0]);
+                            nextDay.setDate(nextDay.getDate() + 1);
+                            checkOutPicker.set("minDate", nextDay);
+                            // If current check-out date is before or same as new check-in date, clear it
+                            if (checkOutPicker.selectedDates[0] && 
+                                (checkOutPicker.selectedDates[0] <= selectedDates[0])) {
+                                checkOutPicker.clear();
+                            }
+                        }
+                    }
+                },
+                locale: { firstDayOfWeek: 1 },
+                onDayCreate: function(dObj, dStr, fp, dayElem) {
+                    const dateStr = dayElem.getAttribute("aria-label");
+                    if (unavailableDates.includes(dateStr)) {
+                        dayElem.style.backgroundColor = "#ffebee";
+                        dayElem.style.color = "#c62828";
+                    }
+                }
+            });
+
+            flatpickr("#checkOutDate", {
+                dateFormat: "Y-m-d",
+                disable: [
+                    ...unavailableDates.map(date => ({ from: date, to: date })), // Disable booked dates
+                    { from: "1900-01-01", to: new Date().toISOString().split("T")[0] } // Disable past dates
+                ],
+                onChange: function(selectedDates, dateStr, instance) {
+                    updateTotal();
+                },
+                locale: { firstDayOfWeek: 1 },
+                onDayCreate: function(dObj, dStr, fp, dayElem) {
+                    const dateStr = dayElem.getAttribute("aria-label");
+                    if (unavailableDates.includes(dateStr)) {
+                        dayElem.style.backgroundColor = "#ffebee";
+                        dayElem.style.color = "#c62828";
+                    }
+                }
+            });
+        }
+
+        document.getElementById("selectedRoom").addEventListener("change", function() {
+            fetchBookedDates();
+        });
+
+        fetchBookedDates();
+
+        window.confirmBooking = async function() {
+            const fullName = document.getElementById("fullName").value;
+            const email = document.getElementById("email").value;
+            const selectedRoom = document.getElementById("selectedRoom").value;
+            const numberOfRooms = document.getElementById("numberOfRooms").value;
+            const checkInDate = document.getElementById("checkInDate").value;
+            const checkOutDate = document.getElementById("checkOutDate").value;
+            const extraPax = document.getElementById("extraPax").value;
+            const numberOfNights = document.getElementById("numberOfNights").value;
+            const totalAmount = document.getElementById("totalAmount").value;
+            const paymentType = document.getElementById("paymentType").value;
+            const paymentAmount = document.getElementById("paymentAmount").value;
+
+            // Check if the email is a valid Gmail address
+            const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+            if (!gmailRegex.test(email)) {
+                alert("Please enter a valid Gmail address (example@gmail.com).");
+                return;
+            }
+
+            if (!fullName || !email || !checkInDate || !checkOutDate || !totalAmount) {
+                alert("Please fill in all required fields!");
+                return;
+            }
+
+            try {
+                const bookingsRef = ref(db, "bookings");
+                await push(bookingsRef, {
+                    fullName,
+                    email,
+                    selectedRoom,
+                    numberOfRooms,
+                    checkInDate,
+                    checkOutDate,
+                    extraPax,
+                    numberOfNights,
+                    totalAmount,
+                    paymentType,
+                    paymentAmount,
+                    status: "pending",
+                    createdAt: new Date().toISOString()
+                });
+
+                alert("Your booking request has been submitted and is now pending. Please wait for an email confirmation regarding the approval of your booking request.");
+                document.getElementById("bookingForm").reset();
+                fetchBookedDates();
+            } catch (error) {
+                console.error("Error saving booking:", error);
+                alert("Failed to confirm booking.");
+            }
+        };
+
+        window.adjustRoomOptions = function() {
+            const selectedRoom = document.getElementById("selectedRoom").value;
+            const roomInput = document.getElementById("numberOfRooms");
+
+            if (selectedRoom === "Casa De Amon") {
+                roomInput.max = 3;
+                } else {
+                roomInput.max = 1;
+                roomInput.value = 1;
+            }
+        };
+
+        window.updateTotal = function() {
+            const nights = calculateNights();
+            document.getElementById("numberOfNights").value = nights;
+
+            const roomPrice = {
+                "Casa De Amon": 1500,
+                "Casa De Bella": 3000,
+                "Casa De Arced": 3500,
+                "Casa Y Agua": 4999
+            };
+
+            const maxExtraPax = {
+                "Casa De Amon": 4,
+                "Casa De Bella": 10,
+                "Casa De Arced": 10,
+                "Casa Y Agua": 20
+            };
+
+            const selectedRoom = document.getElementById("selectedRoom").value;
+            const price = roomPrice[selectedRoom] || 0;
+            let rooms = parseInt(document.getElementById("numberOfRooms").value);
+            let extraPax = parseInt(document.getElementById("extraPax").value) || 0;
+
+            // Limit extra pax based on the selected room type
+            const maxAllowedPax = maxExtraPax[selectedRoom] || 0;
+            if (extraPax > maxAllowedPax) {
+                extraPax = maxAllowedPax;
+                document.getElementById("extraPax").value = maxAllowedPax;
+            }
+
+            if (selectedRoom === "Casa De Amon" && rooms > 3) {
+                rooms = 3;
+                document.getElementById("numberOfRooms").value = 3;
+            } else if (selectedRoom !== "Casa De Amon") {
+                rooms = 1;
+                document.getElementById("numberOfRooms").value = 1;
+            }
+
+            // Calculate total cost
+            const roomTotal = price * rooms * nights;
+            const extraPaxTotal = extraPax * 300 * nights;
+            const totalPrice = roomTotal + extraPaxTotal;
+
+            const totalAmount = `₱${totalPrice.toLocaleString()}`;
+            document.getElementById("totalAmount").value = totalAmount;
+            
+            // Update payment amount
+            updatePaymentAmount();
+        };
+
+        window.calculateNights = function() {
+            const checkInDate = document.getElementById("checkInDate").value;
+            const checkOutDate = document.getElementById("checkOutDate").value;
+
+            if (!checkInDate || !checkOutDate) return 1;
+
+            const checkIn = new Date(checkInDate);
+            const checkOut = new Date(checkOutDate);
+            
+            if (isNaN(checkIn.getTime()) || isNaN(checkOut.getTime()) || checkOut <= checkIn) {
+                return 1;
+            }
+
+            return Math.floor((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+        };
+
+        window.updatePaymentAmount = function() {
+            const totalAmount = document.getElementById("totalAmount").value;
+            const paymentType = document.getElementById("paymentType").value;
+            const paymentAmount = document.getElementById("paymentAmount");
+            
+            if (totalAmount) {
+                const numericAmount = parseFloat(totalAmount.replace(/[^0-9.-]+/g, ""));
+                if (paymentType === "partial") {
+                    const partialAmount = numericAmount * 0.3;
+                    paymentAmount.value = `₱${partialAmount.toLocaleString()}`;
+                }
+            }
+        };
+    </script>
+</head>
+<body>
+    <button class="back-button" onclick="window.location.href='rooms.html'">⬅ Back to Rooms</button>
+
+    <h1>Stay With Us!</h1>
+    <form id="bookingForm">
+        <label for="fullName">Full Name:</label>
+        <input type="text" id="fullName" required>
+    
+        <label for="email">Email Address:</label>
+<input type="email" id="email" required pattern="[a-zA-Z0-9._%+-]+@gmail\.com$" title="Please enter a valid Gmail address">
+
+    
+        <label for="selectedRoom">Selected Room:</label>
+        <select id="selectedRoom" onchange="adjustRoomOptions(); updateTotal();">
+            <option value="Casa De Amon">Casa De Amon</option>
+            <option value="Casa De Arced">Casa De Arced</option>
+            <option value="Casa De Bella">Casa De Bella</option>
+            <option value="Casa Y Agua">Casa Y Agua</option>
+        </select>
+    
+        <div class="form-group">
+            <div>
+                <label for="numberOfRooms">Number of Rooms:</label>
+                <input type="number" id="numberOfRooms" value="1" min="1" onchange="updateTotal()">
+            </div>
+            <div>
+                <label for="extraPax">Extra Pax (₱300 per head):</label>
+                <input type="number" id="extraPax" value="0" min="0" oninput="updateTotal()">
+            </div>
+        </div>
+    
+        <div class="form-group">
+            <div>
+                <label for="checkInDate">Check-in Date:</label>
+                <input type="text" id="checkInDate" required>
+            </div>
+            <div>
+                <label for="checkOutDate">Check-out Date:</label>
+                <input type="text" id="checkOutDate" required>
+            </div>
+        </div>
+    
+        <div class="form-group">
+            <div>
+                <label for="numberOfNights">Number of Nights:</label>
+                <input type="number" id="numberOfNights" required readonly>
+            </div>
+            <div>
+                <label for="totalAmount">Total Amount to Pay:</label>
+                <input type="text" id="totalAmount" required readonly>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div>
+                <label for="paymentType">Payment Type:</label>
+                <select id="paymentType" onchange="updatePaymentAmount()">
+                    <option value="partial">30% Down Payment (Gcash)</option>
+                </select>
+            </div>
+            <div>
+                <label for="paymentAmount">Amount to Pay:</label>
+                <input type="text" id="paymentAmount" required readonly>
+            </div>
+        </div>
+    
+        <button type="button" onclick="confirmBooking()">Confirm Booking</button>
+    </form>
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+         document.addEventListener("DOMContentLoaded", function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const selectedRoom = urlParams.get("room");
+        const roomsCount = urlParams.get("rooms") ? Math.min(3, parseInt(urlParams.get("rooms"))) : 1;
+
+        if (selectedRoom) {
+            document.getElementById("selectedRoom").value = selectedRoom;
+            adjustRoomOptions(); 
+
+            if (selectedRoom === "Casa De Amon") {
+                document.getElementById("numberOfRooms").value = roomsCount;
+            }
+        }
+    });
+
+    function adjustRoomOptions() {
+        const selectedRoom = document.getElementById("selectedRoom").value;
+        const roomInput = document.getElementById("numberOfRooms");
+
+        if (selectedRoom === "Casa De Amon") {
+            roomInput.max = 3;
+        } else {
+            roomInput.max = 1;
+            roomInput.value = 1;
+        }
+    }
+
+        function calculateNights() {
+            const checkInDate = document.getElementById("checkInDate").value;
+            const checkOutDate = document.getElementById("checkOutDate").value;
+
+            if (!checkInDate || !checkOutDate) return 1;
+
+            const checkIn = new Date(checkInDate);
+            const checkOut = new Date(checkOutDate);
+            
+            if (isNaN(checkIn.getTime()) || isNaN(checkOut.getTime()) || checkOut <= checkIn) {
+                return 1;
+            }
+
+            return Math.floor((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+        }
+
+        function updatePaymentAmount() {
+            const totalAmount = document.getElementById("totalAmount").value;
+            const paymentType = document.getElementById("paymentType").value;
+            const paymentAmount = document.getElementById("paymentAmount");
+            
+            if (totalAmount) {
+                const numericAmount = parseFloat(totalAmount.replace(/[^0-9.-]+/g, ""));
+                if (paymentType === "partial") {
+                    const partialAmount = numericAmount * 0.3;
+                    paymentAmount.value = `₱${partialAmount.toLocaleString()}`;
+                }
+            }
+        }
+
+        function updateTotal() {
+    const nights = calculateNights();
+    document.getElementById("numberOfNights").value = nights;
+
+    const roomPrice = {
+        "Casa De Amon": 1500,
+        "Casa De Bella": 3000,
+        "Casa De Arced": 3500,
+        "Casa Y Agua": 4999
+    };
+
+    const maxExtraPax = {
+        "Casa De Amon": 4,
+        "Casa De Bella": 10,
+        "Casa De Arced": 10,
+        "Casa Y Agua": 20
+    };
+
+    const selectedRoom = document.getElementById("selectedRoom").value;
+    const price = roomPrice[selectedRoom] || 0;
+    let rooms = parseInt(document.getElementById("numberOfRooms").value);
+    let extraPax = parseInt(document.getElementById("extraPax").value) || 0;
+
+    // Limit extra pax based on the selected room type
+    const maxAllowedPax = maxExtraPax[selectedRoom] || 0;
+    if (extraPax > maxAllowedPax) {
+        extraPax = maxAllowedPax;
+        document.getElementById("extraPax").value = maxAllowedPax;
+    }
+
+    if (selectedRoom === "Casa De Amon" && rooms > 3) {
+        rooms = 3;
+        document.getElementById("numberOfRooms").value = 3;
+    } else if (selectedRoom !== "Casa De Amon") {
+        rooms = 1;
+        document.getElementById("numberOfRooms").value = 1;
+    }
+
+    // Calculate total cost
+    const roomTotal = price * rooms * nights;
+    const extraPaxTotal = extraPax * 300 * nights;
+    const totalPrice = roomTotal + extraPaxTotal;
+
+    const totalAmount = `₱${totalPrice.toLocaleString()}`;
+    document.getElementById("totalAmount").value = totalAmount;
+    
+    // Update payment amount
+    updatePaymentAmount();
+}
+    </script>
+</body>
+</html>

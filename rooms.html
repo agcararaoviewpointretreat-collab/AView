@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Discover perfect accommodations at Agcararao Mountain View Resort - luxury rooms with mountain views">
+  <title>AMVR Accommodation</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Base Styles */
+     * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: url('aga.jpg') no-repeat top center fixed; /* Image at the top */
+            background-size: cover; /* Ensures it covers the entire page */
+            line-height: 1.6;
+          
+            
+        }
+
+        /* Overlay to improve readability */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(157, 153, 153, 0.4); /* Dark overlay */
+            z-index: -1;
+        }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+      .navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.02);    /* extremely transparent */
+    backdrop-filter: blur(2px);             /* more intense blur */
+    -webkit-backdrop-filter: blur(2px);     /* Safari support */
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* soft deep shadow */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* faint border */
+    z-index: 1000;
+}
+
+.nav-container {
+    max-width: 1500px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+}
+
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            gap: 0;
+        }
+
+        .logo img {
+    /* Increase height for a bigger logo; set width to auto so it scales proportionally */
+    height: 50px;
+    width: auto;
+}
+
+.logo-text {
+    /* Increase the font size to make the text larger */
+    font-size: 1.2rem;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-weight: bold;
+    color: #070707;
+    white-space: nowrap; /* Ensures the text remains on one line */
+    transition: color 0.3s ease-in-out;
+}
+
+    
+    .logo:hover .logo-text {
+        color: #099309;
+    }
+
+        .resort-name {
+            font-size: 1.3rem;
+            color: #2c5530;
+            font-weight: 600;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #0e0d0d;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            padding: 0.5rem 0;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        /* Underline effect for nav links */
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #2c5530;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #2c5530;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Dropdown Styles */
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown > a .fa-chevron-down {
+            font-size: 0.8rem;
+            margin-left: 0.3rem;
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown:hover > a .fa-chevron-down {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-content {
+            position: absolute;
+            top: 100%;
+            left: -1rem;
+            background: #ffffff;
+            min-width: 180px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            padding: 0.5rem 0;
+            margin-top: 0.5rem;
+        }
+
+        .dropdown:hover .dropdown-content {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-content a {
+            padding: 0.7rem 1.2rem;
+            display: block;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .dropdown-content a:hover {
+            background: #f8f9fa;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .nav-container {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                gap: 1.5rem;
+            }
+
+            .resort-name {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                width: 100%;
+                gap: 1rem;
+                margin-top: 1rem;
+                display: none;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .dropdown-content {
+                position: static;
+                box-shadow: none;
+                opacity: 1;
+                visibility: visible;
+                transform: none;
+                padding-left: 1rem;
+            }
+
+            .logo {
+                margin-bottom: 0.5rem;
+            }
+        }
+
+        /* Scroll Effect */
+        .navbar.scrolled {
+            background: rgba(255, 255, 255, 0.98);
+        }
+
+        /* Add smooth transition for scroll effect */
+        .navbar {
+            transition: background-color 0.3s ease;
+        }
+
+    /* Hero Section */
+    .hero {
+      height: 90vh;
+      background-image: url('jj.jpeg');
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      border-radius: 16px;
+      padding: 50px;
+      margin-top: 90px;
+      margin-left: 20px;
+      margin-right: 20px;
+    }
+
+    /* Accommodation Content */
+    .accommodation-content {
+      max-width: 700px;
+      margin: -90px auto 50px;
+      padding: 60px 20px;
+      background-color: white;
+      border-radius: 16px;
+      box-shadow: 0 0 25px rgba(12, 80, 14, 0.8);
+    }
+    
+    .agcararao-title {
+      text-align: center;
+      font-size: 2.5rem;
+      color: #555;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+    
+    .agcararao-subtitle {
+      text-align: center;
+      font-size: 1rem;
+      letter-spacing: 1px;
+      color: #888;
+      margin-bottom: 40px;
+      text-transform: uppercase;
+    }
+    
+    .divider {
+      width: 300px;
+      height: 3px;
+      background-color: #e6c35c;
+      margin: 0 auto 40px;
+    }
+    
+    .agcararao-description {
+      text-align: center;
+      max-width: 900px;
+      margin: 0 auto 25px;
+      color: #777;
+      font-size: 1.1rem;
+      line-height: 1.8;
+    }
+
+    /* Main Slider */
+    .slider-container {
+      position: relative;
+      width: 100%;
+      height: 500px;
+      overflow: hidden;
+      margin-bottom: 50px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    
+    .slider-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      perspective: 1000px;
+      
+    }
+    
+    .slide {
+      position: absolute;
+      width: 80%;
+      height: 100%;
+      left: 10%;
+      top: 0;
+      opacity: 0;
+      transform: translateZ(-200px) translateX(0);
+      transition: all 0.8s ease-in-out;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    
+    .slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .slide.active {
+      opacity: 1;
+      transform: translateZ(0) translateX(0);
+      z-index: 10;
+    }
+    
+    .slide.prev-1 {
+      opacity: 0.7;
+      transform: translateZ(-100px) translateX(-30%);
+      z-index: 9;
+    }
+    
+    .slide.prev-2 {
+      opacity: 0.5;
+      transform: translateZ(-200px) translateX(-45%);
+      z-index: 8;
+    }
+    
+    .slide.next-1 {
+      opacity: 0.7;
+      transform: translateZ(-100px) translateX(30%);
+      z-index: 9;
+    }
+    
+    .slide.next-2 {
+      opacity: 0.5;
+      transform: translateZ(-200px) translateX(45%);
+      z-index: 8;
+    }
+    
+    .slider-nav {
+      position: absolute;
+      top: 50%;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      z-index: 100;
+      transform: translateY(-50%);
+      padding: 0 30px;
+    }
+    
+    .slider-nav button {
+      background-color: rgba(255, 255, 255, 0.8);
+      border: none;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      transition: background-color 0.3s;
+    }
+    
+    .slider-nav button:hover {
+      background-color: rgba(255, 255, 255, 1);
+    }
+
+    /* Room sections */
+.room-section {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 4rem;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.room-section:hover {
+  transform: translateY(-5px);
+}
+
+@media (min-width: 900px) {
+  .room-section {
+    flex-direction: row;
+  }
+}
+
+/* Room info */
+.room-info {
+  padding: 2rem;
+  flex: 1;
+}
+
+.room-title {
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.room-name {
+  position: relative;
+  display: inline-block;
+}
+
+.room-name::after {
+  content: '';
+  position: absolute;
+  width: 170px;
+  height: 3px;
+  background-color: #4d96db;
+  bottom: -10px;
+  left: 0;
+}
+
+.room-description {
+  margin-bottom: 1.5rem;
+  line-height: 1.8;
+}
+
+/* Inclusions */
+.room-inclusions {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  gap: 0.75rem;
+}
+
+.inclusion {
+  display: inline-flex;
+  align-items: center;
+  background-color: #edf7ff;
+  color: #2980b9;
+  padding: 0.5rem 1rem;
+  border-radius: 30px;
+  font-size: 0.875rem;
+}
+
+.extra-pax {
+  display: block;
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background-color: #fff8e1;
+  color: #e67e22;
+  border-radius: 6px;
+  border-left: 3px solid #f39c12;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Room price and booking */
+.room-price {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 1.5rem 0;
+
+}
+
+.book-now-btn {
+    display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+            cursor: pointer;
+            margin-top: 15px;
+            border: none;
+        }
+
+        .book-now-btn:hover {
+            background-color: #0056b3;
+        }
+
+/* Room selection dropdown */
+.room-selection {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.room-selection label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.room-selection select {
+  width: 100%;
+  max-width: 250px;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  background-color: #f9f9f9;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23333%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem top 50%;
+  background-size: 0.65rem auto;
+}
+
+.room-selection select:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+/* Image sliders */
+.section-slider {
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+  min-height: 450px;
+}
+
+.section-slider-wrapper {
+  display: flex;
+  height: 100%;
+  transition: transform 0.5s ease;
+}
+
+.section-slide {
+  flex: 0 0 100%;
+  height: 100%;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  transition: opacity 0.5s ease;
+  display: none;
+}
+
+.section-slide.active {
+  opacity: 1;
+  display: block;
+}
+
+.section-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Navigation buttons */
+.section-nav {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  transform: translateY(-50%);
+  z-index: 2;
+  padding: 0 1.5rem;
+}
+
+.section-prev,
+.section-next {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: #2c3e50;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.section-prev:hover,
+.section-next:hover {
+  background-color: white;
+  transform: scale(1.1);
+}
+
+/* Dots navigation */
+.section-dots {
+  position: absolute;
+  bottom: 1.5rem;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  z-index: 2;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.dot.active {
+  width: 12px;
+  height: 12px;
+  background-color: white;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 0 0 3px rgba(255, 255, 255, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .room-section {
+    flex-direction: column;
+  }
+  
+  .section-slider {
+    min-height: 300px;
+  }
+}
+
+@media (max-width: 600px) {
+  .inclusion {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.8rem;
+  }
+  
+  .room-price {
+    font-size: 1.5rem;
+  }
+  
+  h2 {
+    font-size: 1.8rem;
+  }
+  
+  .section-slider {
+    min-height: 250px;
+  }
+}
+
+/* Add some subtle animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.room-section {
+  animation: fadeIn 0.6s ease forwards;
+}
+
+/* Staggered animation for multiple room sections */
+.room-section:nth-child(1) { animation-delay: 0.1s; }
+.room-section:nth-child(2) { animation-delay: 0.2s; }
+.room-section:nth-child(3) { animation-delay: 0.3s; }
+.room-section:nth-child(4) { animation-delay: 0.4s; }
+
+/* Footer Bottom */
+.footer-bottom {
+    text-align: center;
+    padding: 0.5rem;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+
+}
+    
+  </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" aria-label="Main navigation">
+      <div class="nav-container">
+        <a href="index.html" class="logo" aria-label="Agcararao Mountain View Resort Home">
+          <img src="loho.png" alt="Agcararao Mountain View Resort Logo" />
+          <span class="logo-text">Agcararao Mountain View Resort</span>
+        </a>
+        
+        <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" style="display: none;">
+          <i class="fas fa-bars"></i>
+        </button>
+        
+        <ul class="nav-links" id="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li class="dropdown">
+            <a href="#amenities" aria-haspopup="true" aria-expanded="false">Amenities <i class="fas fa-chevron-down"></i></a>
+            <div class="dropdown-content" aria-label="Amenities submenu">
+              <a href="rooms.html">Rooms</a>
+              <a href="activities.html">Activities</a>
+              <a href="foods.html">Foods</a>
+            </div>
+          </li>
+          <li><a href="gallery.html">Gallery</a></li>
+        </ul>
+      </div>
+    </nav>
+  <section class="hero" aria-label="Agcararao mountain view resort">
+   
+  </section>
+
+  <!-- Introduction Section -->
+  <section class="accommodation-content" aria-labelledby="accommodation-title">
+    <h1 id="accommodation-title" class="agcararao-title">Discover Your Perfect Haven</h1>
+    <p class="agcararao-subtitle">Step into a world where rustic charm meets modern elegance at Agcararao Mountain View Resort.</p>
+    <div class="divider" aria-hidden="true"></div>
+    <p class="agcararao-description">Thoughtfully curated spaces combine local charm with modern comforts for a serene retreat. Imagine waking to panoramic views of lush landscapes, crowned by an ethereal sea of clouds at dawn.</p>
+  </section>
+
+  <!-- Main Content -->
+  <div class="container">
+    <!-- Main Highlight Slider -->
+    <div class="slider-container" aria-label="Featured accommodations gallery">
+      <div class="slider-wrapper">
+        <div class="slide active">
+          <img src="yag.jpg">
+        </div>
+        <div class="slide next-1">
+            <img src="iu.jpg">
+          </div>
+          <div class="slide next-2">
+            <img src="8.jpg">
+          </div>
+          <div class="slide next-3">
+            <img src="096.jpg"> <!-- Add new image -->
+          </div>
+          <div class="slide next-4">
+            <img src="ge.jpg"> <!-- Add new image -->
+          </div>
+          <div class="slide prev-2">
+            <img src="56.jpg">
+          </div>
+          <div class="slide prev-1">
+            <img src="u7.jpg"> <!-- Replace empty src -->
+          </div>
+          <div class="slide prev-3">
+            <img src="74.jpg"> <!-- Add new image -->
+          </div>
+          <div class="slide prev-4">
+            <img src="[7.jpg"> <!-- Add new image -->
+          </div>
+          
+      </div>
+      
+      <div class="slider-nav">
+        <button class="prev-btn" aria-label="Previous slide">❮</button>
+        <button class="next-btn" aria-label="Next slide">❯</button>
+      </div>
+    </div>
+
+      <!-- Room Section 1: Casa De Amon -->
+      <section class="room-section" aria-labelledby="Casa-de-amon">
+        <div class="section-slider" aria-label="Casa De Amon room gallery">
+          <div class="section-slider-wrapper">
+            <div class="section-slide active">
+              <img src="yag.jpg">
+            </div>
+            <div class="section-slide">
+              <img src="iu.jpg">
+            </div>
+            <div class="section-slide">
+              <img src="mon.jpg">
+            </div>
+            <div class="section-slide">
+              <img src="we.jpg">
+            </div>
+            <div class="section-slide">
+              <img src="am.jpg">
+            </div>
+          </div>
+          
+          <div class="section-nav">
+            <button class="section-prev" aria-label="Previous room image">❮</button>
+            <button class="section-next" aria-label="Next room image">❯</button>
+          </div>
+          
+          <div class="section-dots" role="tablist">
+            <span class="dot active" data-index="0" role="tab" aria-selected="true" aria-label="Image 1"></span>
+            <span class="dot" data-index="1" role="tab" aria-selected="false" aria-label="Image 2"></span>
+            <span class="dot" data-index="2" role="tab" aria-selected="false" aria-label="Image 3"></span>
+            <span class="dot" data-index="3" role="tab" aria-selected="false" aria-label="Image 4"></span>
+            <span class="dot" data-index="4" role="tab" aria-selected="false" aria-label="Image 5"></span>
+          </div>
+        </div>
+
+        
+        <div id="casa-de-amon" class="room-info">
+          <div class="room-title">
+            <h2 id="Casa-de-amon" class="room-name">Casa De Amon</h2>
+          </div>
+          
+          <p class="room-description">Escape to Casa De Amon, where breathtaking mountain views, misty mornings, and a sea of clouds create the perfect peaceful retreat. This charming A-frame bamboo hut offers a cozy escape, fresh mountain air, and stunning panoramic landscapes. Relax on the hammock net balcony, watch the sunrise, or unwind in nature’s embrace.</p>
+          
+          <div class="room-inclusions" aria-label="Room inclusions">
+            <span class="inclusion">✔ Breakfast for 2 pax</span>
+            <span class="inclusion">✔ Entrance/Overnight fee for 5 pax</span>
+            <span class="inclusion">✔ Beddings</span>
+            <span class="inclusion">✔ exclusive net</span>
+            <span class="inclusion">✔ Bonfire</span>
+            <span class="extra-pax">➕ Extra Pax: ₱300.00 per head (can accommodate 2-4 pax)</span>
+            
+           <!-- Room Selection Dropdown -->
+    <div class="room-selection">
+        <label for="room-count">Select Number of Rooms:</label>
+        <select id="room-count" onchange="updatePrice()">
+          <option value="1">1 Room</option>
+          <option value="2">2 Rooms</option>
+          <option value="3">3 Rooms</option>
+        </select>
+      </div>
+
+
+        </div>
+        <div class="room-price" id="total-price">₱1,500 per night</div>
+        <button class="book-now-btn" onclick="openBookingForm('Casa De Amon', 1500, document.getElementById('room-count').value)">BOOK NOW</button>
+
+    </section>
+    
+    <script>
+        function updatePrice() {
+            let roomCount = document.getElementById("room-count").value;
+            let basePrice = 1500; // Casa De Amon price per room
+            let totalPrice = basePrice * roomCount;
+            document.getElementById("total-price").innerText = `₱${totalPrice.toLocaleString()} per night`;
+        }
+    
+        function openBookingForm(roomName, basePrice, roomCount = 1) {
+            let encodedRoomName = encodeURIComponent(roomName);
+            window.location.href = `booking.html?room=${encodedRoomName}&rooms=${roomCount}&price=${basePrice}`;
+        }
+    </script>
+    
+
+    <!-- Room Section 2: Casa De Bella -->
+    <section class="room-section" aria-labelledby="Casa-de-bella">
+      <div class="section-slider" aria-label="Casa De Bella room gallery">
+        <div class="section-slider-wrapper">
+          <div class="section-slide active">
+            <img src="ca.jpg">
+          </div>
+          <div class="section-slide">
+            <img src="----.jpg">
+          </div>
+          <div class="section-slide">
+            <img src="sa.jpg">
+          </div>
+          <div class="section-slide">
+            <img src="laa.jpg">
+          </div>
+          <div class="section-slide">
+            <img src="bella.jpg">
+          </div>
+        </div>
+        
+        <div class="section-nav">
+          <button class="section-prev" aria-label="Previous room image">❮</button>
+          <button class="section-next" aria-label="Next room image">❯</button>
+        </div>
+        
+        <div class="section-dots" role="tablist">
+          <span class="dot active" data-index="0" role="tab" aria-selected="true" aria-label="Image 1"></span>
+          <span class="dot" data-index="1" role="tab" aria-selected="false" aria-label="Image 2"></span>
+          <span class="dot" data-index="2" role="tab" aria-selected="false" aria-label="Image 3"></span>
+          <span class="dot" data-index="3" role="tab" aria-selected="false" aria-label="Image 4"></span>
+          <span class="dot" data-index="4" role="tab" aria-selected="false" aria-label="Image 5"></span>
+        </div>
+      </div>
+      
+      <div id="casa-de-bella" class="room-info">
+        <div class="room-title">
+          <h2 id="Casa-de-bella" class="room-name">Casa De Bella</h2>
+        </div>
+        
+        <p class="room-description">Escape to Casa De Bella, a charming bamboo cabin nestled in the heart of Agcararao Mountain View Resort, Passi City. Relax in a beautifully crafted bamboo-inspired cabin featuring spacious interiors, cozy native furniture, and an open-concept design that allows you to fully embrace the surrounding natural beauty. Step out onto your private balcony, where you can sip your morning coffee while admiring the panoramic views of rolling hills, lush forests, and golden sunsets.</p>
+        
+        <div class="room-inclusions" aria-label="Room inclusions">
+            <span class="inclusion">✔ Breakfast for 5 pax</span>
+            <span class="inclusion">✔ Entrance/Overnight fee for 5 pax</span>
+            <span class="inclusion">✔ Beddings</span>
+            <span class="inclusion">✔ Own Toilet</span>
+            <span class="inclusion">✔ Bonfire</span>
+            <span class="inclusion">✔ Own Balcony</span>
+            <span class="extra-pax">➕ Extra Pax: ₱300.00 per head w/ breakfast (can accommodate 10 pax)</span>
+            
+        </div>
+      
+        <div class="room-price" id="total-price">₱3,000 per night</div>
+        <button class="book-now-btn" onclick="openBookingForm('Casa De Bella', 3000)">BOOK NOW</button>
+    </section>
+    
+    <!-- Room Section 3: Casa De Arced -->
+    <section class="room-section" aria-labelledby="Casa-de-arced">
+      <div class="section-slider" aria-label="Casa De Arced room gallery">
+        <div class="section-slider-wrapper">
+          <div class="section-slide active">
+            <img src="aw.jpg">
+          </div>
+          <div class="section-slide">
+            <img src="8.jpg">
+          </div>
+          <div class="section-slide">
+            <img src="ced.jpg">
+          </div>
+          <div class="section-slide">
+            <img src="ar.jpg">
+          </div>
+          <div class="section-slide">
+            <img src="jyg.jpg">
+          </div>
+        </div>
+        
+        <div class="section-nav">
+          <button class="section-prev" aria-label="Previous room image">❮</button>
+          <button class="section-next" aria-label="Next room image">❯</button>
+        </div>
+        
+        <div class="section-dots" role="tablist">
+          <span class="dot active" data-index="0" role="tab" aria-selected="true" aria-label="Image 1"></span>
+          <span class="dot" data-index="1" role="tab" aria-selected="false" aria-label="Image 2"></span>
+          <span class="dot" data-index="2" role="tab" aria-selected="false" aria-label="Image 3"></span>
+          <span class="dot" data-index="3" role="tab" aria-selected="false" aria-label="Image 4"></span>
+          <span class="dot" data-index="4" role="tab" aria-selected="false" aria-label="Image 5"></span>
+        </div>
+      </div>
+      
+      <div id="casa-de-arced" class="room-info">
+        <div class="room-title">
+          <h2 id="Casa-de-arced" class="room-name">Casa De Arced</h2>
+        </div>
+        
+        <p class="room-description">Escape to Casa De Arced, a serene haven tucked away in nature’s embrace. This enchanting bamboo-inspired hideaway blends rustic charm with modern comforts, offering a truly authentic retreat. Start your mornings with breathtaking mountain vistas as you savor a cup of coffee on your spacious private balcony. Let the gentle whispers of the breeze and the melodies of birdsong create a tranquil escape from the everyday hustle.</p>
+        
+      
+        <div class="room-inclusions" aria-label="Room inclusions">
+            <span class="inclusion">✔ Breakfast for 5 pax</span>
+            <span class="inclusion">✔ Entrance/Overnight fee for 5 pax</span>
+            <span class="inclusion">✔ Beddings for 5 pax</span>
+            <span class="inclusion">✔ Swimming</span>
+            <span class="extra-pax">➕ Extra Pax: ₱300.00 per head w/ breakfast (can accommodate 10 pax)</span>
+        </div>
+        
+        
+        <div class="room-price" id="total-price">₱3,500 per night</div>
+
+        <button class="book-now-btn" onclick="openBookingForm('Casa De Arced', 3500)">BOOK NOW</button>
+
+    </section>
+    <!-- Room Section 4: Casa Y Agua -->
+    <section class="room-section" aria-labelledby="casa-y-agua">
+        <div class="section-slider" aria-label="Casa Y Agua room gallery">
+          <div class="section-slider-wrapper">
+            <div class="section-slide active">
+              <img src="agj.jpg">
+            </div>
+            <div class="section-slide">
+              <img src="loi.jpg">
+            </div>
+            <div class="section-slide">
+              <img src="jgz.jpg">
+            </div>
+            <div class="section-slide">
+              <img src="sdl.jpg">
+            </div>
+            <div class="section-slide">
+              <img src="sw.jpg">
+            </div>
+          </div>
+          
+          <div class="section-nav">
+            <button class="section-prev" aria-label="Previous room image">❮</button>
+            <button class="section-next" aria-label="Next room image">❯</button>
+          </div>
+          
+          <div class="section-dots" role="tablist">
+            <span class="dot active" data-index="0" role="tab" aria-selected="true" aria-label="Image 1"></span>
+            <span class="dot" data-index="1" role="tab" aria-selected="false" aria-label="Image 2"></span>
+            <span class="dot" data-index="2" role="tab" aria-selected="false" aria-label="Image 3"></span>
+            <span class="dot" data-index="3" role="tab" aria-selected="false" aria-label="Image 4"></span>
+            <span class="dot" data-index="4" role="tab" aria-selected="false" aria-label="Image 5"></span>
+          </div>
+        </div>
+        
+        <div class="room-info">
+          <div class="room-title">
+            <h2 id="casa-de-bella" class="room-name">Casa Y Agua</h2>
+          </div>
+          
+          <p class="room-description">Escape to Casa De Bella, a charming bamboo cabin nestled in the heart of Agcararao Mountain View Resort, Passi City. Relax in a beautifully crafted bamboo-inspired cabin featuring spacious interiors, cozy native furniture, and an open-concept design that allows you to fully embrace the surrounding natural beauty. Step out onto your private balcony, where you can sip your morning coffee while admiring the panoramic views of rolling hills, lush forests, and golden sunsets.</p>
+          
+          <div class="room-inclusions" aria-label="Room inclusions">
+              <span class="inclusion">✔ Breakfast for 5 pax</span>
+              <span class="inclusion">✔ Entrance/Overnight stay fee for 5 pax</span>
+              <span class="inclusion">✔ Beddings for 5 pax</span>
+              <span class="inclusion">✔ Exclusive use of infinity pool</span>
+              <span class="inclusion">✔ Bonfire</span>
+              <span class="inclusion">✔ Own cr, Living & Dinning room, Griller</span>
+              <span class="extra-pax">➕ Extra Pax: ₱300.00 per head w/ breakfast (can accommodate 20 pax)</span>
+              
+          </div>
+          
+          <div class="room-price" id="total-price">₱4,999 per night</div>
+
+          <button class="book-now-btn" onclick="openBookingForm('Casa Y Agua', 4999)">BOOK NOW</button>
+      </section>
+
+   <!-- Footer -->
+ <footer>
+  <div class="footer-bottom">
+      <p>&copy; 2025 Agcararao Mountain View Resort. All rights reserved.</p>
+  </div>
+</footer>
+    
+</body>
+ 
+</html>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Main slider functionality
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.querySelector('.prev-btn');
+        const nextBtn = document.querySelector('.next-btn');
+        
+        const totalSlides = slides.length;
+        
+        // Function to update the slides
+        function updateSlides() {
+            // Find current active slide
+            let activeIndex = 0;
+            slides.forEach((slide, index) => {
+                if (slide.classList.contains('active')) {
+                    activeIndex = index;
+                }
+                
+                // Remove all classes
+                slide.classList.remove('active', 'prev-1', 'prev-2', 'next-1', 'next-2');
+            });
+            
+            // Calculate indices for all positions
+            const prevIndex1 = (activeIndex - 1 + totalSlides) % totalSlides;
+            const prevIndex2 = (activeIndex - 2 + totalSlides) % totalSlides;
+            const nextIndex1 = (activeIndex + 1) % totalSlides;
+            const nextIndex2 = (activeIndex + 2) % totalSlides;
+            
+            // Apply proper classes
+            slides[activeIndex].classList.add('active');
+            slides[prevIndex1].classList.add('prev-1');
+            slides[prevIndex2].classList.add('prev-2');
+            slides[nextIndex1].classList.add('next-1');
+            slides[nextIndex2].classList.add('next-2');
+        }
+        
+        // Initialize slider
+        updateSlides();
+        
+        // Next button click event
+        nextBtn.addEventListener('click', function() {
+            let activeIndex = 0;
+            slides.forEach((slide, index) => {
+                if (slide.classList.contains('active')) {
+                    activeIndex = index;
+                }
+            });
+            
+            // Calculate new active index
+            const newActiveIndex = (activeIndex + 1) % totalSlides;
+            
+            // Remove active from current slide
+            slides[activeIndex].classList.remove('active');
+            // Add active to new slide
+            slides[newActiveIndex].classList.add('active');
+            
+            // Update all slides
+            updateSlides();
+        });
+        
+        // Previous button click event
+        prevBtn.addEventListener('click', function() {
+            let activeIndex = 0;
+            slides.forEach((slide, index) => {
+                if (slide.classList.contains('active')) {
+                    activeIndex = index;
+                }
+            });
+            
+            // Calculate new active index
+            const newActiveIndex = (activeIndex - 1 + totalSlides) % totalSlides;
+            
+            // Remove active from current slide
+            slides[activeIndex].classList.remove('active');
+            // Add active to new slide
+            slides[newActiveIndex].classList.add('active');
+            
+            // Update all slides
+            updateSlides();
+        });
+        
+        // Section sliders functionality
+        const sectionSliders = document.querySelectorAll('.section-slider');
+        
+        sectionSliders.forEach(function(slider) {
+            const sectionSlides = slider.querySelectorAll('.section-slide');
+            const sectionPrev = slider.querySelector('.section-prev');
+            const sectionNext = slider.querySelector('.section-next');
+            const dots = slider.querySelectorAll('.dot');
+            
+            const totalSectionSlides = sectionSlides.length;
+            let currentSlideIndex = 0;
+            
+            // Function to show a specific slide
+            function showSlide(index) {
+                sectionSlides.forEach(slide => {
+                    slide.classList.remove('active');
+                });
+                
+                dots.forEach(dot => {
+                    dot.classList.remove('active');
+                });
+                
+                sectionSlides[index].classList.add('active');
+                dots[index].classList.add('active');
+                currentSlideIndex = index;
+            }
+            
+            // Next button click
+            sectionNext.addEventListener('click', function() {
+                const newIndex = (currentSlideIndex + 1) % totalSectionSlides;
+                showSlide(newIndex);
+            });
+            
+            // Previous button click
+            sectionPrev.addEventListener('click', function() {
+                const newIndex = (currentSlideIndex - 1 + totalSectionSlides) % totalSectionSlides;
+                showSlide(newIndex);
+            });
+            
+            // Dot click events
+            dots.forEach(dot => {
+                dot.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    showSlide(index);
+                });
+            });
+        });
+    });
+</script>

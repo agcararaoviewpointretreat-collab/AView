@@ -1,0 +1,1852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMVR Activities</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <style>
+   * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: url('jyf.jpg') no-repeat top center fixed; /* Image at the top */
+            background-size: cover; /* Ensures it covers the entire page */
+            line-height: 1.6;
+          
+            
+        }
+
+        /* Overlay to improve readability */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(157, 153, 153, 0.4); /* Dark overlay */
+            z-index: -1;
+        }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+      .navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.02);    /* extremely transparent */
+    backdrop-filter: blur(2px);             /* more intense blur */
+    -webkit-backdrop-filter: blur(2px);     /* Safari support */
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* soft deep shadow */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* faint border */
+    z-index: 1000;
+}
+
+.nav-container {
+    max-width: 1500px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+}
+
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            gap: 0;
+        }
+
+        .logo img {
+    /* Increase height for a bigger logo; set width to auto so it scales proportionally */
+    height: 50px;
+    width: auto;
+}
+
+.logo-text {
+    /* Increase the font size to make the text larger */
+    font-size: 1.2rem;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-weight: bold;
+    color: #070707;
+    white-space: nowrap; /* Ensures the text remains on one line */
+    transition: color 0.3s ease-in-out;
+}
+
+    
+    .logo:hover .logo-text {
+        color: #099309;
+    }
+
+        .resort-name {
+            font-size: 1.3rem;
+            color: #2c5530;
+            font-weight: 600;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #0e0d0d;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            padding: 0.5rem 0;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        /* Underline effect for nav links */
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #2c5530;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #2c5530;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Dropdown Styles */
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown > a .fa-chevron-down {
+            font-size: 0.8rem;
+            margin-left: 0.3rem;
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown:hover > a .fa-chevron-down {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-content {
+            position: absolute;
+            top: 100%;
+            left: -1rem;
+            background: #ffffff;
+            min-width: 180px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            padding: 0.5rem 0;
+            margin-top: 0.5rem;
+        }
+
+        .dropdown:hover .dropdown-content {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-content a {
+            padding: 0.7rem 1.2rem;
+            display: block;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .dropdown-content a:hover {
+            background: #f8f9fa;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .nav-container {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                gap: 1.5rem;
+            }
+
+            .resort-name {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                width: 100%;
+                gap: 1rem;
+                margin-top: 1rem;
+                display: none;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .dropdown-content {
+                position: static;
+                box-shadow: none;
+                opacity: 1;
+                visibility: visible;
+                transform: none;
+                padding-left: 1rem;
+            }
+
+            .logo {
+                margin-bottom: 0.5rem;
+            }
+        }
+
+        /* Scroll Effect */
+        .navbar.scrolled {
+            background: rgba(255, 255, 255, 0.98);
+        }
+
+        /* Add smooth transition for scroll effect */
+        .navbar {
+            transition: background-color 0.3s ease;
+        }
+
+
+        .activities-hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('her.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            margin-top: 80px;
+            position: relative;
+        }
+
+        .activities-hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .activities-hero p {
+            font-size: 1.5rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .activities-container {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+
+        .activity-category {
+            margin-bottom: 6rem;
+        }
+
+        .activity-category h2 {
+            color: #2c5530;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .activity-category h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: #2c5530;
+        }
+
+        .activity-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2.5rem;
+        }
+
+        .bonfire-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .bonfire-wrapper .activity-card {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .activity-card {
+            background: #fff;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .activity-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .activity-image {
+            height: 350px;
+            overflow: hidden;
+            position: relative;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .activity-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .activity-card:not(:has(video)) .activity-image img:hover {
+            transform: none;
+        }
+
+        .activity-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: none;
+        }
+
+        .activity-image:hover .activity-video {
+            display: block;
+        }
+
+        .activity-image:hover img {
+            display: none;
+        }
+
+        .activity-content {
+            padding: 2rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .activity-content h3 {
+            color: #2c5530;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+        }
+
+        .activity-content p {
+            color: #252424;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            
+        }
+
+        .activity-details {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+            margin-top: auto;
+        }
+
+        .book-activity {
+            display: inline-block;
+            background-color: #2c5530;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-align: center;
+            width: fit-content;
+            
+        }
+
+        .book-activity:hover {
+            background-color: #1a3a1f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(44, 85, 48, 0.2);
+        }
+
+        .price-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .price-item {
+            color: #2c5530;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .inclusions {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+
+        .inclusions h4 {
+            color: #2c5530;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .inclusions ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .inclusions li {
+            color: #4e4646;
+            font-size: 1rem;
+            margin-bottom: 0.3rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .inclusions li::before {
+            content: "•";
+            color: #2c5530;
+            position: absolute;
+            left: 0;
+        }
+
+        @media (max-width: 768px) {
+            .activities-hero h1 {
+                font-size: 2.8rem;
+            }
+
+            .activities-hero p {
+                font-size: 1.2rem;
+            }
+
+            .activity-category h2 {
+                font-size: 2rem;
+            }
+
+            .activity-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+      
+
+/* Footer Bottom */
+.footer-bottom {
+            text-align: center;
+    padding: 0.5rem;
+    color: #070707;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+
+}
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+#swimmingModal {
+    z-index: 1001;
+}
+
+#cottageReservationModal {
+    z-index: 1001;
+}
+
+#reservationModal {
+    z-index: 1000;
+}
+
+.modal-content {
+    position: relative;
+    background-color: #fff;
+    width: 90%;
+    max-width: 700px;
+    margin: 2rem auto;
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    animation: slideIn 0.3s forwards;
+}
+
+@keyframes slideIn {
+            from {
+        transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.close-btn {
+    position: absolute;
+    right: 1.5rem;
+    top: 1.5rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #777;
+    transition: color 0.3s;
+}
+
+.close-btn:hover {
+    color: #333;
+}
+
+.modal-header {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.modal-header h2 {
+    color: #2c5530;
+    font-size: 1.8rem;
+}
+
+/* Form styles */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+input, select, textarea {
+                width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    color: #333;
+}
+
+input::placeholder, textarea::placeholder {
+    color: #666;
+}
+
+textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+.input-group {
+            display: flex;
+    gap: 1rem;
+}
+
+.input-group .form-group {
+    flex: 1;
+}
+
+.submit-btn {
+    background-color: #2c5530;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+            font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.submit-btn:hover {
+    background-color: #1a3a1f;
+}
+
+.reservation-summary {
+    background-color: #f5f7fa;
+    padding: 1.5rem;
+    border-radius: 5px;
+    margin-top: 2rem;
+    color: #333;
+}
+
+.summary-header {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+            color: #2c5530;
+        }
+
+.summary-details {
+    margin-bottom: 1rem;
+        }
+
+.summary-detail {
+            display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.3rem;
+    color: #333;
+}
+
+.summary-total {
+            font-weight: bold;
+    border-top: 1px solid #ddd;
+    padding-top: 0.5rem;
+    margin-top: 0.5rem;
+            color: #2c5530;
+        }
+
+/* Modal header text color */
+.modal-header h2 {
+    color: #2c5530;
+}
+
+.modal-header p {
+    color: #333;
+}
+
+/* Form validation styles */
+input:invalid, select:invalid, textarea:invalid {
+    border-color: #dc3545;
+}
+
+input:valid, select:valid, textarea:valid {
+    border-color: #28a745;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .input-group {
+        flex-direction: column;
+        gap: 0;
+    }
+    
+    .modal-content {
+        width: 95%;
+        padding: 1.5rem;
+    }
+        }
+
+        /* Add this to your existing styles */
+        .total-section {
+            background-color: #f5f7fa;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+        
+        .total-header {
+            font-weight: bold;
+            color: #2c5530;
+            margin-bottom: 0.5rem;
+        }
+        
+        .total-amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c5530;
+        }
+
+        /* Form spacing and additional guests styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .additional-guests {
+            margin-bottom: 1rem;
+        }
+
+        .additional-guests label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .small-input {
+            width: 80px !important;
+            padding: 0.5rem !important;
+        }
+
+        .fee-info {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .fee-info p {
+            margin: 0.2rem 0;
+        }
+
+        .availability-message {
+            margin-top: 0.5rem;
+            padding: 0.75rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            white-space: pre-line;
+        }
+
+        .available {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .unavailable {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .availability-message.unavailable {
+            margin-bottom: 1rem;
+        }
+
+        .down-payment, .balance {
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+        
+        .total-header {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .total-amount {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .down-payment .total-header {
+            color: #e74c3c;
+        }
+        
+        .balance .total-header {
+            color: #27ae60;
+        }
+
+        /* Add notification badge styles */
+        .cottage-option {
+            position: relative;
+            display: inline-block;
+        }
+
+        .pending-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #ff4444;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
+            font-weight: bold;
+            min-width: 15px;
+            text-align: center;
+            display: none;
+        }
+
+        /* Notification styles */
+        .cottage-notifications {
+            margin-top: 10px;
+            display: none;
+        }
+
+        .cottage-notification {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .notification-badge {
+            background-color: #ff4444;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
+            font-weight: bold;
+            min-width: 15px;
+            text-align: center;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+<body>
+     <!-- Navigation -->
+  <nav class="navbar" aria-label="Main navigation">
+    <div class="nav-container">
+      <a href="index.html" class="logo" aria-label="Agcararao Mountain View Resort Home">
+        <img src="loho.png" alt="Agcararao Mountain View Resort Logo" />
+        <span class="logo-text">Agcararao Mountain View Resort</span>
+      </a>
+      
+      <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" style="display: none;">
+        <i class="fas fa-bars"></i>
+      </button>
+      
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li class="dropdown">
+          <a href="#amenities" aria-haspopup="true" aria-expanded="false">Amenities <i class="fas fa-chevron-down"></i></a>
+          <div class="dropdown-content" aria-label="Amenities submenu">
+            <a href="rooms.html">Rooms</a>
+            <a href="activities.html">Activities</a>
+            <a href="foods.html">Foods</a>
+          </div>
+        </li>
+        <li><a href="gallery.html">Gallery</a></li>
+      </ul>
+    </div>
+  </nav>
+    <!-- Hero Section -->
+    <section class="activities-hero">
+        <div class="hero-content">
+            <h1>Adventure Begins Here</h1>
+            <p>Unleash your spirit of exploration and enjoy stunning experiences at Agcararao Mountain View Resort.</p>
+    </div>
+    </section>
+
+    <!-- Activities Content -->
+    <div class="activities-container">
+        <!-- Adventure Activities -->
+        <section class="activity-category" data-aos="fade-up">
+            <h2>Explore & Enjoy</h2>
+            <div class="activity-grid">
+                <div class="activity-card">
+                    <div class="activity-image">
+                        <img src="atv.jpg" alt="ATV Riding">
+                        <video controls class="activity-video">
+                            <source src="joee.mp4" type="video/mp4">
+                          
+                        </video>
+                </div>
+                    <div class="activity-content">
+                        <h3>ATV Adventure</h3>
+                        <p>Get ready for an adrenaline-pumping adventure at Agcararao Mountain View Resort! Hop on an ATV and navigate through rugged trails, scenic mountain paths, and breathtaking landscapes. Feel the thrill of the ride while soaking in the fresh mountain air and stunning panoramic views.</p>
+                        <div class="activity-details">
+                            <div class="price-list">
+                                <h4 style="color: #2c5530; margin-bottom: 10px; font-size: 1.2em;">Rates</h4>
+                                <span class="price-item">₱150 (5 mins)</span>
+                                <span class="price-item">₱250 (10 mins)</span>
+                                <span class="price-item">₱350 (15 mins)</span>
+                                <span class="price-item">₱450 (20 mins)</span>
+                                <span class="price-item">₱500 (30 mins)</span>
+                            </div>
+                </div>
+            </div>
+        </div>
+
+                <div class="activity-card">
+                    <div class="activity-image">
+                        <img src="gro.jpg" alt="Rainbow Slide">
+                        <video controls class="activity-video">
+                            <source src="narde.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                    <div class="activity-content">
+                        <h3>Rainbow Slide</h3>
+                        <p>Experience the ultimate thrill as you glide down the vibrant Rainbow Slide at Agcararao Mountain View Resort! This colorful, high-speed slide offers an exciting ride with breathtaking views of the surrounding mountains. Perfect for all ages, it's a must-try attraction for those seeking fun and adventure.</p>
+                        <div class="activity-details">
+                            <div class="price-list">
+                                <h4 style="color: #2c5530; margin-bottom: 10px; font-size: 1.2em;">Rates</h4>
+                                <span class="price-item">₱75 (1 drop)</span>
+                                <span class="price-item">₱100 (2 drops)</span>
+                            </div>
+                        </div>
+                    </div>
+        </div>
+
+                <div class="activity-card">
+                    <div class="activity-image">
+                        <img src="pool games.jpg" alt="Pool Games">
+                    </div>
+                    <div class="activity-content">
+                        <h3>Pool Games</h3>
+                        <p>Enjoy a unique twist on classic billiards with our wooden puck billiards table at Agcararao Mountain View Resort. Set against a breathtaking mountain backdrop, this game offers a fun and exciting challenge for all skill levels. Play, relax, and take in the fresh air while making unforgettable memories with friends and family.</p>
+                        <div class="activity-details">
+                            <div class="price-list">
+                                <h4 style="color: #2c5530; margin-bottom: 10px; font-size: 1.2em;">Rates</h4>
+                                <span class="price-item">₱100 (per hour)</span>
+                                
+                            </div>
+                    </div>
+                </div>
+            </div>
+            
+                <div class="activity-card">
+                    <div class="activity-image">
+                        <img src="mjh.jpg" alt="Billiards">
+                    </div>
+                    <div class="activity-content">
+                        <h3>Billiards</h3>
+                        <p>Unwind and enjoy a friendly game of billiards at our indoor recreation area. Whether you're a seasoned player or just looking for some casual fun, our billiards area offers the perfect spot to relax and challenge friends or family to an exciting match.</p>
+                        <div class="activity-details">
+                            <div class="price-list">
+                                <h4 style="color: #2c5530; margin-bottom: 10px; font-size: 1.2em;">Rates</h4>
+                                <span class="price-item">₱100 (per hour)</span>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="bonfire-wrapper">
+            <div class="activity-card">
+                <div class="activity-image">
+                    <img src="lop.jpg" alt="Bonfire">
+                    <video controls class="activity-video">
+                        <source src="par.mp4" type="video/mp4">
+                    </video>
+                    </div>
+                <div class="activity-content">
+                    <h3>Bonfire</h3>
+                    <p>Gather around the warm glow of a bonfire at Agcararao Mountain View Resort and experience the perfect way to unwind under the starry sky. Enjoy the crackling flames, cozy ambiance, and breathtaking mountain views while sharing stories, roasting marshmallows, or simply soaking in the peaceful atmosphere.</p>
+                    <div class="activity-details">
+                       
+                    </div>
+                </div>
+                    </div>
+                </div>
+
+        <!-- Leisure Activities -->
+        <section class="activity-category" data-aos="fade-up" style="margin-top: 4rem;">
+            <h2>Leisure & Relaxation</h2>
+            <div class="activity-grid">
+                <div class="activity-card">
+                    <div class="activity-image">
+                        <img src="lyo.jpg" alt="Swimming Pool">
+                </div>
+                    <div class="activity-content">
+                        <h3>Swimming Pool</h3>
+                        <p>Take a dip and cool off in the crystal-clear swimming pools at Agcararao Mountain View Resort! Surrounded by breathtaking mountain views and fresh air, our pools offer the perfect escape for relaxation and fun. Whether you're swimming, splashing around with family, the serene ambiance makes for an unforgettable experience.</p>
+                        <div class="activity-details">
+                            <div class="price-list">
+                                <h4 style="color: #2c5530; margin-bottom: 10px; font-size: 1.2em;">Rates</h4>
+                                <span class="price-item">Adult: ₱100</span>
+                                <span class="price-item">Children: ₱80</span>
+            </div>
+                            <a href="#" class="book-activity">Reserve</a>
+                            <div class="inclusions">
+                                <h4>Inclusions:</h4>
+                                <ul>
+                                    <li> No corkage fee </li>
+                                    <li>Changing room access</li>
+                                </ul>
+                                
+                </div>
+                        </div>
+            </div>
+        </div>
+
+                <div class="activity-card">
+                    <div class="activity-image">
+                        <img src="kt.jpg" alt="Camping">
+                
+            </div>
+                    <div class="activity-content">
+                        <h3>Camping</h3>
+                        <p>Escape to the great outdoors and enjoy an unforgettable camping experience at Agcararao Mountain View Resort! Immerse yourself in nature as you set up camp amidst breathtaking mountain landscapes. Breathe in the fresh air, relax under a sky full of stars, and gather around a cozy bonfire for stories and laughter.</p>
+                        <div class="activity-details">
+                            <div class="price-list">
+                                <h4 style="color: #2c5530; margin-bottom: 10px; font-size: 1.2em;">Rates</h4>
+                                <span class="price-item">₱400 per head (With Own Tent)</span>
+                            </div>
+                            <a href="#" class="book-activity">View All Details</a>
+                            
+                            <div class="inclusions">
+                                <h4>Inclusions:</h4>
+                                <ul>
+                                    <li>Camping area access</li>
+                                    <li>Entrance & Swimming</li>
+                                    <li>Overnight Stay Fee</li>
+                                    <li>Breakfast</li>
+                                </ul>
+            </div>
+        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-bottom">
+        <p>&copy; 2025 Agcararao Mountain View Resort. All rights reserved.</p>
+    </div>
+</footer>
+
+    <!-- Reservation Modal -->
+    <div id="reservationModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeModal">&times;</span>
+            <div class="modal-header">
+                <h2>Camping Reservation</h2>
+                <p>Agcararao Viewpoint Retreat</p>
+            </div>
+            
+            <form id="reservationForm">
+                <div class="input-group">
+                    <div class="form-group">
+                        <label for="checkIn">Check-in Date</label>
+                        <input type="date" id="checkIn" name="checkIn" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="checkOut">Check-out Date</label>
+                        <input type="date" id="checkOut" name="checkOut" required>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <div class="form-group">
+                        <label for="guests">Number of Persons</label>
+                        <input type="number" id="guests" name="guests" min="1" max="2" value="1" required>
+                        <div class="fee-info" id="ownTentFee" style="display: none;">
+                            <p>₱400 per head (entrance & swimming)</p>
+                        </div>
+                        <div class="fee-info" id="rentTentFee" style="display: none;">
+                            <p>₱1000 (tent rental)</p>
+                            <p>₱300 per head (overnight fee)</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="additionalGuests">Additional Guests</label>
+                        <input type="number" id="additionalGuests" name="additionalGuests" min="0" max="2" value="0">
+                        <div class="fee-info">
+                            <p>₱300 per additional guest (overnight fee)</p>
+                        </div>
+                    </div>
+                </div>
+
+
+                
+                <div class="form-group">
+                    <label for="hasTent">Do you have your own tent?</label>
+                    <select id="hasTent" name="hasTent" required>
+                        <option value="yes">Yes, I have my own tent</option>
+                        <option value="no">No, I need to rent a tent</option>
+                    </select>
+                </div>
+                
+                <div id="tentRentalOptions" style="display: none;">
+                    <div class="form-group">
+                        <label for="tentSize">Tent Size</label>
+                        <select id="tentSize" name="tentSize">
+                            <option value="2">2-Person Tent (₱1000/night)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" name="fullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                </div>
+                </div>
+
+                <div class="total-section">
+                    <div class="total-header">Total Amount</div>
+                    <div class="total-amount" id="totalAmount">₱0</div>
+                    <div class="down-payment">
+                        <div class="total-header">30% Down Payment Required</div>
+                        <div class="total-amount" id="downPayment">₱0</div>
+                    </div>
+                    <div class="balance">
+                        <div class="total-header">Balance</div>
+                        <div class="total-amount" id="balanceAmount">₱0</div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="submit-btn">Submit Reservation</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Cottage Reservation Modal -->
+    <div id="cottageReservationModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeCottageModal">&times;</span>
+            <div class="modal-header">
+                <h2>Cottage Reservation</h2>
+                <p>Agcararao Mountain View Resort</p>
+            </div>
+            
+            <form id="cottageReservationForm">
+                <div class="form-group">
+                    <label for="cottageName">Full Name</label>
+                    <input type="text" id="cottageName" name="cottageName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="cottageEmail">Email</label>
+                    <input type="email" id="cottageEmail" name="cottageEmail" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="cottageGuests">Number of Guests</label>
+                    <input type="number" id="cottageGuests" name="cottageGuests" min="1" max="10" value="1" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="cottageNumber">Cottage Number</label>
+                    <select id="cottageNumber" name="cottageNumber" required>
+                        <option value="">Select Cottage</option>
+                        <option value="1">Cottage 1 (₱300)</option>
+                        <option value="2">Cottage 2 (₱300)</option>
+                        <option value="3">Cottage 3 (₱300)</option>
+                        <option value="4">Big Cottage (₱500)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="cottageDate">Reservation Date</label>
+                    <input type="date" id="cottageDate" name="cottageDate" required>
+                    <div id="cottageAvailability" class="availability-message"></div>
+                </div>
+
+                <div class="total-section">
+                    <div class="total-header">Total Amount</div>
+                    <div class="total-amount" id="cottageTotalAmount">₱0</div>
+                </div>
+                
+                <button type="submit" class="submit-btn">Submit Reservation</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Swimming Pool Reservation Modal -->
+    <div id="swimmingModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeSwimmingModal">&times;</span>
+            <div class="modal-header">
+                <h2>Swimming Pool Reservation</h2>
+                <p>Agcararao Viewpoint Retreat</p>
+            </div>
+            
+            <form id="swimmingReservationForm">
+                <div class="form-group">
+                    <label for="swimmingName">Full Name</label>
+                    <input type="text" id="swimmingName" name="swimmingName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="swimmingEmail">Email</label>
+                    <input type="email" id="swimmingEmail" name="swimmingEmail" required>
+                </div>
+
+
+
+                <div class="form-group">
+                    <label for="swimmingDate">Reservation Date</label>
+                    <input type="date" id="swimmingDate" name="swimmingDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="swimmingCottage">Cottage Selection</label>
+                    <select id="swimmingCottage" name="swimmingCottage" required>
+                        <option value="">Select Cottage</option>
+                        <option value="1">Cottage 1 (₱300)</option>
+                        <option value="2">Cottage 2 (₱300)</option>
+                        <option value="3">Cottage 3 (₱300)</option>
+                        <option value="4">Big Cottage (₱500)</option>
+                    </select>
+                    <div id="cottageNotifications" class="cottage-notifications"></div>
+                    <div id="swimmingCottageAvailability" class="availability-message"></div>
+                </div>
+
+                <div class="total-section">
+                    <div class="total-header">Total Amount</div>
+                    <div class="total-amount" id="swimmingTotalAmount">₱0</div>
+                    <div class="down-payment">
+                        <div class="total-header">30% Down Payment Required</div>
+                        <div class="total-amount" id="swimmingDownPayment">₱0</div>
+                    </div>
+                    <div class="balance">
+                        <div class="total-header">Balance</div>
+                        <div class="total-amount" id="swimmingBalanceAmount">₱0</div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="submit-btn">Submit Reservation</button>
+            </form>
+                    </div>
+                </div>
+
+                <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+                <script>
+                    AOS.init({
+                        duration: 1000,
+                        once: true,
+                        offset: 100
+                    });
+                </script>
+                <script type="module">
+                    // Import Firebase modules
+                    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+                    import { getDatabase, ref, push, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+                    // Firebase configuration
+                    const firebaseConfig = {
+                        apiKey: "AIzaSyBAE0ieuAJRp_rF4I90qXP8zPr4TQW_rIg",
+                        authDomain: "agcararaoret.firebaseapp.com",
+                        databaseURL: "https://agcararaoret-default-rtdb.firebaseio.com",
+                        projectId: "agcararaoret",
+                        storageBucket: "agcararaoret.appspot.com",
+                        messagingSenderId: "369964400118",
+                        appId: "1:369964400118:web:bd0e0f15ef0e235392dbd7"
+                    };
+
+                    // Initialize Firebase
+                    const app = initializeApp(firebaseConfig);
+                    const db = getDatabase(app);
+
+                    // Your existing code starts here
+                    const modal = document.getElementById('reservationModal');
+                    const closeBtn = document.getElementById('closeModal');
+                    const form = document.getElementById('reservationForm');
+            
+                    // Get form elements
+                    const checkInInput = document.getElementById('checkIn');
+                    const checkOutInput = document.getElementById('checkOut');
+                    const guestsInput = document.getElementById('guests');
+                    const additionalGuestsInput = document.getElementById('additionalGuests');
+                    const hasTentSelect = document.getElementById('hasTent');
+                    const tentRentalOptions = document.getElementById('tentRentalOptions');
+                    const tentSizeSelect = document.getElementById('tentSize');
+                    const totalAmountElement = document.getElementById('totalAmount');
+            
+                    // Constants
+                    const OWN_TENT_PER_PERSON = 400;  // Per person fee when bringing own tent
+                    const RENT_TENT_FEE = 1000;  // Fixed tent rental fee
+                    const RENT_TENT_PER_PERSON = 200;  // Per person fee when renting tent
+            
+                    // Set minimum date for check-in to today
+                    const today = new Date().toISOString().split('T')[0];
+                    checkInInput.min = today;
+            
+                    // Update check-out minimum date when check-in date changes
+                    checkInInput.addEventListener('change', function() {
+                        const checkInDate = new Date(this.value);
+                        const nextDay = new Date(checkInDate);
+                        nextDay.setDate(nextDay.getDate() + 1);
+                        checkOutInput.value = nextDay.toISOString().split('T')[0];
+                        checkOutInput.min = nextDay.toISOString().split('T')[0];
+                        checkOutInput.max = nextDay.toISOString().split('T')[0];
+                        calculateTotal();
+                    });
+            
+                    // Disable check-out date changes
+                    checkOutInput.addEventListener('change', function(e) {
+                e.preventDefault();
+                        const checkInDate = new Date(checkInInput.value);
+                        const nextDay = new Date(checkInDate);
+                        nextDay.setDate(nextDay.getDate() + 1);
+                        this.value = nextDay.toISOString().split('T')[0];
+                    });
+            
+                    // Calculate total amount
+                    function calculateTotal() {
+                        const persons = parseInt(guestsInput.value) || 0;
+                        const additionalPersons = parseInt(additionalGuestsInput.value) || 0;
+                        let total = 0;
+                        
+                        if (hasTentSelect.value === 'yes') {
+                            // For own tent: ₱400 per person (including additional guests)
+                            total = OWN_TENT_PER_PERSON * (persons + additionalPersons);
+                        } else {
+                            // For rented tent: ₱1000 fixed + ₱200 per person (including additional guests)
+                            if (persons > 0) {
+                                total = RENT_TENT_FEE + (RENT_TENT_PER_PERSON * (persons + additionalPersons));
+                            }
+                        }
+                        
+                        const downPayment = Math.ceil(total * 0.3);
+                        const balance = total - downPayment;
+                        
+                        totalAmountElement.textContent = `₱${total}`;
+                        document.getElementById('downPayment').textContent = `₱${downPayment}`;
+                        document.getElementById('balanceAmount').textContent = `₱${balance}`;
+                    }
+            
+                    // Event listeners for inputs that affect the total
+                    guestsInput.addEventListener('input', calculateTotal);
+                    guestsInput.addEventListener('change', calculateTotal);
+                    additionalGuestsInput.addEventListener('input', calculateTotal);
+                    additionalGuestsInput.addEventListener('change', calculateTotal);
+                    hasTentSelect.addEventListener('change', function() {
+                        if (this.value === 'yes') {
+                            tentRentalOptions.style.display = 'none';
+                            document.getElementById('ownTentFee').style.display = 'block';
+                            document.getElementById('rentTentFee').style.display = 'none';
+                        } else {
+                            tentRentalOptions.style.display = 'block';
+                            document.getElementById('ownTentFee').style.display = 'none';
+                            document.getElementById('rentTentFee').style.display = 'block';
+                        }
+                        calculateTotal();
+                    });
+            
+                    // Initialize the total and fee display
+                    calculateTotal();
+                    if (hasTentSelect.value === 'yes') {
+                        document.getElementById('ownTentFee').style.display = 'block';
+                        document.getElementById('rentTentFee').style.display = 'none';
+                    } else {
+                        document.getElementById('ownTentFee').style.display = 'none';
+                        document.getElementById('rentTentFee').style.display = 'block';
+                    }
+            
+                    // Open modals when "View All Details" is clicked
+                    document.querySelectorAll('.book-activity').forEach(button => {
+                        button.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            const activityCard = this.closest('.activity-card');
+                            const activityTitle = activityCard.querySelector('h3').textContent;
+                            
+                            // Hide all modals first
+                            document.querySelectorAll('.modal').forEach(modal => {
+                                modal.style.display = 'none';
+                            });
+                            
+                            // Show the appropriate modal
+                            if (activityTitle === 'Swimming Pool') {
+                                swimmingModal.style.display = 'block';
+                                swimmingModal.style.zIndex = '1001';
+                            } else if (activityTitle === 'Cottage') {
+                                cottageModal.style.display = 'block';
+                                cottageModal.style.zIndex = '1001';
+                            } else if (activityTitle === 'Camping') {
+                                modal.style.display = 'block';
+                                document.body.style.overflow = 'hidden';
+                            }
+                        });
+                    });
+            
+                    // Close swimming modal
+                    document.getElementById('closeSwimmingModal').addEventListener('click', function() {
+                        swimmingModal.style.display = 'none';
+                        document.body.style.overflow = 'auto';
+                    });
+            
+                    // Close cottage modal
+                    document.getElementById('closeCottageModal').addEventListener('click', function() {
+                        cottageModal.style.display = 'none';
+                        document.body.style.overflow = 'auto';
+                    });
+            
+                    // Close camping modal
+                    document.getElementById('closeModal').addEventListener('click', function() {
+                        modal.style.display = 'none';
+                        document.body.style.overflow = 'auto';
+                    });
+            
+                    // Close modals when clicking outside
+                    window.addEventListener('click', function(e) {
+                        if (e.target.classList.contains('modal')) {
+                            e.target.style.display = 'none';
+                            document.body.style.overflow = 'auto';
+                        }
+                    });
+            
+                    // Handle form submission
+                    form.addEventListener('submit', async function(e) {
+                        e.preventDefault();
+                        
+                        // Get form data
+                        const formData = {
+                            checkIn: checkInInput.value,
+                            checkOut: checkOutInput.value,
+                            guests: guestsInput.value,
+                            additionalGuests: additionalGuestsInput.value,
+                            hasTent: hasTentSelect.value,
+                            tentSize: hasTentSelect.value === 'no' ? tentSizeSelect.value : null,
+                            fullName: document.getElementById('fullName').value,
+                            email: document.getElementById('email').value,
+                            totalAmount: totalAmountElement.textContent,
+                            downPayment: document.getElementById('downPayment').textContent,
+                            balanceAmount: document.getElementById('balanceAmount').textContent,
+                            activityType: 'tent',
+                            status: 'pending',
+                            submissionDate: new Date().toISOString()
+                        };
+                        
+                        try {
+                            // Save to Firebase
+                            await push(ref(db, 'activities'), formData);
+                            console.log('Reservation submitted:', formData);
+                            alert('Reservation submitted successfully! Please proceed with the 30% down payment. We will contact you shortly.');
+                        } catch (error) {
+                            console.error('Error submitting reservation:', error);
+                            alert('Error submitting reservation. Please try again.');
+                            return;
+                        }
+                        
+                        // Close modal
+                        modal.style.display = 'none';
+                        document.body.style.overflow = 'auto';
+                        
+                        // Reset form
+                        form.reset();
+                        calculateTotal();
+                    });
+            
+                    // Cottage Reservation Modal
+                    const cottageModal = document.getElementById('cottageReservationModal');
+                    const closeCottageModal = document.getElementById('closeCottageModal');
+                    const cottageForm = document.getElementById('cottageReservationForm');
+                    const cottageDateInput = document.getElementById('cottageDate');
+                    const cottageTotalAmountElement = document.getElementById('cottageTotalAmount');
+            
+                    // Track cottage reservations
+                    const cottageReservations = {
+                        '1': [], // Cottage 1 reservations
+                        '2': [], // Cottage 2 reservations
+                        '3': [], // Cottage 3 reservations
+                        '4': []  // Big Cottage reservations
+                    };
+            
+                    // Function to check cottage availability
+                    async function checkCottageAvailability(cottageNumber, date) {
+                        const activitiesRef = ref(db, "activities");
+                        try {
+                            const snapshot = await get(activitiesRef);
+                            if (snapshot.exists()) {
+                                let isAvailable = true;
+                                snapshot.forEach((child) => {
+                                    const data = child.val();
+                                    // Check both possible date fields and all activity types
+                                    const bookingCottageNumber = String(data.cottageNumber);
+                                    const bookingDate = String(data.cottageDate || data.date);
+                                    if (
+                                        bookingCottageNumber === String(cottageNumber) &&
+                                        bookingDate === String(date)
+                                    ) {
+                                        isAvailable = false;
+                                    }
+                                });
+                                return isAvailable;
+                            }
+                            return true;
+                        } catch (error) {
+                            console.error(error);
+                            return true; // Default to available if error
+                        }
+                    }
+            
+                    // Function to update availability message
+                    async function updateAvailabilityMessage(cottageNumber, date) {
+                        const availabilityDiv = document.getElementById('cottageAvailability');
+                        const isAvailable = await checkCottageAvailability(cottageNumber, date);
+                        
+                        if (isAvailable) {
+                            availabilityDiv.textContent = 'This cottage is available on the selected date';
+                            availabilityDiv.className = 'availability-message available';
+                        } else {
+                            availabilityDiv.textContent = 'This cottage is already reserved for the selected date';
+                            availabilityDiv.className = 'availability-message unavailable';
+                        }
+                    }
+            
+                    // Update cottage date input when cottage number changes
+                    document.getElementById('cottageNumber').addEventListener('change', function() {
+                        const cottageNumber = this.value;
+                        const date = document.getElementById('cottageDate').value;
+                        if (cottageNumber && date) {
+                            updateAvailabilityMessage(cottageNumber, date);
+                        }
+                    });
+            
+                    // Update availability when date changes
+                    document.getElementById('cottageDate').addEventListener('change', function() {
+                        const cottageNumber = document.getElementById('cottageNumber').value;
+                        const date = this.value;
+                        if (cottageNumber && date) {
+                            updateAvailabilityMessage(cottageNumber, date);
+                        }
+                    });
+            
+                    // Handle cottage form submission
+                    cottageForm.addEventListener('submit', async function(e) {
+                        e.preventDefault();
+                        
+                        const cottageNumber = document.getElementById('cottageNumber').value;
+                        const date = document.getElementById('cottageDate').value;
+                        
+                        const isAvailable = await checkCottageAvailability(cottageNumber, date);
+                        if (!isAvailable) {
+                            alert('This cottage is already reserved for the selected date. Please choose a different date or cottage.');
+                            return;
+                        }
+                        
+                        // Get form data
+                        const formData = {
+                            fullName: document.getElementById('cottageName').value,
+                            email: document.getElementById('cottageEmail').value,
+                            guests: document.getElementById('cottageGuests').value,
+                            cottageNumber: cottageNumber,
+                            date: date,
+                            totalAmount: cottageTotalAmountElement.textContent,
+                            activityType: 'swimming',
+                            status: 'pending',
+                            submissionDate: new Date().toISOString()
+                        };
+                        
+                        try {
+                            // Save to Firebase
+                            await push(ref(db, 'activities'), formData);
+                            
+                            // Show success message
+                            alert('Cottage Reservation submitted successfully! We will contact you shortly.');
+                            
+                            // Close modal and reset form
+                            cottageModal.style.display = 'none';
+                            document.body.style.overflow = 'auto';
+                            cottageForm.reset();
+                            calculateCottageTotal();
+                        } catch (error) {
+                            console.error("Error saving reservation:", error);
+                            alert('Failed to submit reservation. Please try again.');
+                        }
+                    });
+            
+                    // Initialize cottage total
+                    function calculateCottageTotal() {
+                        const guests = parseInt(document.getElementById('cottageGuests').value) || 0;
+                        const cottageNumber = document.getElementById('cottageNumber').value;
+                        let total = 0;
+            
+                        // Cottage rates
+                        const cottageRates = {
+                            '1': 300,
+                            '2': 300,
+                            '3': 300,
+                            '4': 500
+                        };
+            
+                        if (cottageNumber) {
+                            total = cottageRates[cottageNumber];
+                        }
+            
+                        cottageTotalAmountElement.textContent = `₱${total}`;
+                    }
+            
+                    // Swimming Pool Reservation Modal
+                    const swimmingModal = document.getElementById('swimmingModal');
+                    const closeSwimmingModal = document.getElementById('closeSwimmingModal');
+                    const swimmingForm = document.getElementById('swimmingReservationForm');
+                    const swimmingDateInput = document.getElementById('swimmingDate');
+                    const swimmingTotalAmountElement = document.getElementById('swimmingTotalAmount');
+            
+                    // Set minimum date for swimming reservation to today
+                    swimmingDateInput.min = new Date().toISOString().split('T')[0];
+            
+                    // Calculate swimming total
+                    function calculateSwimmingTotal() {
+                        const cottageNumber = document.getElementById('swimmingCottage').value;
+                        
+                        const cottageRates = {
+                            '1': 300,
+                            '2': 300,
+                            '3': 300,
+                            '4': 500
+                        };
+                        
+                        let total = 0;
+                        if (cottageNumber) {
+                            total += cottageRates[cottageNumber];
+                        }
+                        
+                        const downPayment = Math.ceil(total * 0.3);
+                        const balance = total - downPayment;
+                        
+                        swimmingTotalAmountElement.textContent = `₱${total}`;
+                        document.getElementById('swimmingDownPayment').textContent = `₱${downPayment}`;
+                        document.getElementById('swimmingBalanceAmount').textContent = `₱${balance}`;
+                    }
+            
+                    // Event listeners for swimming form
+                    document.getElementById('swimmingCottage').addEventListener('change', calculateSwimmingTotal);
+            
+                    // Open swimming modal when "View All Details" is clicked for swimming pool
+                    document.querySelectorAll('.book-activity').forEach(button => {
+                        button.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            if (this.closest('.activity-card').querySelector('h3').textContent === 'Swimming Pool') {
+                                swimmingModal.style.display = 'block';
+                                document.body.style.overflow = 'hidden';
+                            } else if (this.closest('.activity-card').querySelector('h3').textContent === 'Cottage') {
+                                cottageModal.style.display = 'block';
+                                document.body.style.overflow = 'hidden';
+                            } else {
+                                modal.style.display = 'block';
+                                document.body.style.overflow = 'hidden';
+                            }
+                        });
+                    });
+            
+                    // Close swimming modal
+                    closeSwimmingModal.addEventListener('click', function() {
+                        swimmingModal.style.display = 'none';
+                        document.body.style.overflow = 'auto';
+                    });
+            
+                    // Close swimming modal when clicking outside
+                    window.addEventListener('click', function(e) {
+                        if (e.target === swimmingModal) {
+                            swimmingModal.style.display = 'none';
+                            document.body.style.overflow = 'auto';
+                        }
+                    });
+            
+                    // Handle swimming form submission
+                    swimmingForm.addEventListener('submit', async function(e) {
+                        e.preventDefault();
+                        
+                        const cottageNumber = document.getElementById('swimmingCottage').value;
+                        const date = document.getElementById('swimmingDate').value;
+                        
+                        if (cottageNumber) {
+                            const isAvailable = await checkCottageAvailability(cottageNumber, date);
+                            if (!isAvailable) {
+                                alert('The selected cottage is already reserved for this date. Please choose a different cottage or date.');
+                                return;
+                            }
+                        }
+                        
+                        // Calculate total amount and down payment
+                        const totalAmount = parseInt(swimmingTotalAmountElement.textContent.replace('₱', ''));
+                        const downPayment = Math.ceil(totalAmount * 0.3);
+                        const balance = totalAmount - downPayment;
+                        
+                        // Get form data
+                        const formData = {
+                            fullName: document.getElementById('swimmingName').value,
+                            email: document.getElementById('swimmingEmail').value,
+                            date: date,
+                            cottageNumber: cottageNumber,
+                            totalAmount: totalAmount,
+                            downPayment: downPayment,
+                            balance: balance,
+                            activityType: 'swimming',
+                            status: 'pending',
+                            submissionDate: new Date().toISOString()
+                        };
+                        
+                        try {
+                            // Save to Firebase
+                            await push(ref(db, 'activities'), formData);
+                            
+                            // Show success message with down payment information
+                            alert(`Reservation submitted successfully!\nPlease note that a ${downPayment} PHP down payment is required to confirm your reservation.`);
+                            
+                            // Close modal and reset form
+                            swimmingModal.style.display = 'none';
+                            document.body.style.overflow = 'auto';
+                            swimmingForm.reset();
+                            calculateSwimmingTotal();
+                        } catch (error) {
+                            console.error("Error saving reservation:", error);
+                            alert('Failed to submit reservation. Please try again.');
+                        }
+                    });
+            
+                    // Initialize swimming total
+                    calculateSwimmingTotal();
+
+                    // Update swimming cottage availability when date or cottage changes
+                    document.getElementById('swimmingDate').addEventListener('change', async function() {
+                        const cottageNumber = document.getElementById('swimmingCottage').value;
+                        const date = this.value;
+                        if (cottageNumber && date) {
+                            await updateSwimmingAvailability(cottageNumber, date);
+                        }
+                    });
+
+                    document.getElementById('swimmingCottage').addEventListener('change', async function() {
+                        const date = document.getElementById('swimmingDate').value;
+                        const cottageNumber = this.value;
+                        if (cottageNumber && date) {
+                            await updateSwimmingAvailability(cottageNumber, date);
+                        }
+                    });
+
+                    // Function to update swimming cottage availability message
+                    async function updateSwimmingAvailability(cottageNumber, date) {
+                        const availabilityDiv = document.getElementById('swimmingCottageAvailability');
+                        const isAvailable = await checkCottageAvailability(cottageNumber, date);
+
+                        if (isAvailable) {
+                            availabilityDiv.textContent = 'This cottage is available on the selected date';
+                            availabilityDiv.className = 'availability-message available';
+                        } else {
+                            availabilityDiv.textContent = 'This cottage is already reserved for the selected date';
+                            availabilityDiv.className = 'availability-message unavailable';
+
+                            // Show available cottages for this date
+                            const availableCottages = [];
+                            for (let i = 1; i <= 4; i++) {
+                                if (await checkCottageAvailability(i.toString(), date)) {
+                                    availableCottages.push(i);
+                                }
+                            }
+                            if (availableCottages.length > 0) {
+                                availabilityDiv.textContent += `\nAvailable cottages for this date: ${availableCottages.join(', ')}`;
+                            } else {
+                                availabilityDiv.textContent += '\nNo cottages available for this date';
+                            }
+                        }
+                    }
+
+                    // Function to get pending bookings count for a cottage and date
+                    async function getPendingBookingsCount(cottageNumber, date) {
+                        const activitiesRef = ref(db, "activities");
+                        let pendingCount = 0;
+                        
+                        try {
+                            const snapshot = await get(activitiesRef);
+                            if (snapshot.exists()) {
+                                snapshot.forEach((child) => {
+                                    const booking = child.val();
+                                    if (booking.activityType === 'swimming' && 
+                                        booking.date === date && 
+                                        booking.cottage === cottageNumber &&
+                                        booking.status === 'pending') {
+                                        pendingCount++;
+                                    }
+                                });
+                            }
+                            console.log(`Cottage ${cottageNumber} has ${pendingCount} pending bookings for ${date}`);
+                            return pendingCount;
+                        } catch (error) {
+                            console.error("Error getting pending bookings count:", error);
+                            return 0;
+                        }
+                    }
+
+                    // Function to update pending notifications with improved visibility
+                    async function updatePendingNotifications(date) {
+                        const notificationsDiv = document.getElementById('cottageNotifications');
+                        let hasPending = false;
+                        let notificationsHtml = '';
+
+                        // First check if we have any pending bookings
+                        for (let i = 1; i <= 4; i++) {
+                            const pendingCount = await getPendingBookingsCount(i.toString(), date);
+                            console.log(`Checking cottage ${i}: ${pendingCount} pending`);
+                            if (pendingCount > 0) {
+                                hasPending = true;
+                                notificationsHtml += `
+                                    <div class="cottage-notification" style="background-color: #fff3cd; padding: 8px; border-radius: 4px; margin-bottom: 5px;">
+                                        <strong>Cottage ${i}</strong>
+                                        <span class="notification-badge" style="margin-left: 10px; background-color: #ff4444; color: white; padding: 2px 8px; border-radius: 12px; font-weight: bold;">${pendingCount}</span>
+                                    </div>`;
+                            }
+                        }
+
+                        if (hasPending) {
+                            notificationsDiv.innerHTML = `
+                                <div style="margin: 10px 0; padding: 10px; background-color: #f8f9fa; border-radius: 4px;">
+                                    <div style="margin-bottom: 10px; color: #666; font-weight: bold;">Pending Bookings:</div>
+                                    ${notificationsHtml}
+                                </div>
+                            `;
+                            notificationsDiv.style.display = 'block';
+                        } else {
+                            notificationsDiv.style.display = 'none';
+                        }
+                    }
+
+                    // Update notifications when date changes
+                    document.getElementById('swimmingDate').addEventListener('change', async function() {
+                        const date = this.value;
+                        console.log('Date changed to:', date);
+                        if (date) {
+                            await updatePendingNotifications(date);
+                        } else {
+                            document.getElementById('cottageNotifications').style.display = 'none';
+                        }
+                    });
+
+                    // Also update notifications when the page loads if a date is already selected
+                    window.addEventListener('load', async function() {
+                        const date = document.getElementById('swimmingDate').value;
+                        if (date) {
+                            await updatePendingNotifications(date);
+                        }
+                    });
+                </script>
+</body>
+</html>

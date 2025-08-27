@@ -1,0 +1,2317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+
+    <title>Agcacarao Mountain View Resort</title>
+    <style>
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: url('ytttt.jpg') no-repeat top center fixed; /* Image at the top */
+            background-size: cover; /* Ensures it covers the entire page */
+            color: white;
+            line-height: 1.6;
+          
+            
+        }
+
+        /* Overlay to improve readability */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(157, 153, 153, 0.4); /* Dark overlay */
+            z-index: -1;
+        }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+      .navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.02);    /* extremely transparent */
+    backdrop-filter: blur(2px);             /* more intense blur */
+    -webkit-backdrop-filter: blur(2px);     /* Safari support */
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* soft deep shadow */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* faint border */
+    z-index: 1000;
+}
+
+.nav-container {
+    max-width: 1500px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+}
+
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            gap: 0;
+        }
+
+        .logo img {
+    /* Increase height for a bigger logo; set width to auto so it scales proportionally */
+    height: 50px;
+    width: auto;
+}
+
+.logo-text {
+    /* Increase the font size to make the text larger */
+    font-size: 1.2rem;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-weight: bold;
+    color: #070707;
+    white-space: nowrap; /* Ensures the text remains on one line */
+    transition: color 0.3s ease-in-out;
+}
+
+    
+    .logo:hover .logo-text {
+        color: #099309;
+    }
+
+        .resort-name {
+            font-size: 1.3rem;
+            color: #2c5530;
+            font-weight: 600;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #0e0d0d;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            padding: 0.5rem 0;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        /* Underline effect for nav links */
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #2c5530;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #2c5530;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Dropdown Styles */
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown > a .fa-chevron-down {
+            font-size: 0.8rem;
+            margin-left: 0.3rem;
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown:hover > a .fa-chevron-down {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-content {
+            position: absolute;
+            top: 100%;
+            left: -1rem;
+            background: #ffffff;
+            min-width: 180px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            padding: 0.5rem 0;
+            margin-top: 0.5rem;
+        }
+
+        .dropdown:hover .dropdown-content {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-content a {
+            padding: 0.7rem 1.2rem;
+            display: block;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .dropdown-content a:hover {
+            background: #f8f9fa;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .nav-container {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                gap: 1.5rem;
+            }
+
+            .resort-name {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                width: 100%;
+                gap: 1rem;
+                margin-top: 1rem;
+                display: none;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .dropdown-content {
+                position: static;
+                box-shadow: none;
+                opacity: 1;
+                visibility: visible;
+                transform: none;
+                padding-left: 1rem;
+            }
+
+            .logo {
+                margin-bottom: 0.5rem;
+            }
+        }
+
+        /* Scroll Effect */
+        .navbar.scrolled {
+            background: rgba(255, 255, 255, 0.98);
+        }
+
+        /* Add smooth transition for scroll effect */
+        .navbar {
+            transition: background-color 0.3s ease;
+        }
+
+        .hero {
+    height: 100vh;
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('jj.jpeg');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    border-radius: 2%;
+    padding: 50px;
+    margin-top: 90px;
+    margin-left: 20px;
+    margin-right: 20px;
+   
+}
+
+.hero-content {
+    max-width: 40%;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeIn 5s ease forwards;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero h1 {
+    font-size: 3.0rem;
+    margin-bottom: 1rem;
+    font-family: 'Playfair Display', Georgia, serif;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hero p {
+    font-size: 1.5rem;
+    max-width: 600px;
+    margin: 0 auto;
+    margin-bottom: 20px;
+    color: #27f74d;
+}
+
+
+
+
+        section {
+            padding: 2rem 2rem;
+        }
+
+        
+
+        .accommodations {
+            
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .accommodations h2 {
+            font-size: 2.5rem;
+            color: #2c5530;
+            margin-bottom: 1rem;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+        }
+
+        .accommodations p {
+            font-size: 1.2rem;
+            color: #313030;
+            margin-bottom: 3rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .accommodations-container {
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            gap: 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto 3rem auto;
+            padding: 0 1rem;
+            flex-wrap: nowrap;
+        }
+
+        .accommodation-item {
+            background-color: rgb(214, 244, 248);
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            flex: 1;
+            min-width: 250px;
+            max-width: 300px;
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .accommodation-item:hover {
+            transform: translateY(-10px);
+        }
+
+        .accommodation-item img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 0.8rem;
+        }
+
+        .accommodation-item h3 {
+            color: #2c5530;
+            font-size: 1.3rem;
+            margin: 0.8rem 0;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+        }
+
+        .accommodation-item p {
+            color: #433f3f;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 0.8rem;
+            flex-grow: 1;
+        }
+
+        @media (max-width: 1200px) {
+            .accommodations-container {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .accommodation-item {
+                flex: 0 1 calc(50% - 1rem);
+                max-width: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .accommodation-item {
+                flex: 0 1 100%;
+            }
+        }
+
+        .about {
+            background-color: #f9f9f9;
+        }
+     
+
+        .contact {
+      padding: 60px 30px;
+      text-align: center;
+      border-radius: 15px;
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+      margin: 30px auto;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    .contact:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .contact h2 {
+      font-size: 2.8rem;
+      color: #1d6124;
+      margin-bottom: 25px;
+      text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1);
+      border-bottom: 3px solid #2c5530;
+      display: inline-block;
+      padding-bottom: 10px;
+      font-family: Georgia, 'Times New Roman', Times, serif;
+    }
+
+   
+    .contact-container {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: space-between;
+      max-width: 800px;
+      margin: 0 auto;
+      gap: 50px;
+      margin-top: 30px;
+    }
+
+   
+    .contact-form-wrapper {
+      flex: 0 0 65%;
+      margin-left: -130px;
+      padding: 20px;
+    }
+
+    .contact-form-header h3 {
+      font-size: 2rem;
+      color: #2c5530;
+      margin-bottom: 35px;
+      text-align: left;
+      font-family: Georgia, 'Times New Roman', Times, serif;
+    }
+
+    .contact-form-header p {
+      font-size: 1.1rem;
+     color: #070606;
+      margin-bottom: 70px;
+      text-align: left;
+      font-family: sans-serif;
+    }
+
+    /* Form Styles */
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+     
+    }
+
+/* Remove box, add underline style */
+input,
+textarea {
+  width: 100%;
+  padding: 10px 0; 
+  border: none;
+  border-bottom: 1px solid #ccc;
+  background: transparent; 
+  font-size: 1.1rem;
+  transition: border-color 0.3s ease;
+  outline: none;
+  border-radius: 0; 
+  resize: none; 
+  overflow: auto;
+
+}
+
+
+input:focus,
+textarea:focus {
+  border-bottom: 1px solid #4CAF50; 
+  outline: none;
+}
+
+
+    button {
+      background: linear-gradient(135deg, #2c5530, #4CAF50);
+      color: #fff;
+      padding: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #4CAF50, #2c5530);
+      transform: scale(1.05);
+    }
+
+  
+    .contact-info {
+  flex: 0 0 auto;
+  margin-left: 10px;
+  text-align: left;
+  padding: 10px;             
+  border-radius: 15px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  height: auto;
+  width: 600px;
+}
+
+
+.contact-info h3{
+    margin-top: -20px;
+  color: #2c5530;
+    
+}
+
+.contact-info p {
+  margin-bottom: 10px;
+  color: #070606;
+  
+  
+}
+.contact-info h4{
+    margin-top: 30px;
+    color: #070606;
+}
+
+.contact-info:hover {
+  background-color: none;
+  transform: scale(1.02);
+}
+
+
+@media (max-width: 1024px) {
+  .contact-container {
+    flex-direction: row; 
+    align-items: flex-start;
+  }
+  
+  
+  .contact-form-wrapper {
+    flex: 0 0 35%;  
+    margin-right: 10px;
+  }
+  
+  .contact-info {
+    flex: 0 0 65%; 
+    margin-right: 0;
+  }
+}
+
+
+    
+    
+.history {
+      padding: 5px 20px;
+     
+   
+    }
+
+  
+    .history-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1200px;
+      margin: auto;
+      gap: 100px; 
+    }
+
+   
+    .history-content {
+      flex: 1;
+      max-width: 50%;
+      margin-left: -10px; 
+    }
+
+    
+    .history h2 {
+      text-align: center;
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #2c5530;
+      margin-bottom: 1.5rem;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+      font-family: Georgia, 'Times New Roman', Times, serif;
+    }
+
+    /* Paragraph Styling */
+    .history p {
+      font-size: 1.2rem;
+      line-height: 1.5;
+      color: #2f2e2e;
+      text-align: justify;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Video Container - Positioned on Right */
+    .video-container {
+      flex: 1;
+      max-width: 50%;
+    }
+
+    .video-container iframe {
+      width: 100%;
+      height: 350px;
+      border-radius: 12px;
+      box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    
+
+   
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .history-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 40px; /* Adjusted gap for smaller screens */
+      }
+      .history-content, .video-container, .image-gallery {
+        max-width: 100%;
+      }
+      .history h2 {
+        font-size: 2.5rem;
+      }
+      .history p {
+        font-size: 1.2rem;
+        line-height: 1.8;
+      }
+      .video-container iframe {
+        height: 300px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .history {
+        padding: 80px 40px;
+      }
+      .history h2 {
+        font-size: 2.2rem;
+      }
+      .history p {
+        font-size: 1.1rem;
+        line-height: 1.7;
+      }
+    }
+
+
+        
+        .btn {
+    background-color: #336a1b; 
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    display: inline-block; 
+    margin-top: 10px; 
+}
+
+.btn:hover {
+    background-color: #2fef16; /* Darker tomato */
+}
+.accommodation-item {
+   
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+    padding: 20px;
+    display: inline-block;
+    width: calc(33% - 40px); /* Three items in a row */
+    vertical-align: top;
+}
+
+.accommodation-item img {
+    width: 100%;
+    height: 400px; 
+    object-fit: cover; 
+    border-radius: 8px;
+    transition: transform 0.3s ease-in-out; 
+}
+
+.accommodation-item img:hover {
+    transform: scale(1.1); 
+}
+
+.accommodation-item h3 {
+    margin: 15px 0;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.accommodation-item p {
+    margin-bottom: 15px;
+   font-family: sans-serif;
+   color: #333;
+}
+
+button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #093b70;
+}
+
+.map-container {
+            width: 100%;
+            height: 400px;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+
+
+
+        .footer-bottom {
+  color: black;
+  box-shadow: 0 2px 10px rgba(19, 23, 19, 0.1);
+  padding: 20px;
+  width: 100%; 
+  margin: 0 auto; 
+  text-align: center; 
+}
+
+.activities {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.activities h2 {
+    font-size: 2.5rem;
+    color: #2c5530;
+    margin-bottom: 1rem;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.activities p {
+    font-size: 1.2rem;
+    color: #262424;
+    margin-bottom: 3rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.activities-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.activity-item {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+   
+}
+
+.activity-item:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.activity-item img {
+    width: 90%;
+    height: 350px;
+    object-fit: fill;
+}
+
+.activity-item h3 {
+    color: #2c5530;
+    font-size: 1.5rem;
+    margin: 1.5rem 0 1rem;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.activity-item p {
+    color: #666;
+    font-size: 1rem;
+    line-height: 1.6;
+    padding: 0 1.5rem 1.5rem;
+    margin: 0;
+    text-align: left;
+}
+
+@media (max-width: 768px) {
+    .activities-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+.section { 
+           
+            padding: 30px; 
+            border-radius: 5px; 
+            margin-top: 20px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+            width: 100%; 
+            box-sizing: border-box;
+        }
+        .star { 
+            color: rgb(72, 74, 72); 
+            cursor: pointer; 
+            font-size: 28px; 
+            
+        }
+        .star.active { 
+            color: gold; 
+        }
+        .feedback-form { 
+            margin: 20px 0; 
+            padding: 35px; 
+            
+           
+        }
+        .feedback-form textarea, .feedback-form input { 
+            width: 100%; 
+            padding: 10px; 
+            margin: 10px 0; 
+            border-radius: 4px; 
+            border: 1px solid #080808; 
+            box-sizing: border-box;
+          
+        }
+        .feedback-form button { 
+            background: #4CAF50; 
+            color: white; 
+            padding: 10px 15px; 
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+     
+        .feedback-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    width: 100%;
+}
+
+
+
+
+@media (max-width: 768px) {
+    .feedback-container {
+        flex-direction: column;
+    }
+    .feedback-column {
+        width: 100%;
+    }
+}
+
+
+
+.entrance-fees {
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.entrance-fees h2 {
+    font-size: 2.5rem;
+    color: #2c5530;
+    margin-bottom: 1rem;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.fees-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.fee-card {
+    background-color: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+}
+
+.fee-card.featured {
+    transform: scale(1.05);
+    border: 2px solid #2c5530;
+}
+
+.popular-tag {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #2c5530;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.fee-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.fee-card h3 {
+    color: #2c5530;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.price {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #2c5530;
+    margin-bottom: 0.5rem;
+}
+
+.per-person {
+    color: #666;
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+.features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem 0;
+    text-align: left;
+}
+
+.features li {
+    padding: 0.5rem 0;
+    color: #666;
+    display: flex;
+    align-items: center;
+}
+
+.features li:before {
+    content: "✓";
+    color: #2c5530;
+    margin-right: 0.5rem;
+    font-weight: bold;
+}
+
+
+@media (max-width: 992px) {
+    .fees-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .fees-container {
+        grid-template-columns: 1fr;
+    }
+    .fee-card.featured {
+        transform: none;
+    }
+}
+
+/* Important Notes Button Styles */
+.notes-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #2c5530;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    margin: 2rem 0;
+    box-shadow: 0 4px 15px rgba(44, 85, 48, 0.2);
+}
+
+.notes-btn:hover {
+    background: #1a4023;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(44, 85, 48, 0.3);
+}
+
+.notes-btn i {
+    font-size: 1.1rem;
+}
+
+/* Modal Styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+}
+
+.modal.show {
+    display: block;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 700px;
+    border-radius: 15px;
+    position: relative;
+    animation: modalFadeIn 0.3s ease-in-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: #2c5530;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.modal-header h3 {
+    color: #2c5530;
+    font-size: 1.5rem;
+    font-family: 'Playfair Display', serif;
+    margin: 0;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.notes-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.notes-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+    color: #444;
+    line-height: 1.5;
+}
+
+.notes-list li:last-child {
+    border-bottom: none;
+}
+
+.notes-list li i {
+    color: #2c5530;
+    font-size: 8px;
+    margin-top: 8px;
+}
+.time {
+    color: #666;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.additional-rates {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    text-align: left;
+    
+}
+
+.additional-rates p {
+    color: #0d0f0d;
+    font-size: 1.5rem;
+    margin: 0.5rem 0;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.additional-rates strong {
+    color: #26490f;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+
+/* Notes Section Styles */
+.notes-section {
+    text-align: center;
+    padding: 1rem 0;
+}
+
+.notes-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #2c5530;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(44, 85, 48, 0.2);
+}
+
+.notes-btn:hover {
+    background: #1a4023;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(44, 85, 48, 0.3);
+}
+
+.notes-btn i {
+    font-size: 1.2rem;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.modal.active {
+    display: block;
+}
+
+.modal-content {
+    position: relative;
+    background: white;
+    width: 90%;
+    max-width: 700px;
+    margin: 10vh auto;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 2px solid #f0f0f0;
+    background: #f8f9fa;
+    border-radius: 20px 20px 0 0;
+}
+
+.header-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-title i {
+    font-size: 1.5rem;
+    color: #2c5530;
+}
+
+.modal-header h3 {
+    color: #2c5530;
+    font-size: 1.5rem;
+    font-family: 'Playfair Display', serif;
+    margin: 0;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 8px;
+    transition: all 0.3s ease;
+    border-radius: 50%;
+}
+
+.close-button:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: #2c5530;
+}
+
+.modal-body {
+    padding: 2rem;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.notes-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.notes-section {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid #e9ecef;
+}
+
+.notes-section h4 {
+    color: #2c5530;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.notes-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.notes-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    color: #444;
+    line-height: 1.5;
+}
+
+.notes-list li i {
+    color: #2c5530;
+    font-size: 6px;
+    margin-top: 8px;
+}
+
+  
+
+
+        .announcements-hero h1 {
+            font-size: 3rem;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            padding: 40px;
+            color: #035715;
+        }
+
+        .announcements-section {
+            padding: 4rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    height: 700px; /* Fixed height for scroll area */
+    overflow: hidden; /* Hide overflow content */
+        }
+
+        /* Custom scrollbar styling */
+        .announcements-section::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .announcements-section::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .announcements-section::-webkit-scrollbar-thumb {
+            background: #447348;
+            border-radius: 4px;
+        }
+
+        .announcements-section::-webkit-scrollbar-thumb:hover {
+            background: #1a4023;
+        }
+
+        .announcements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            overflow-y: auto;
+            margin-top: 2rem;
+            padding-right: 10px; /* Add padding to prevent content from touching scrollbar */
+            max-height: 450px; /* Adjust based on your needs */
+        
+        }
+
+        /* Make the filters section sticky at the top */
+        .announcement-filters {
+            position: sticky;
+            top: 0;
+            padding: 1rem 0;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .sort-select {
+            padding: 0.8rem 1.5rem;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            background-color: white;
+            font-size: 1rem;
+            color: #333;
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .sort-select:hover {
+            border-color: #205b26;
+        }
+
+        .announcement-categories {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            padding: 0.8rem 1.5rem;
+            border: 2px solid #2c5530;
+            border-radius: 25px;
+            background: none;
+            color: #2c5530;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .category-btn:hover,
+        .category-btn.active {
+            background-color: #2c5530;
+            color: white;
+        }
+
+        .announcement-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .announcement-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .announcement-date {
+            color: #2c5530;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .announcement-card h3 {
+            color: #2c5530;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+        }
+
+        .announcement-card p {
+            color: #1f1b1b;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .announcements-grid {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer / Edge */
+}
+
+.announcements-grid::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+    /* Feedback section styles */
+    .section {
+        padding: 2rem;
+        margin: 2rem auto;
+        max-width: 1400px;
+        box-shadow: none;
+       
+    }
+
+    .section h2 {
+        text-align: center;
+        color: #17451b;
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+        font-family: Georgia, 'Times New Roman', Times, serif;
+        position: relative;
+    }
+
+    .section h2:after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 3px;
+        background-color: #2c5530;
+    }
+
+    /* Main feedback container */
+    .feedback-wrapper {
+        height: 500px; /* Height for 2 rows */
+        overflow-y: auto;
+        padding-right: 10px;
+        scrollbar-width: thin; /* Firefox */
+        scrollbar-color: #2c5530 #f1f1f1; /* Firefox */
+    }
+
+    .feedback-text-container::-webkit-scrollbar {
+        width: 8px;
+        display: block;
+    }
+
+    .feedback-wrapper::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    .feedback-wrapper::-webkit-scrollbar-thumb {
+        background: #2c5530;
+        border-radius: 4px;
+    }
+
+    .feedback-wrapper::-webkit-scrollbar-thumb:hover {
+        background: #1a4023;
+    }
+
+    /* Grid layout */
+    #feedbackList {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); /* 5 cards per row */
+        gap: 20px;
+        padding: 10px;
+    }
+
+    /* Feedback card */
+    .feedback-item {
+        background: rgb(212, 238, 192);
+        height: 220px;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 20px;
+    }
+
+    /* Star rating */
+    .feedback-stars {
+        color: #ffd700;
+        font-size: 1.2rem;
+        margin-bottom: 0.8rem;
+        flex-shrink: 0; /* Prevent stars from shrinking */
+    }
+
+    /* Scrollable feedback text area */
+    .feedback-text-container {
+        flex: 1;
+        overflow-y: auto;
+        margin: 0.5rem 0;
+        position: relative;
+        
+    }
+
+   
+    /* Actual feedback text */
+    .feedback-text {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        color: #070606;
+        word-wrap: break-word;
+        padding-right: 5px;
+    }
+
+    /* Guest info and date */
+    .feedback-meta {
+        font-size: 0.85rem;
+        color: #403e3e;
+        padding-top: 0.8rem;
+        margin-top: 0.8rem;
+        border-top: 1px solid #474444;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-shrink: 0; /* Prevent meta from shrinking */
+    }
+
+    .guest-name {
+        font-weight: 600;
+        color: #1c3d20;
+    }
+
+    .feedback-date {
+        color: #0f0d0d;
+    }
+    i {
+    margin-right: 8px;
+}
+.messenger-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    z-index: 1000;
+}
+
+.messenger-text {
+    background-color: #0084FF;
+    color: #f2f5f6;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 600;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.messenger-button {
+    background-color: #0084FF;
+    color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.messenger-button:hover {
+    transform: scale(1.1);
+}
+
+.messenger-button i {
+    font-size: 30px;
+    /* Ensure perfect centering of the icon */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    /* Remove any default padding/margin that might affect centering */
+    padding: 0;
+    margin: 0;
+}
+
+/* Alternative if using an SVG or image instead of an icon font */
+.messenger-button svg,
+.messenger-button img {
+    width: 24px;
+    height: 24px;
+    /* Perfect centering */
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .messenger-container {
+        bottom: 20px;
+        right: 20px;
+    }
+    
+    .messenger-text {
+        padding: 10px 20px;
+        font-size: 15px;
+    }
+    
+    .messenger-button {
+        width: 55px;
+        height: 55px;
+    }
+    
+    .messenger-button i {
+        font-size: 28px;
+    }
+}
+
+
+    </style>
+</head>
+<body>
+   <!-- Navigation -->
+  <nav class="navbar" aria-label="Main navigation">
+    <div class="nav-container">
+      <a href="index.html" class="logo" aria-label="Agcararao Mountain View Resort Home">
+        <img src="loho.png" alt="Agcararao Mountain View Resort Logo" />
+        <span class="logo-text">Agcararao Mountain View Resort</span>
+      </a>
+      
+      <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" style="display: none;">
+        <i class="fas fa-bars"></i>
+      </button>
+      
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li class="dropdown">
+          <a href="#amenities" aria-haspopup="true" aria-expanded="false">Amenities <i class="fas fa-chevron-down"></i></a>
+          <div class="dropdown-content" aria-label="Amenities submenu">
+            <a href="rooms.html">Rooms</a>
+            <a href="activities.html">Activities</a>
+            <a href="foods.html">Foods</a>
+          </div>
+        </li>
+        <li><a href="gallery.html">Gallery</a></li>
+      </ul>
+    </div>
+  </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <h1>AGCARARAO VIEWPOINT RETREAT</h1>
+            <p>Experience Majestic Views!</p>
+            <a href="rooms.html" class="btn">Book Now & Explore</a>
+        </div>
+    </div>
+
+    
+    <!-- Updated Notes Modal -->
+    <div id="notesModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="header-title">
+                    <i class="fas fa-clipboard-list"></i>
+                    <h3>Important Notes</h3>
+                </div>
+                <button class="close-button" onclick="toggleNotesModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="notes-sections">
+                    <!-- Booking Section -->
+                    <div class="notes-section">
+                        <h4><i class="fas fa-calendar-check"></i> Booking Information</h4>
+                        <ul class="notes-list">
+                            <li>
+                                <i class="fas fa-circle"></i>
+                                <span>Advance booking is required for all stays</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-circle"></i>
+                                <span>Check-in: 2:00 PM | Check-out: 12:00 PM</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-circle"></i>
+                                <span>All prices are subject to change without prior notice</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Facilities Section -->
+                    <div class="notes-section">
+                        <h4><i class="fas fa-bolt"></i> Power & Facilities</h4>
+                        <ul class="notes-list">
+                            <li>
+                                <i class="fas fa-circle"></i>
+                                <span>Limited electricity available (Solar-powered)</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-circle"></i>
+                                <span>Solar and battery-operated lights are provided</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-circle"></i>
+                                <span>Solar charging station available for phones</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- What to Bring Section -->
+                    <div class="notes-section">
+                        <h4><i class="fas fa-suitcase"></i> What to Bring</h4>
+                        <ul class="notes-list">
+                            <li>
+                                <i class="fas fa-circle"></i>
+                                <span>Personal charging cables</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-circle"></i>
+                                <span>Power banks (highly recommended)</span>
+                            </li>
+                            
+                        </ul>
+                    </div>
+
+                 
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="entrance-fees">
+        <h2>Rates & Fees</h2>
+      
+        <div class="fees-container">
+            <div class="fee-card">
+                <h3>Entrance Fee</h3>
+                <div class="time">7 AM - 6 PM</div>
+                <div class="additional-rates">
+                    <p><strong>Adult:</strong> ₱50 </p>
+                    <p><strong>Biker:</strong> ₱40</p>
+                    <p><strong>Children (10 y.o below):</strong> ₱30</p>
+                </div>
+               
+            </div>
+            <div class="fee-card">
+                <h3>Overnight Stay</h3>
+                <div class="time">Check-in: 2 PM | Check-out: 12 NN</div>
+                <div class="price">₱200</div>
+                <div class="per-person">per person</div>
+                <ul class="features">
+                    <li>Breakfast included</li>
+                </ul>
+                
+            </div>
+            <div class="fee-card">
+                <h3>Swimming pool Fees</h3>
+                <div class="time">Day/Night Swimming</div>
+                <div class="additional-rates">
+                    <p><strong>Adult:</strong> ₱100 </p>
+                    <p><strong>Children:</strong> ₱80</p>
+                    <p><strong>Toddlers (3 years old below):</strong> Free</p>
+            </div>
+            </div>
+        </div>
+      <!-- Important Notes Button -->
+<button class="notes-btn" onclick="toggleNotesModal()">
+    <i class="fas fa-info-circle"></i>
+    Important Notes
+</button>
+
+<!-- Hidden Notes Modal -->
+<div id="notesModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Important Notes</h3>
+            <button class="close-button" onclick="toggleNotesModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <ul class="notes-list">
+                <li><i class="fas fa-circle"></i>All prices are subject to change without prior notice</li>
+                <li><i class="fas fa-circle"></i>Advance booking is recommended, especially during peak seasons</li>
+                <li><i class="fas fa-circle"></i>Check-in time: 2:00 PM, Check-out time: 12:00 PM</li>
+                <li><i class="fas fa-circle"></i>No electricity available</li>
+                <li><i class="fas fa-circle"></i>Solar and battery-operated lights are provided</li>
+                <li><i class="fas fa-circle"></i>Solar vendo charging is available for mobile phones</li>
+                <li><i class="fas fa-circle"></i>Please bring your own charging cable</li>
+                <li><i class="fas fa-circle"></i>Bringing power banks is highly recommended</li>
+            </ul>
+        </div>
+    </div>
+</div>
+    </section>
+
+    <!-- Announcements Section -->
+  
+    <div class="announcements-hero">
+        <h1>Announcements & Updates</h1>
+    </div>
+
+    <section class="announcements-section">
+        <div class="announcement-filters">
+            <select class="sort-select" onchange="sortAnnouncements(this.value)">
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+            </select>
+            
+            <div class="announcement-categories">
+                <button class="category-btn active" onclick="filterAnnouncements('all')">All</button>
+                <button class="category-btn" onclick="filterAnnouncements('special-offers')">Special Offers</button>
+                <button class="category-btn" onclick="filterAnnouncements('new-activities')">New Activities</button>
+                <button class="category-btn" onclick="filterAnnouncements('events')">Events</button>
+            </div>
+        </div>
+
+        <div class="announcements-grid" id="announcements-grid">
+            <p>Loading announcements...</p>
+        </div>
+    </section>
+
+
+    <section id="accommodations" class="accommodations">
+        <h2>Stay at Agcararao Mountain View Resort</h2>
+        <p>Enjoy rustic bamboo huts with breathtaking mountain views for the perfect nature retreat.</p>
+        <div class="accommodations-container">
+            <div class="accommodation-item">
+                <img src="yag.jpg" alt="Accommodation 1">
+                <h3>Casa De Amon</h3>
+                <p>Unplug and unwind in a rustic bamboo hut—breathtaking views, fresh mountain air, and ultimate relaxation await!</p>
+            </div>
+            <div class="accommodation-item">
+                <img src="----.jpg" alt="Accommodation 2">
+                <h3>Casa De Bella</h3>
+                <p>Wake up to stunning mountain views in this cozy hideaway, where nature's beauty meets ultimate comfort and tranquility. </p>
+            </div>
+            <div class="accommodation-item">
+                <img src="8.jpg" alt="Accommodation 3">
+                <h3>Casa De Arced</h3>
+                <p>Escape to serenity with mountain views, a refreshing pool, and a cozy bamboo retreat for your perfect nature escape!</p>
+            </div>
+            <div class="accommodation-item">
+                <img src="p9.jpg" alt="Accommodation 4">
+                <h3>Casa Y Agua</h3>
+                <p>Discover your perfect tropical hideaway, unwind in this charming bamboo retreat, take a refreshing dip in the pool, and enjoy the peaceful vibes of nature.</p>
+            </div>
+        </div>
+        <a href="rooms.html" class="btn">View All Rooms</a>
+    </section>
+
+    <section id="activities" class="activities">
+        <h2>Experience Adventure & Serenity</h2>
+        <p>Unwind in Nature's Serenity While Embracing Exciting New Experiences.</p>
+        <div class="activities-container">
+            <div class="activity-item">
+                <img src="atv.jpg" alt="ATV Riding">
+                <h3>ATV Adventure</h3>
+                <p>Get ready for an exhilarating off-road experience. Take control of our ATV and conquer rugged trails, winding paths, and breathtaking mountain landscapes.</p>
+            </div>
+            <div class="activity-item">
+                <img src="096.jpg" alt="Pool Games">
+                <h3>Infinity Pool</h3>
+                <p>Escape to a breathtaking infinity pool where the sky meets the mountains and relaxation knows no bounds. Surrounded by panoramic views of lush greenery and rolling hills.</p>
+            </div>
+            <div class="activity-item">
+                <img src="kt.jpg" alt="Bonfire">
+                <h3>Camping Escape</h3>
+                <p>Wake up to the golden sunrise from your tent, surrounded by misty mountain views. As night falls, enjoy a breathtaking starlit sky while camping under the open air.</p>
+            </div>
+            <div class="activity-item">
+                <img src="456.jpg" alt="Rainbow Slide">
+                <h3>Rainbow Slide</h3>
+                <p>Glide down a vibrant rainbow slide with breathtaking mountain views and golden sunsets as your backdrop. Feel the rush of excitement and let gravity take you on an unforgettable ride.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="history">
+        <div class="history-container">
+            <!-- Text on the Left -->
+            <div class="history-content" data-aos="fade-right" data-aos-duration="1000">
+                <h2>The Journey</h2>
+                <p>Agcararao Mountain View Resort, located in Sitio Agcararao, Barangay Jaguimitan, Passi City, Iloilo, is a relatively recent addition to the region's tourist attractions.
+                    Established by the family of former Binibining Pintados PSSG Jo-nah Belle Capuy-Arcenal, the resort was developed
+                    to showcase the area's natural beauty, including its flower and vegetable farms, panoramic views, and the phenomenon known as the "sea of clouds".
+                    The resort officially opened to the public on February 18, 2020, offering visitors opportunities for trekking, relaxation, and photography amidst scenic landscapes. 
+                    Since its inauguration, Agcararao Mountain View has become a favored destination for both locals and tourists seeking a tranquil escape in Iloilo's highlands.  
+                </p>
+            </div>
+            
+            <!-- Video on the Right -->
+            <div class="video-container">
+                <iframe width="560" height="315" src="sea of the clouds.mp4" title="video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+        </div>
+    </section>
+
+    <section class="history alternate">
+        <div class="history-container">
+            <!-- Image on the Left -->
+            <div class="video-container">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/fPeWlSVdlFI?si=Qp0HASxpRuuS342E" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+            <!-- Text on the Right -->
+            <div class="history-content" data-aos="fade-left" data-aos-duration="1000">
+                <h2>Experience Serenity</h2>
+                <p>Experience the magic for yourself step into a world where every view, every breeze, and every moment invites you to pause 
+                    and savor nature's artistry. At Agcararao Mountain View Resort, you'll find more than just a destination; you'll discover a sanctuary designed for both adventure and relaxation. 
+                    Wander along scenic trails that reveal hidden corners of blooming flower fields and lush vegetable gardens, or simply pause at a lookout to witness the sea of clouds gently rolling beneath you.
+
+
+                </p>
+            </div>
+        </div>
+    </section>
+
+    
+    <section id="contact" class="contact">
+        <h2>Get in Touch</h2>
+        <div class="contact-container">
+         
+            <div class="contact-form-wrapper">
+                <div class="contact-form-header">
+                    <h3>Reach Out to Us</h3>
+                    <p>We value your feedback and inquiries. Please share your contact details, and one of our team members will reach out to you shortly.</p>
+                </div>
+    
+            
+                <div class="section feedback-form">
+                    <div class="star-rating">
+                        <span class="star" data-rating="1">★</span>
+                        <span class="star" data-rating="2">★</span>
+                        <span class="star" data-rating="3">★</span>
+                        <span class="star" data-rating="4">★</span>
+                        <span class="star" data-rating="5">★</span>
+                    </div>
+                    <textarea id="feedbackText" placeholder="Your feedback..." rows="4"></textarea>
+                    <input type="text" id="guestName" placeholder="Name" style="padding: 10px; margin: 10px 0; width: 100%; box-sizing: border-box;">
+                    <button id="submitFeedback">Submit Feedback</button>
+                    
+                </div>
+            </div>
+    
+            <!-- Contact Info on the Right -->
+            <div class="contact-info">
+                <h3>Agcararao Mountain View Resort</h3>
+                <p>Sitio Agcararao, Barangay Jaguimitan, Passi City, Iloilo, Philippines</p>
+                <div class="map-container">
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d606.8788243263241!2d122.67755899383931!3d11.152781868434358!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33af6b87ec3a9e67%3A0x34f76be5764349e4!2sAgcararao%20Mountain%20View!5e1!3m2!1sen!2sph!4v1741186612378!5m2!1sen!2sph"
+                        allowfullscreen="" 
+                        loading="lazy">
+                    </iframe>
+                    <div>
+                        <p><strong><i class="fas fa-envelope"></i></strong> jonah_belle20@yahoo.com.ph</p>
+                        <p><strong><i class="fas fa-phone-alt"></i></strong> 0919 002 8346</p>
+                        <p><strong><i class="fab fa-facebook-f"></i></strong> facebook.com/agcararaomountainview/</p>
+                    
+                        <h4>Customer Support</h4>
+                        <br>
+                        <p>For immediate assistance or special requests, please contact our 24/7 Customer Support team. We're here to help you make the most of your stay!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        
+        <div class="section">
+            <h2>Feedback & Ratings</h2>
+            
+          
+
+            <!-- Feedback List with Scrollbar -->
+            <div class="feedback-wrapper">
+                <div id="feedbackList">
+                    <!-- Feedback items will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="messenger-container">
+        <div class="messenger-text">Contact us</div>
+        <a href="https://m.me/agcararaomountainview" class="messenger-button" target="_blank" aria-label="Chat with us on Messenger">
+            <i class="fab fa-facebook-messenger"></i>
+        </a>
+    </div>
+    <footer>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Agcararao Mountain View Resort. All Rights Reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
+
+
+<script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+<script>
+    AOS.init();
+</script>
+
+
+
+<script>
+// Get the modal
+const modal = document.getElementById("notesModal");
+
+// Function to toggle modal
+function toggleNotesModal() {
+    if (modal.classList.contains("show")) {
+        modal.classList.remove("show");
+        document.body.style.overflow = 'auto'; // Enable scrolling
+    } else {
+        modal.classList.add("show");
+        document.body.style.overflow = 'hidden'; // Disable scrolling
+    }
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    if (event.target == modal) {
+        toggleNotesModal();
+    }
+}
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === "Escape" && modal.classList.contains("show")) {
+        toggleNotesModal();
+    }
+});
+</script>
+
+<script>
+    function sortAnnouncements(order) {
+        const grid = document.getElementById('announcements-grid');
+        const announcements = Array.from(grid.getElementsByClassName('announcement-card'));
+
+        announcements.sort((a, b) => {
+            const dateA = new Date(a.getAttribute('data-date'));
+            const dateB = new Date(b.getAttribute('data-date'));
+            return order === 'newest' ? dateB - dateA : dateA - dateB;
+        });
+
+        grid.innerHTML = '';
+        announcements.forEach(announcement => grid.appendChild(announcement));
+    }
+</script>
+
+<script>
+function filterAnnouncements(category) {
+    const announcements = document.querySelectorAll('.announcement-card');
+
+    announcements.forEach(card => {
+        if (category === "all" || card.getAttribute('data-category') === category) {
+            card.style.display = "block";
+        } else {
+            card.style.display = "none";
+        }
+    });
+}
+</script>
+
+<script type="module">
+    // Import Firebase modules
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBAE0ieuAJRp_rF4I90qXP8zPr4TQW_rIg",
+      authDomain: "agcararaoret.firebaseapp.com",
+      databaseURL: "https://agcararaoret-default-rtdb.firebaseio.com",
+      projectId: "agcararaoret",
+      storageBucket: "agcararaoret.appspot.com",
+      messagingSenderId: "369964400118",
+     
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+
+    // Wait for DOM to be ready
+    document.addEventListener("DOMContentLoaded", () => {
+        let currentRating = 0;
+
+// Load announcements when the page loads
+document.addEventListener("DOMContentLoaded", () => {
+        loadAnnouncements();
+    });
+
+    // Load Announcements from Firebase
+    function loadAnnouncements() {
+        const announcementGrid = document.getElementById("announcements-grid");
+        onValue(ref(db, 'announcements'), (snapshot) => {
+            announcementGrid.innerHTML = ""; // Clear previous content
+
+            if (!snapshot.exists()) {
+                announcementGrid.innerHTML = "<p>No announcements yet.</p>";
+                return;
+            }
+
+            snapshot.forEach(child => {
+                const data = child.val();
+                const announcementCard = document.createElement("div");
+                announcementCard.classList.add("announcement-card");
+                announcementCard.setAttribute("data-category", data.category);
+                announcementCard.setAttribute("data-date", data.date);
+
+                announcementCard.innerHTML = `
+                    <div class="announcement-date">${data.date}</div>
+                    <h3>${data.title}</h3>
+                    <p>${data.content}</p>
+                `;
+
+                announcementGrid.appendChild(announcementCard);
+            });
+        });
+    }
+
+        // Load Feedback
+        function loadFeedback() {
+            const feedbackList = document.getElementById('feedbackList');
+            onValue(ref(db, 'feedback'), (snapshot) => {
+                feedbackList.innerHTML = '';
+
+                if (!snapshot.exists()) {
+                    feedbackList.innerHTML = "<p>No feedback yet.</p>";
+                    return;
+                }
+
+                const feedbackArray = [];
+                snapshot.forEach((child) => {
+                    const feedback = child.val();
+                    // Only include approved feedback
+                    if (feedback.isApproved === true) {
+                        feedbackArray.push({
+                            ...feedback,
+                            id: child.key
+                        });
+                    }
+                });
+
+                // Sort feedback by date (newest first)
+                feedbackArray.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                if (feedbackArray.length === 0) {
+                    feedbackList.innerHTML = "<p>No approved feedback yet.</p>";
+                    return;
+                }
+
+                feedbackArray.forEach((data) => {
+                    const feedbackItem = document.createElement('div');
+                    feedbackItem.className = 'feedback-item';
+
+                    feedbackItem.innerHTML = `
+                        <div class="feedback-stars">
+                            ${'★'.repeat(data.rating)}${'☆'.repeat(5 - data.rating)}
+                        </div>
+                        <div class="feedback-text-container">
+                            <div class="feedback-text">${data.feedback}</div>
+                        </div>
+                        <div class="feedback-meta">
+                            <span class="guest-name">${data.guest}</span>
+                            <span class="feedback-date">${formatDate(data.date)}</span>
+                        </div>
+                    `;
+
+                    feedbackList.appendChild(feedbackItem);
+                });
+            });
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+
+        // Reset stars
+        function resetStars() {
+            currentRating = 0;
+            document.querySelectorAll('.star').forEach(star => star.classList.remove('active'));
+        }
+
+        // Submit feedback
+        document.getElementById('submitFeedback').addEventListener('click', () => {
+            const feedback = document.getElementById('feedbackText').value.trim();
+            const guestName = document.getElementById('guestName').value.trim();
+
+            if (currentRating === 0 || feedback === '' || guestName === '') {
+                alert('Please complete all fields and select a rating');
+                return;
+            }
+
+            push(ref(db, 'feedback'), {
+                rating: currentRating,
+                feedback: feedback,
+                guest: guestName,
+                date: new Date().toISOString(),
+                isApproved: false,
+                isRejected: false
+            }).then(() => {
+                alert('Thank you for your feedback!');
+                document.getElementById('feedbackText').value = '';
+                document.getElementById('guestName').value = '';
+                resetStars();
+                loadFeedback();
+            });
+        });
+
+        // Star click handler
+        document.querySelectorAll('.star').forEach(star => {
+            star.addEventListener('click', function () {
+                currentRating = parseInt(this.dataset.rating);
+                document.querySelectorAll('.star').forEach(s => {
+                    s.classList.toggle('active', parseInt(s.dataset.rating) <= currentRating);
+                });
+            });
+        });
+
+        // Initial load
+        loadAnnouncements();
+        loadFeedback();
+    });
+</script>
+
+<!-- Add this before the closing body tag -->
+<script>
+    function sortAnnouncements(order) {
+        const grid = document.getElementById('announcements-grid');
+        const announcements = Array.from(grid.getElementsByClassName('announcement-card'));
+
+        announcements.sort((a, b) => {
+            const dateA = new Date(a.getAttribute('data-date'));
+            const dateB = new Date(b.getAttribute('data-date'));
+            return order === 'newest' ? dateB - dateA : dateA - dateB;
+        });
+
+        grid.innerHTML = '';
+        announcements.forEach(announcement => grid.appendChild(announcement));
+    }
+
+    function filterAnnouncements(category) {
+        const announcements = document.querySelectorAll('.announcement-card');
+        announcements.forEach(card => {
+            if (category === "all" || card.getAttribute('data-category') === category) {
+                card.style.display = "block";
+            } else {
+                card.style.display = "none";
+            }
+        });
+
+        // Update active button state
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.textContent.toLowerCase() === category || (category === 'all' && btn.textContent === 'All'));
+        });
+    }
+</script>
+

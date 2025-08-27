@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMVR Menu</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: url('ytttt.jpg') no-repeat top center fixed; /* Image at the top */
+            background-size: cover; /* Ensures it covers the entire page */
+            color: white;
+            line-height: 1.6;
+          
+            
+        }
+
+        /* Overlay to improve readability */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(157, 153, 153, 0.4); /* Dark overlay */
+            z-index: -1;
+        }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+      .navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.85);    /* extremely transparent */
+    backdrop-filter: blur(2px);             /* more intense blur */
+    -webkit-backdrop-filter: blur(2px);     /* Safari support */
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* soft deep shadow */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* faint border */
+    z-index: 1000;
+    transition: background-color 0.3s ease;
+}
+
+.nav-container {
+    max-width: 1500px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+}
+
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            gap: 0;
+        }
+
+        .logo img {
+    /* Increase height for a bigger logo; set width to auto so it scales proportionally */
+    height: 50px;
+    width: auto;
+}
+
+.logo-text {
+    /* Increase the font size to make the text larger */
+    font-size: 1.2rem;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-weight: bold;
+    color: #070707;
+    white-space: nowrap; /* Ensures the text remains on one line */
+    transition: color 0.3s ease-in-out;
+}
+
+    
+    .logo:hover .logo-text {
+        color: #099309;
+    }
+
+        .resort-name {
+            font-size: 1.3rem;
+            color: #2c5530;
+            font-weight: 600;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #0e0d0d;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            padding: 0.5rem 0;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        /* Underline effect for nav links */
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #2c5530;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #2c5530;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Dropdown Styles */
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown > a .fa-chevron-down {
+            color: #2c5530 !important;
+    font-size: 1rem;
+    margin-left: 0.3rem;
+    vertical-align: middle;
+    opacity: 1 !important;
+    filter: none !important;
+        }
+
+        .dropdown > a:hover .fa-chevron-down {
+            color: #e74c3c !important; /* Change color on hover for effect */
+        }
+
+        .dropdown-content {
+            position: absolute;
+            top: 100%;
+            left: -1rem;
+            background: #ffffff;
+            min-width: 180px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            padding: 0.5rem 0;
+            margin-top: 0.5rem;
+        }
+
+        .dropdown:hover .dropdown-content {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-content a {
+            padding: 0.7rem 1.2rem;
+            display: block;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .dropdown-content a:hover {
+            background: #f8f9fa;
+        }
+
+        /* Make dropdown-content icons visible and aligned */
+.dropdown-content a i {
+    color: #2c5530;
+    margin-left: 0.3rem;
+    font-size: 0.8rem;
+    vertical-align: middle;
+}
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .nav-container {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                gap: 1.5rem;
+            }
+
+            .resort-name {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                width: 100%;
+                gap: 1rem;
+                margin-top: 1rem;
+                display: none;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .dropdown-content {
+                position: static;
+                box-shadow: none;
+                opacity: 1;
+                visibility: visible;
+                transform: none;
+                padding-left: 1rem;
+            }
+
+            .logo {
+                margin-bottom: 0.5rem;
+            }
+        }
+
+        /* Scroll Effect */
+        .navbar.scrolled {
+            background: rgba(255, 255, 255, 0.98);
+        }
+
+        /* Add smooth transition for scroll effect */
+        .navbar {
+            transition: background-color 0.3s ease;
+        }
+
+        
+       
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+           
+            color: #02093b;
+            margin-bottom: 30px;
+            margin-top: 80px;
+        }
+        
+        header h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 18px;
+            color: #151544;
+        }
+        
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .tab-button {
+            padding: 15px 30px;
+            background-color: #34495e;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s;
+            border-radius: 5px;
+            margin: 0 10px;
+        }
+        
+        .tab-button:hover {
+            background-color: #2c3e50;
+        }
+        
+        .tab-button.active {
+            background-color: #e74c3c;
+        }
+        
+        .menu-section {
+            display: none;
+        }
+        
+        .menu-section.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .menu-item {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        
+        .menu-item:hover {
+            transform: translateY(-10px);
+        }
+        
+        .menu-item-image {
+            height: 200px;
+            background-color: #ddd;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .menu-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .menu-item-content {
+            padding: 20px;
+        }
+        
+        .menu-item-title {
+            font-size: 20px;
+            color: #02093b;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+        }
+        
+        .menu-item-price {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .menu-item-description {
+            color: #3d3d3d;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .category-title {
+            font-size: 28px;
+            margin: 30px 0 20px;
+            color: #02093b;
+            text-align: center;
+            position: relative;
+        }
+        
+        .category-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background-color: #e74c3c;
+        }
+        
+        @media (max-width: 992px) {
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .tab-button {
+                padding: 10px 20px;
+                font-size: 16px;
+            }
+        }
+        
+        .dessert-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .dessert-grid .menu-item:nth-child(3) {
+            grid-column: span 1;
+        }
+
+        .footer-bottom {
+    text-align: center;
+    padding: 0.5rem;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    color: black;
+
+}
+    </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar" aria-label="Main navigation">
+    <div class="nav-container">
+      <a href="index.html" class="logo" aria-label="Agcararao Mountain View Resort Home">
+        <img src="loho.png" alt="Agcararao Mountain View Resort Logo" />
+        <span class="logo-text">Agcararao Mountain View Resort</span>
+      </a>
+      
+      <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" style="display: none;">
+        <i class="fas fa-bars"></i>
+      </button>
+      
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li class="dropdown">
+          <a href="#amenities" aria-haspopup="true" aria-expanded="false">
+            Amenities <i class="fas fa-chevron-down"></i>
+          </a>
+          <div class="dropdown-content" aria-label="Amenities submenu">
+            <a href="rooms.html">Rooms</a>
+            <a href="activities.html">Activities</a>
+            <a href="foods.html">Foods <i class="fas fa-chevron-down"></i></a>
+          </div>
+        </li>
+        <li><a href="gallery.html">Gallery</a></li>
+      </ul>
+    </div>
+  </nav>
+
+    <header>
+        <h1>Agcararao Bites & Beverages</h1>
+        <p>Savor Every Sip and Bite – Fresh, Flavorful, and Unforgettable</p>
+    </header>
+    
+    <div class="container">
+        <div class="tab-container">
+            <button class="tab-button active" data-tab="food">Food Menu</button>
+            <button class="tab-button" data-tab="drinks">Drinks Menu</button>
+        </div>
+        
+        <div id="food" class="menu-section active">
+            <h2 class="category-title">Snacks</h2>
+            <div class="menu-grid">
+                <div class="menu-item">
+                    <div class="menu-item-image">
+                        <img src="pancit_canton.jpg" alt="pancit_canton">
+                    </div>
+                    <div class="menu-item-content">
+                        <div class="menu-item-title">
+                            <span>Pacit Canton</span>
+                            <span class="menu-item-price">
+                              ₱40.00 <span style="font-size:13px;color:#888;">(Small)</span><br>
+                              ₱50.00 <span style="font-size:13px;color:#888;">(Big)</span>
+                            </span>
+                        </div>
+                        <p class="menu-item-description"> A classic Filipino stir-fried noodle dish made with savory sauce.</p>
+                    </div>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="menu-item-image">
+                        <img src="bu.jpg" alt="hotdog_sandwich">
+                    </div>
+                    <div class="menu-item-content">
+                        <div class="menu-item-title">
+                            <span>Hotdog Sandwich</span>
+                            <span class="menu-item-price">₱120.00</span>
+                        </div>
+                        <p class="menu-item-description">Hotdog in a soft bun, served with ketchup, mustard, and optional toppings.</p>
+                    </div>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="menu-item-image">
+                        <img src="er.png" alt="egg_sandwich">
+                    </div>
+                    <div class="menu-item-content">
+                        <div class="menu-item-title">
+                            <span>Egg Sandwich</span>
+                            <span class="menu-item-price">₱49.00</span>
+                        </div>
+                        <p class="menu-item-description">Fried eggs served in a soft bun, with mayo or cheese for extra flavor.</p>
+                    </div>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="menu-item-image">
+                        <img src="oi.jpg" alt="french_fries">
+                    </div>
+                    <div class="menu-item-content">
+                        <div class="menu-item-title">
+                            <span>French Fries</span>
+                            <span class="menu-item-price">₱79.00</span>
+                        </div>
+                        <p class="menu-item-description">Crispy potato strips fried until golden brown, commonly enjoyed with salt and dipping sauces.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <h2 class="category-title">Silog Series</h2>
+            <div class="menu-grid">
+                <div class="menu-item">
+                    <div class="menu-item-image">
+                        <img src="ht.jpg" alt="maling_silog">
+                    </div>
+                    <div class="menu-item-content">
+                        <div class="menu-item-title">
+                            <span>Maling Silog</span>
+                            <span class="menu-item-price">₱120.00</span>
+                        </div>
+                        <p class="menu-item-description">A classic Filipino breakfast combo of crispy fried Maling, rice, and a sunny-side-up egg.</p>
+                    </div>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="menu-item-image">
+                        <img src="slo.jpg" alt="Sausilog">
+                    </div>
+                    <div class="menu-item-content">
+                        <div class="menu-item-title">
+                            <span>Sausilog</span>
+                            <span class="menu-item-price">₱120.00</span>
+                        </div>
+                        <p class="menu-item-description">Juicy local sausage served with fragrant rice and a fried egg, perfect for an all day breakfast fix.</p>
+                    </div>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="menu-item-image">
+                        <img src="Longsilog.png" alt="longsilog">
+                    </div>
+                    <div class="menu-item-content">
+                        <div class="menu-item-title">
+                            <span>Longsilog</span>
+                            <span class="menu-item-price">₱120.00</span>
+                        </div>
+                        <p class="menu-item-description">Sweet and savory Filipino longganisa paired with rice and a sunny-side-up egg, a breakfast favorite full of flavor.</p>
+                    </div>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="menu-item-image">
+                        <img src="cornsyug.jpg" alt="cornsilog">
+                    </div>
+                    <div class="menu-item-content">
+                        <div class="menu-item-title">
+                            <span>Corn Silog</span>
+                            <span class="menu-item-price">₱110.00</span>
+                        </div>
+                        <p class="menu-item-description">A Filipino breakfast favorite featuring savory corned beef, rice, and a sunny-side-up egg.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <h2 class="category-title">Agcararao Meal Offers</h2>
+            <div class="menu-grid dessert-grid">
+                <div class="menu-item">
+                    <div class="menu-item-image">
+                        <img src="hu87.jpeg" alt="native_manok">
+                    </div>
+                    <div class="menu-item-content">
+                        <div class="menu-item-title">
+                            <span>Native whole manok with 1 platter rice(5-6pax)</span>
+                            <span class="menu-item-price">₱899.00</span>
+                        </div>
+                        <p class="menu-item-description">Tender, juicy native chicken served whole with a heaping platter of rice, good for five to six hungry diners.</p>
+                    </div>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="menu-item-image">
+                        <img src="jol.jpg" alt="manok">
+                    </div>
+                    <div class="menu-item-content">
+                        <div class="menu-item-title">
+                            <span>1/2 Native whole manok with 1 platter rice(2-5pax)</span>
+                            <span class="menu-item-price">₱459.00</span>
+                        </div>
+                        <p class="menu-item-description">Half a serving of flavorful native chicken, simmered in rich herbs and spices, paired with a hearty platter of rice, great for sharing with family or friends.</p>
+                    </div>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="menu-item-image">
+                        <img src="ljy.jpg" alt="pantat">
+                    </div>
+                    <div class="menu-item-content">
+                        <div class="menu-item-title">
+                            <span>Pantat Combo Meal</span>
+                            <span class="menu-item-price">₱200.00</span>
+                        </div>
+                        <p class="menu-item-description">A delicious combo featuring tender grilled or fried catfish (pantat), served with steamed rice and a refreshing glass of lemonade.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="drinks" class="menu-section">
+            <h2 class="category-title">Mountain Sips</h2>
+            <div class="menu-grid">
+                <div class="menu-item">
+                    <div class="menu-item-image">
+                        <img src="kola.jpg" alt="Hot_tablea">
+                    </div>
+                    <div class="menu-item-content">
+                        <div class="menu-item-title">
+                            <span>Hot Tablea</span>
+                            <span class="menu-item-price">₱75.00</span>
+                        </div>
+                        <p class="menu-item-description">A hot chocolate made from pure cacao tablea, traditionally brewed for a deep, bold flavor that warms the soul.</p>
+                    </div>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="menu-item-image">
+                        <img src="carlota.jpg" alt="la_carlota">
+                    </div>
+                    <div class="menu-item-content">
+                        <div class="menu-item-title">
+                            <span>La Carlota native coffee</span>
+                            <span class="menu-item-price">₱79.00</span>
+                        </div>
+                        <p class="menu-item-description">Bold and aromatic local brew, made from native coffee beans roasted to perfection for a smooth, earthy flavor with every sip.</p>
+                    </div>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="menu-item-image">
+                        <img src="bolk.jpg" alt="iced_cofi">
+                    </div>
+                    <div class="menu-item-content">
+                        <div class="menu-item-title">
+                            <span>Iced Coffee</span>
+                            <span class="menu-item-price">₱89.00</span>
+                        </div>
+                        <p class="menu-item-description">Smooth and refreshing brewed coffee served over ice, perfect for a cool caffeine kick any time of day.</p>
+                    </div>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="menu-item-image">
+                        <img src="koli.jpg" alt="lemonade">
+                    </div>
+                    <div class="menu-item-content">
+                        <div class="menu-item-title">
+                            <span>Lemonaden Juice</span>
+                            <span class="menu-item-price">
+                                ₱135.00 <span style="font-size:13px;color:#888;">(Lemonade Pitch)</span><br>
+                                ₱75.00 <span style="font-size:13px;color:#888;">(Lemonade Half Pitcher)</span>
+                              </span>
+                        </div>
+                        <p class="menu-item-description">It's a tangy, citrusy drink often served chilled, perfect for hot weather or as a revitalizing treat.</p>
+                    </div>
+                </div>
+            </div>
+            
+           
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const menuSections = document.querySelectorAll('.menu-section');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const tab = this.dataset.tab;
+                    
+                    // Remove active class from all buttons and sections
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    menuSections.forEach(section => section.classList.remove('active'));
+                    
+                    // Add active class to clicked button and corresponding section
+                    this.classList.add('active');
+                    document.getElementById(tab).classList.add('active');
+                });
+            });
+        });
+    </script>
+
+<div class="footer-bottom">
+    <p>&copy; 2025 Agcararao Mountain View Resort. All rights reserved.</p>
+</div>
+</footer>
+
+</body>
+</html>

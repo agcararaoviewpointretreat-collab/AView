@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMVR About</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <style>
+ * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: url('grt.jpg') no-repeat top center fixed; /* Image at the top */
+            background-size: cover; /* Ensures it covers the entire page */
+            line-height: 1.6;
+          
+            
+        }
+
+        /* Overlay to improve readability */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(157, 153, 153, 0.4); /* Dark overlay */
+            z-index: -1;
+        }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+      .navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.02);    /* extremely transparent */
+    backdrop-filter: blur(2px);             /* more intense blur */
+    -webkit-backdrop-filter: blur(2px);     /* Safari support */
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* soft deep shadow */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* faint border */
+    z-index: 1000;
+}
+
+.nav-container {
+    max-width: 1500px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+}
+
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            gap: 0;
+        }
+
+        .logo img {
+    /* Increase height for a bigger logo; set width to auto so it scales proportionally */
+    height: 50px;
+    width: auto;
+}
+
+.logo-text {
+    /* Increase the font size to make the text larger */
+    font-size: 1.2rem;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-weight: bold;
+    color: #070707;
+    white-space: nowrap; /* Ensures the text remains on one line */
+    transition: color 0.3s ease-in-out;
+}
+
+    
+    .logo:hover .logo-text {
+        color: #099309;
+    }
+
+        .resort-name {
+            font-size: 1.3rem;
+            color: #2c5530;
+            font-weight: 600;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #0e0d0d;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            padding: 0.5rem 0;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        /* Underline effect for nav links */
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #2c5530;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #2c5530;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Dropdown Styles */
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown > a .fa-chevron-down {
+            font-size: 0.8rem;
+            margin-left: 0.3rem;
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown:hover > a .fa-chevron-down {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-content {
+            position: absolute;
+            top: 100%;
+            left: -1rem;
+            background: #ffffff;
+            min-width: 180px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            padding: 0.5rem 0;
+            margin-top: 0.5rem;
+        }
+
+        .dropdown:hover .dropdown-content {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-content a {
+            padding: 0.7rem 1.2rem;
+            display: block;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .dropdown-content a:hover {
+            background: #f8f9fa;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .nav-container {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                gap: 1.5rem;
+            }
+
+            .resort-name {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                width: 100%;
+                gap: 1rem;
+                margin-top: 1rem;
+                display: none;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .dropdown-content {
+                position: static;
+                box-shadow: none;
+                opacity: 1;
+                visibility: visible;
+                transform: none;
+                padding-left: 1rem;
+            }
+
+            .logo {
+                margin-bottom: 0.5rem;
+            }
+        }
+
+        /* Scroll Effect */
+        .navbar.scrolled {
+            background: rgba(255, 255, 255, 0.98);
+        }
+
+        /* Add smooth transition for scroll effect */
+        .navbar {
+            transition: background-color 0.3s ease;
+        }
+        .about-hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('nh.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            margin-top: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(44, 85, 48, 0.3), rgba(0, 0, 0, 0.5));
+        }
+
+        .about-hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .about-hero p {
+            font-size: 1.5rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .about-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .about-section {
+            margin-bottom: 6rem;
+            position: relative;
+        }
+
+        .about-section::after {
+            content: '';
+            position: absolute;
+            bottom: -3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: #2c5530;
+        }
+
+        .about-section:last-child::after {
+            display: none;
+        }
+
+        .about-section h2 {
+            color: #2c5530;
+            font-size: 2.8rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .about-section h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: #2c5530;
+        }
+
+        .about-section p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #060404;
+            margin-bottom: 2rem;
+            text-align: justify;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+            margin-top: 3rem;
+        }
+
+        .value-card {
+            background: #fff;
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .value-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: #2c5530;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .value-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .value-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .value-card i {
+            font-size: 3rem;
+            color: #2c5530;
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .value-card:hover i {
+            transform: scale(1.1);
+        }
+
+        .value-card h3 {
+            color: #2c5530;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+        }
+
+        .value-card p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #040404;
+            margin: 0;
+        }
+
+        .team-section {
+    background: transparent; /* Removes white background */
+    padding: 6rem 0;
+    margin: 0 -2rem;
+}
+
+.team-member {
+    text-align: center;
+    position: relative;
+    background: transparent;
+    box-shadow: none;
+    display: flex; /* Enables flexbox */
+    flex-direction: column; /* Stacks content vertically */
+    align-items: center; /* Centers items horizontally */
+}
+
+.team-member img {
+    width: 450px;  /* Increased from 250px */
+    height: 450px; /* Increased from 250px */
+    border-radius: 2%;
+    object-fit: cover;
+    margin-bottom: 1.5rem;
+    border: 6px solid #2c5530; /* Thicker border */
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Stronger shadow */
+}
+
+.team-member:hover img {
+    transform: scale(1.1); /* Enlarges slightly on hover */
+    border-color: #3a6b3e;
+}
+
+
+          
+        .team-member h3 {
+            color: #2c5530;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+        }
+
+        .team-member p {
+            color: #474444;
+            font-size: 1.3rem;
+            margin: 0;
+            
+        }
+
+        @media (max-width: 768px) {
+            .about-hero h1 {
+                font-size: 2.8rem;
+            }
+            
+            .about-hero p {
+                font-size: 1.2rem;
+            }
+            
+            .about-section h2 {
+                font-size: 2.2rem;
+            }
+
+            .about-section p {
+                font-size: 1.1rem;
+            }
+
+            .values-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .team-member img {
+                width: 200px;
+                height: 200px;
+            }
+        }
+
+       /* Certificates Section */
+.certificates-section {
+    text-align: center;
+    padding: 4rem 2rem;
+    
+}
+
+.certificates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Certificate Container */
+.certificate {
+    padding: 2rem;
+    border-radius: 10px;
+    background: none;
+    text-align: center;
+    transition: transform 0.3s ease; /* Smooth scaling effect */
+}
+
+/* Zoom effect on hover */
+.certificate:hover {
+    transform: scale(1.1); /* Enlarges the entire certificate container */
+}
+
+/* Certificate Image */
+.certificate img {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Zoom effect on hover */
+.certificate:hover img {
+    transform: scale(1.1); /* Enlarges the image */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Certificate Description */
+.certificate p {
+    color: #535151;
+    font-size: 1.2rem;
+    font-weight: bold;
+    transition: transform 0.3s ease, color 0.3s ease;
+    text-align: center;
+}
+
+/* Zoom effect on description */
+.certificate:hover p {
+    transform: scale(1.1); /* Enlarges the text */
+    color: #0c0d0c; /* Changes color slightly for better effect */
+}
+
+
+.certificate h3 {
+    color: #2c5530;
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+}
+      
+/* Footer Bottom */
+.footer-bottom {
+    text-align: center;
+    padding: 0.5rem;
+ color: #040404;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+
+}
+
+
+
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" aria-label="Main navigation">
+        <div class="nav-container">
+          <a href="index.html" class="logo" aria-label="Agcararao Mountain View Resort Home">
+            <img src="loho.png" alt="Agcararao Mountain View Resort Logo" />
+            <span class="logo-text">Agcararao Mountain View Resort</span>
+          </a>
+          
+          <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" style="display: none;">
+            <i class="fas fa-bars"></i>
+          </button>
+          
+          <ul class="nav-links" id="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li class="dropdown">
+              <a href="#amenities" aria-haspopup="true" aria-expanded="false">Amenities <i class="fas fa-chevron-down"></i></a>
+              <div class="dropdown-content" aria-label="Amenities submenu">
+                <a href="rooms.html">Rooms</a>
+                <a href="activities.html">Activities</a>
+                <a href="foods.html">Foods</a>
+              </div>
+            </li>
+            <li><a href="gallery.html">Gallery</a></li>
+          </ul>
+        </div>
+      </nav>
+    <!-- Hero Section -->
+    <section class="about-hero">
+        <div class="hero-content">
+            <h1>Our Journey</h1>
+            <p>Uncover the passion and vision that make our resort a true paradise.</p>
+        </div>
+    </section>
+
+    <!-- About Content -->
+    <div class="about-content">
+        <section class="about-section" data-aos="fade-up">
+            <h2>Our History</h2>
+            <p>Agcararao Mountain View is a tourist destination nestled in the highlands of Brgy. Magdungao, Sitio Agcararao, Passi City. It is owned by former Binibining Pintados Jo-nah Belle Capuy-Arcenal's family. The farm site is attractive and is seen to be a place where clouds freely dance so the family has decided to convert their property into a flower and vegetable farm where groups and families of Passi City and its neighboring towns can pay a visit to enjoy the mesmerizing view from the top over-looking the nature and sea of clouds. The family is motivated to propagate the land to make it more a wonderful place where guests can go trekking, have fun, relax, and contemplate how wonderful life can be. The resort officially opened to the public on February 18, 2020, offering visitors opportunities for trekking, relaxation, and photography amidst scenic landscapes. </p>
+        </section>
+
+        <section class="about-section" data-aos="fade-up">
+            <h2>Our Values</h2>
+            <div class="values-grid">
+                <div class="value-card">
+                    <i class="fas fa-tree"></i>
+                    <h3>Nature</h3>
+                    <p>We committed to preserving the breathtaking beauty of its natural surroundings. </p>
+                </div>
+                <div class="value-card">
+                    <i class="fas fa-concierge-bell"></i>
+                    <h3>Hospitality</h3>
+                    <p>We take pride in our heartfelt hospitality, embracing local culture and traditions to create a meaningful experience for all.</p>
+                </div>
+                <div class="value-card">
+                    <i class="fas fa-hiking"></i>
+                    <h3>Adventure</h3>
+                    <p>We’re dedicated to crafting unforgettable moments filled with adventure and excitement.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-section team-section" data-aos="fade-up">
+            <h2>Our Team</h2>
+            <div class="team-grid">
+                <div class="team-member">
+                    <img src="agcararao logo.jpg" alt="Owner">
+                    <h3>Jo-nah Belle Capuy-Arcenal</h3>
+                    <p>Owner</p>
+                </div>
+                  <div class="team-member">
+                    <img src="nangnang.png" alt="staff">
+                    <h3>Jovencita Capuy</h3>
+                    <p>Staff</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <section class="about-section certificates-section" data-aos="fade-up">
+        <h2>Our Certificates & Accreditations</h2>
+        <div class="certificates-grid">
+            <div class="certificate">
+                <img src="cer.jpg" alt="DOT Accreditation">
+                <h3>DOT Accreditation</h3>
+                <p>Recognized by the Department of Tourism as an accredited Tourism Recreation Center for our commitment to excellence in hospitality and compliance with tourism standards.</p>
+               
+            </div>
+           
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Agcararao Mountain View Resort. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init();
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
