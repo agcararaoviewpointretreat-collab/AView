@@ -561,41 +561,100 @@ body {
 }
 
 
-
+/* Mobile drawer styles */
+.mobile-menu-btn { display: none; background: none; border: none; font-size: 24px; color: #2c5530; cursor: pointer; }
+.mobile-nav { position: fixed; top: 0; right: 0; height: 100vh; width: 65%; max-width: 150px; background: #fff; box-shadow: -2px 0 12px rgba(0,0,0,0.15); transform: translateX(100%); transition: transform 0.3s ease; z-index: 2000; padding: 12px; }
+.mobile-nav.open { transform: translateX(0); }
+.close-drawer { background: none; border: none; font-size: 26px; line-height: 1; color: #2c5530; cursor: pointer; position: absolute; top: 10px; right: 12px; }
+.mobile-nav-links { list-style: none; margin: 48px 0 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.mobile-nav-links a { color: #2c5530; text-decoration: none; font-size: 1rem; padding: 10px 8px; border-radius: 6px; }
+.mobile-nav-links a:hover { background: #f3f5f4; }
+.nav-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.35); z-index: 1500; display: none; }
+.nav-overlay.show { display: block; }
+@media (max-width: 768px) {
+  .navbar { padding: 18px 0; }
+  .nav-container { justify-content: space-between; padding: 0.2rem 0.4rem; }
+  .nav-links { display: none !important; }
+  .mobile-menu-btn { display: inline-flex !important; align-items: center; justify-content: center; }
+}
+@media (max-width: 768px) {
+  /* Keep header in one row: logo left, menu button right */
+  .nav-container { flex-direction: row !important; align-items: center !important; justify-content: space-between !important; }
+  .logo { margin-bottom: 0 !important; display: flex !important; align-items: center !important; }
+  /* One card per row for Meal Offers on mobile */
+  .dessert-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
+}
+@media (max-width: 600px) {
+  body,
+  .container,
+  .about-content,
+  .about-section,
+  .about-section *,
+  .values-grid,
+  .values-grid *,
+  .team-section,
+  .team-section *,
+  .certificates-section,
+  .certificates-section *,
+  .footer-bottom,
+  h1, h2, h3, h4, h5, h6,
+  p, label, input, select, textarea {
+    font-size: 13px !important;
+    line-height: 1.4 !important;
+  }
+  .logo-text {
+    font-size: 0.8rem !important;
+  }
+  
+  #our-journey-title {
+    font-size: 1.5rem !important;
+    font-weight: bold !important;
+    letter-spacing: 1px;
+  }
+}
     </style>
 </head>
 <body>
     <!-- Navigation -->
     <nav class="navbar" aria-label="Main navigation">
-        <div class="nav-container">
-          <a href="index.html" class="logo" aria-label="Agcararao Mountain View Resort Home">
-            <img src="loho.png" alt="Agcararao Mountain View Resort Logo" />
-            <span class="logo-text">Agcararao Mountain View Resort</span>
-          </a>
-          
-          <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" style="display: none;">
-            <i class="fas fa-bars"></i>
-          </button>
-          
-          <ul class="nav-links" id="nav-links">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="about.html">About</a></li>
-            <li class="dropdown">
-              <a href="#amenities" aria-haspopup="true" aria-expanded="false">Amenities <i class="fas fa-chevron-down"></i></a>
-              <div class="dropdown-content" aria-label="Amenities submenu">
-                <a href="rooms.html">Rooms</a>
-                <a href="activities.html">Activities</a>
-                <a href="foods.html">Foods</a>
-              </div>
-            </li>
-            <li><a href="gallery.html">Gallery</a></li>
-          </ul>
+  <div class="nav-container">
+    <a href="index.html" class="logo" aria-label="Agcararao Mountain View Resort Home">
+      <img src="loho.png" alt="Agcararao Mountain View Resort Logo" />
+      <span class="logo-text">Agcararao Mountain View Resort</span>
+    </a>
+    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open menu">&#9776;</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li class="dropdown">
+        <a href="#amenities" aria-haspopup="true" aria-expanded="false">Amenities <i class="fas fa-chevron-down"></i></a>
+        <div class="dropdown-content" aria-label="Amenities submenu">
+          <a href="rooms.html">Rooms</a>
+          <a href="activities.html">Activities</a>
+          <a href="foods.html">Foods</a>
         </div>
-      </nav>
+      </li>
+      <li><a href="gallery.html">Gallery</a></li>
+    </ul>
+  </div>
+</nav>
+<!-- Mobile drawer and overlay -->
+<div id="mobileNav" class="mobile-nav" aria-hidden="true">
+  <button class="close-drawer" id="closeMobileNav" aria-label="Close menu">&times;</button>
+  <ul class="mobile-nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="rooms.html">Rooms</a></li>
+    <li><a href="activities.html">Activities</a></li>
+     <li><a href="foods.html">Foods</a></li>
+    <li><a href="gallery.html">Gallery</a></li>
+  </ul>
+</div>
+<div id="navOverlay" class="nav-overlay" aria-hidden="true"></div>
     <!-- Hero Section -->
     <section class="about-hero">
         <div class="hero-content">
-            <h1>Our Journey</h1>
+            <h1 id="our-journey-title">Our Journey</h1>
             <p>Uncover the passion and vision that make our resort a true paradise.</p>
         </div>
     </section>
@@ -670,5 +729,32 @@ body {
         AOS.init();
     </script>
     <script src="script.js"></script>
+    <script>
+(function ensureHamburger(){
+  try{
+    var navContainer=document.querySelector('.nav-container');
+    if(navContainer && !document.getElementById('mobileMenuBtn')){
+      var btn=document.createElement('button');
+      btn.id='mobileMenuBtn';
+      btn.className='mobile-menu-btn';
+      btn.setAttribute('aria-label','Open menu');
+      btn.innerHTML='\u2630';
+      navContainer.appendChild(btn);
+    }
+  }catch(e){}
+})();
+(function mobileNavToggle(){
+  var openBtn=document.getElementById('mobileMenuBtn');
+  var drawer=document.getElementById('mobileNav');
+  var closeBtn=document.getElementById('closeMobileNav');
+  var overlay=document.getElementById('navOverlay');
+  function openDrawer(){ if(!drawer)return; drawer.classList.add('open'); overlay&&overlay.classList.add('show'); document.body.style.overflow='hidden'; }
+  function closeDrawer(){ if(!drawer)return; drawer.classList.remove('open'); overlay&&overlay.classList.remove('show'); document.body.style.overflow=''; }
+  openBtn&&openBtn.addEventListener('click',openDrawer);
+  closeBtn&&closeBtn.addEventListener('click',closeDrawer);
+  overlay&&overlay.addEventListener('click',closeDrawer);
+  document.querySelectorAll('#mobileNav a').forEach(function(a){ a.addEventListener('click',closeDrawer); });
+})();
+    </script>
 </body>
 </html>
