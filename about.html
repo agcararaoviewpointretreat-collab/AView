@@ -360,33 +360,40 @@ body {
             overflow: hidden;
         }
 
-        .value-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: #2c5530;
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
-
-        .value-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .value-card:hover::before {
-            transform: scaleX(1);
-        }
-
-        .value-card i {
-            font-size: 3rem;
-            color: #2c5530;
-            margin-bottom: 1.5rem;
-            transition: transform 0.3s ease;
-        }
+            .values-grid {
+                justify-content: center !important;
+                align-items: center !important;
+            }
+            .value-card {
+                margin: 0 auto !important;
+                padding: 14px 6px !important;
+                text-align: center !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                max-width: 95vw !important;
+            }
+            .value-card h3 {
+                font-size: 0.85rem !important;
+                margin-bottom: 0.4rem !important;
+                letter-spacing: 0.3px !important;
+                text-align: center !important;
+            }
+            .value-card p {
+                font-size: 0.75rem !important;
+                line-height: 1.5 !important;
+                margin-bottom: 0.4rem !important;
+                word-break: break-word !important;
+                letter-spacing: 0.01em !important;
+                text-align: center !important;
+            }
+            .value-card i {
+                font-size: 1rem !important;
+                margin-bottom: 0.5rem !important;
+                display: block !important;
+                text-align: center !important;
+            }
+        
 
         .value-card:hover i {
             transform: scale(1.1);
@@ -585,6 +592,30 @@ body {
   .dessert-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
 }
 @media (max-width: 600px) {
+    .value-card {
+        padding: 12px 6px !important;
+        text-align: center !important;
+    }
+    .value-card h3 {
+        font-size: 0.85rem !important;
+        margin-bottom: 0.3rem !important;
+        letter-spacing: 0.2px !important;
+        text-align: center !important;
+    }
+    .value-card p {
+        font-size: 0.7rem !important;
+        line-height: 1.4 !important;
+        margin-bottom: 0.3rem !important;
+        word-break: break-word !important;
+        letter-spacing: 0.01em !important;
+        text-align: center !important;
+    }
+    .value-card i {
+        font-size: 0.95rem !important;
+        margin-bottom: 0.4rem !important;
+        display: block !important;
+        text-align: center !important;
+    }
   body,
   .container,
   .about-content,
