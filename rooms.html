@@ -658,21 +658,77 @@ body {
 }
 
 @media (max-width: 600px) {
-  .inclusion {
-    font-size: 0.75rem;
-    padding: 0.4rem 0.8rem;
+  body,
+  .container,
+  .navbar,
+  .nav-container,
+  .logo-text,
+  h1, h2, h3, h4, h5, h6,
+  p, label, input, select, textarea,
+  .room-card,
+  .room-card *,
+  .footer-bottom,
+  .modal-content,
+  .modal-header h2,
+  .modal-header p,
+  .form-group,
+  .submit-btn {
+    font-size: 13px !important;
+    line-height: 1.4 !important;
   }
-  
+  .logo-text {
+    font-size: 0.85rem !important;
+  }
+  h1, h2 {
+    font-size: 1.1rem !important;
+  }
+  h3, h4, h5, h6 {
+    font-size: 1rem !important;
+  }
+  .room-card {
+    padding: 10px !important;
+  }
+  .modal-content {
+    padding: 0.7rem !important;
+    border-radius: 8px !important;
+  }
+  .submit-btn {
+    font-size: 13px !important;
+    padding: 0.6rem 1rem !important;
+  }
+  .price-item,
+  .submit-btn,
+  .book-activity {
+    font-size: 12px !important;
+  }
+  .book-activity,
+  .submit-btn {
+    padding: 0.5rem 0.8rem !important;
+    border-radius: 7px !important;
+  }
+  .price-item,
+  .book-now-btn {
+    font-size: 11px !important;
+  }
+  .book-now-btn {
+    padding: 0.45rem 0.7rem !important;
+    border-radius: 6px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .price-item {
+    font-size: 10px !important;
+  }
+  .book-now-btn {
+    font-size: 13px !important;
+    padding: 0.7rem 1.2rem !important;
+    border-radius: 8px !important;
+  }
   .room-price {
-    font-size: 1.5rem;
-  }
-  
-  h2 {
-    font-size: 1.8rem;
-  }
-  
-  .section-slider {
-    min-height: 250px;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    margin: 1rem 0 !important;
   }
 }
 
@@ -699,6 +755,11 @@ body {
     font-size: 0.9rem;
     margin-top: 1rem;
 
+}
+@media (max-width: 600px) {
+  .logo-text {
+    font-size: 0.8rem !important;
+  }
 }
     
   </style>
@@ -732,7 +793,20 @@ body {
         </ul>
       </div>
     </nav>
-  <section class="hero" aria-label="Agcararao mountain view resort">
+    <!-- Mobile drawer and overlay -->
+    <div id="mobileNav" class="mobile-nav" aria-hidden="true">
+      <button class="close-drawer" id="closeMobileNav" aria-label="Close menu">&times;</button>
+      <ul class="mobile-nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="rooms.html">Rooms</a></li>
+        <li><a href="activities.html">Activities</a></li>
+        <li><a href="foods.html">Foods</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+      </ul>
+    </div>
+    <div id="navOverlay" class="nav-overlay" aria-hidden="true"></div>
+    <section class="hero" aria-label="Agcararao mountain view resort">
    
   </section>
 
@@ -1046,10 +1120,9 @@ body {
       <p>&copy; 2025 Agcararao Mountain View Resort. All rights reserved.</p>
   </div>
 </footer>
-    
-</body>
+
  
-</html>
+
   <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Main slider functionality
@@ -1180,3 +1253,53 @@ body {
         });
     });
 </script>
+    <style>
+    /* Mobile drawer styles */
+    .mobile-menu-btn { display: none; background: none; border: none; font-size: 24px; color: #2c5530; cursor: pointer; }
+    .mobile-nav { position: fixed; top: 0; right: 0; height: 100vh; width: 65%; max-width: 150px; background: #fff; box-shadow: -2px 0 12px rgba(0,0,0,0.15); transform: translateX(100%); transition: transform 0.3s ease; z-index: 2000; padding: 12px; }
+    .mobile-nav.open { transform: translateX(0); }
+    .close-drawer { background: none; border: none; font-size: 26px; line-height: 1; color: #2c5530; cursor: pointer; position: absolute; top: 10px; right: 12px; }
+    .mobile-nav-links { list-style: none; margin: 48px 0 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+    .mobile-nav-links a { color: #2c5530; text-decoration: none; font-size: 1rem; padding: 10px 8px; border-radius: 6px; }
+    .mobile-nav-links a:hover { background: #f3f5f4; }
+    .nav-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.35); z-index: 1500; display: none; }
+    .nav-overlay.show { display: block; }
+    @media (max-width: 768px) {
+      .navbar { padding: 16px 0; }
+      .nav-container { justify-content: space-between; padding: 0.2rem 0.4rem; }
+      .nav-links { display: none !important; }
+      .mobile-menu-btn { display: inline-flex !important; align-items: center; justify-content: center; }
+      .nav-container { flex-direction: row !important; align-items: center !important; }
+    }
+    </style>
+
+    <script>
+    (function ensureHamburger(){
+      try{
+        var navContainer=document.querySelector('.nav-container');
+        if(navContainer && !document.getElementById('mobileMenuBtn')){
+          var btn=document.createElement('button');
+          btn.id='mobileMenuBtn';
+          btn.className='mobile-menu-btn';
+          btn.setAttribute('aria-label','Open menu');
+          btn.innerHTML='\u2630';
+          navContainer.appendChild(btn);
+        }
+      }catch(e){}
+    })();
+    (function mobileNavToggle(){
+      var openBtn=document.getElementById('mobileMenuBtn');
+      var drawer=document.getElementById('mobileNav');
+      var closeBtn=document.getElementById('closeMobileNav');
+      var overlay=document.getElementById('navOverlay');
+      function openDrawer(){ if(!drawer)return; drawer.classList.add('open'); overlay&&overlay.classList.add('show'); document.body.style.overflow='hidden'; }
+      function closeDrawer(){ if(!drawer)return; drawer.classList.remove('open'); overlay&&overlay.classList.remove('show'); document.body.style.overflow=''; }
+      openBtn&&openBtn.addEventListener('click',openDrawer);
+      closeBtn&&closeBtn.addEventListener('click',closeDrawer);
+      overlay&&overlay.addEventListener('click',closeDrawer);
+      document.querySelectorAll('#mobileNav a').forEach(function(a){ a.addEventListener('click',closeDrawer); });
+    })();
+    </script>
+    </div>
+</body>
+</html>
