@@ -1,3 +1,4 @@
+   
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -360,40 +361,38 @@ body {
             overflow: hidden;
         }
 
-            .values-grid {
-                justify-content: center !important;
-                align-items: center !important;
-            }
-            .value-card {
-                margin: 0 auto !important;
-                padding: 14px 6px !important;
-                text-align: center !important;
-                display: flex !important;
-                flex-direction: column !important;
-                align-items: center !important;
-                max-width: 95vw !important;
-            }
-            .value-card h3 {
-                font-size: 0.85rem !important;
-                margin-bottom: 0.4rem !important;
-                letter-spacing: 0.3px !important;
-                text-align: center !important;
-            }
-            .value-card p {
-                font-size: 0.75rem !important;
-                line-height: 1.5 !important;
-                margin-bottom: 0.4rem !important;
-                word-break: break-word !important;
-                letter-spacing: 0.01em !important;
-                text-align: center !important;
-            }
-            .value-card i {
-                font-size: 1rem !important;
-                margin-bottom: 0.5rem !important;
-                display: block !important;
-                text-align: center !important;
-            }
-        
+        .value-card {
+            padding: 22px 12px !important;
+            text-align: center !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            row-gap: 0.7rem !important;
+        }
+        .value-card h3 {
+            font-size: 0.95rem !important;
+            margin-bottom: 0.5rem !important;
+            letter-spacing: 0.2px !important;
+            text-align: center !important;
+            margin-top: 0.2rem !important;
+        }
+        .value-card p {
+            font-size: 0.8rem !important;
+            line-height: 1.5 !important;
+            margin-bottom: 0.5rem !important;
+            margin-top: 0.2rem !important;
+            word-break: break-word !important;
+            letter-spacing: 0.01em !important;
+            text-align: center !important;
+        }
+        .value-card i {
+            font-size: 1.1rem !important;
+            margin-bottom: 0.6rem !important;
+            margin-top: 0.2rem !important;
+            display: block !important;
+            text-align: center !important;
+        }
 
         .value-card:hover i {
             transform: scale(1.1);
@@ -592,30 +591,6 @@ body {
   .dessert-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
 }
 @media (max-width: 600px) {
-    .value-card {
-        padding: 12px 6px !important;
-        text-align: center !important;
-    }
-    .value-card h3 {
-        font-size: 0.85rem !important;
-        margin-bottom: 0.3rem !important;
-        letter-spacing: 0.2px !important;
-        text-align: center !important;
-    }
-    .value-card p {
-        font-size: 0.7rem !important;
-        line-height: 1.4 !important;
-        margin-bottom: 0.3rem !important;
-        word-break: break-word !important;
-        letter-spacing: 0.01em !important;
-        text-align: center !important;
-    }
-    .value-card i {
-        font-size: 0.95rem !important;
-        margin-bottom: 0.4rem !important;
-        display: block !important;
-        text-align: center !important;
-    }
   body,
   .container,
   .about-content,
@@ -643,6 +618,28 @@ body {
     letter-spacing: 1px;
   }
 }
+ /* Desktop view: Make value cards bigger */
+    @media (min-width: 601px) {
+        .value-card {
+            padding: 2.2rem 1.2rem !important;
+            min-width: 220px !important;
+            max-width: 320px !important;
+            margin: 1.2rem auto !important;
+            font-size: 1.1rem !important;
+        }
+        .value-card h3 {
+            font-size: 1.5rem !important;
+            margin-bottom: 0.8rem !important;
+        }
+        .value-card p {
+            font-size: 1rem !important;
+            margin-bottom: 0.7rem !important;
+        }
+        .value-card i {
+            font-size: 2.2rem !important;
+            margin-bottom: 0.8rem !important;
+        }
+    }
     </style>
 </head>
 <body>
