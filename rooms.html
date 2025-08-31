@@ -7,6 +7,13 @@
   <title>AMVR Accommodation</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    /* Hide mobile menu and nav in desktop view */
+    @media (min-width: 601px) {
+      .mobile-menu-btn,
+      .mobile-nav {
+        display: none !important;
+      }
+    }
     /* Base Styles */
      * {
     margin: 0;
@@ -768,28 +775,27 @@ body {
 <body>
     <!-- Navigation -->
     <nav class="navbar" aria-label="Main navigation">
-      <div class="nav-container">
-        <a href="index.html" class="logo" aria-label="Agcararao Mountain View Resort Home">
-          <img src="loho.png" alt="Agcararao Mountain View Resort Logo" />
-          <span class="logo-text">Agcararao Mountain View Resort</span>
-        </a>
-
-        
-        <ul class="nav-links" id="nav-links">
-          <li><a href="index.html">Home</a></li>
-          <li><a href="about.html">About</a></li>
-          <li class="dropdown">
-            <a href="#amenities" aria-haspopup="true" aria-expanded="false">Amenities <i class="fas fa-chevron-down"></i></a>
-            <div class="dropdown-content" aria-label="Amenities submenu">
-              <a href="rooms.html">Rooms</a>
-              <a href="activities.html">Activities</a>
-              <a href="foods.html">Foods</a>
-            </div>
-          </li>
-          <li><a href="gallery.html">Gallery</a></li>
-        </ul>
-      </div>
-    </nav>
+  <div class="nav-container">
+    <a href="index.html" class="logo" aria-label="Agcararao Mountain View Resort Home">
+      <img src="loho.png" alt="Agcararao Mountain View Resort Logo" />
+      <span class="logo-text">Agcararao Mountain View Resort</span>
+    </a>
+    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open menu">&#9776;</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li class="dropdown">
+        <a href="#amenities" aria-haspopup="true" aria-expanded="false">Amenities <i class="fas fa-chevron-down"></i></a>
+        <div class="dropdown-content" aria-label="Amenities submenu">
+          <a href="rooms.html">Rooms</a>
+          <a href="activities.html">Activities</a>
+          <a href="foods.html">Foods</a>
+        </div>
+      </li>
+      <li><a href="gallery.html">Gallery</a></li>
+    </ul>
+  </div>
+</nav>
     <!-- Mobile drawer and overlay -->
     <div id="mobileNav" class="mobile-nav" aria-hidden="true">
       <button class="close-drawer" id="closeMobileNav" aria-label="Close menu">&times;</button>
