@@ -28,10 +28,13 @@
           
       /* Page Title */
       h1 {
-          color: #226135;
-          margin-bottom: 20px;
-            text-align: center;
-        }
+                    color: #226135;
+                    margin-bottom: 20px;
+                    text-align: center;
+                    font-size: 2.2rem;
+                    position: relative;
+                    z-index: 2;
+                }
 
       /* Form Container */
       form {
@@ -130,17 +133,38 @@
           box-shadow: 0px 4px 10px rgba(255, 117, 140, 0.4);
       }
 
-      /* Responsive adjustments */
-      @media (max-width: 600px) {
-          .form-group {
-              flex-direction: column;
-              gap: 15px;
-          }
-          
-          form {
-            padding: 20px;
-          }
-      }
+            /* Responsive adjustments */
+            @media (max-width: 600px) {
+                label,
+                input,
+                select,
+                button {
+                    font-size: 12px !important;
+                }
+                .back-button {
+                    padding: 6px 12px;
+                    font-size: 11px;
+                    top: 10px;
+                    left: 10px;
+                }
+                    h1 {
+                        font-size: 1.3rem;
+                        margin-top: 18px;
+                        margin-bottom: 16px;
+                        position: static;
+                        left: 0;
+                        right: 0;
+                        text-align: center;
+                    }
+                    .form-group {
+                            flex-direction: column;
+                            gap: 15px;
+                    }
+                    form {
+                        padding: 20px;
+                        max-width: 280px; /* Make the form thinner on mobile */
+                    }
+            }
 
       /* Add these styles to your existing CSS */
       .unavailable {
@@ -186,6 +210,101 @@
           background: #e8f5e9;
             color: #2c5530;
         }
+
+        /* Custom Notification Styles */
+.custom-notification {
+    position: fixed;
+    top: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 220px;
+    max-width: 88vw;
+    background: linear-gradient(90deg, #e8f5e9 0%, #fffbe7 100%);
+    color: #222;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(44,85,48,0.13);
+    padding: 1rem 1.5rem 1rem 1rem;
+    z-index: 9999;
+    font-size: 1.02rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s, top 0.35s, transform 0.35s;
+    border: 2px solid #2c5530;
+    animation: notif-fadein 0.5s cubic-bezier(.4,1.6,.6,1) 1;
+}
+@keyframes notif-fadein {
+    0% { opacity: 0; transform: translateX(-50%) translateY(-40px) scale(0.97); }
+    80% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1.01); }
+    100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+.custom-notification.show {
+    opacity: 1;
+    pointer-events: auto;
+    top: 48px;
+    transform: translateX(-50%) translateY(0);
+}
+.custom-notification .notif-message {
+    white-space: pre-line;
+    line-height: 1.7;
+    text-align: center;
+    font-size: 1.05em;
+    margin: 0.1em 0 0.1em 0;
+    color: #2c5530;
+    font-weight: 500;
+}
+.custom-notification .notif-highlight {
+    color: #e67e22;
+    font-weight: bold;
+    background: #fffbe7;
+    padding: 0 0.2em;
+    border-radius: 4px;
+}
+.custom-notification .notif-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #888;
+    cursor: pointer;
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    transition: color 0.2s;
+    line-height: 1;
+    padding: 0 0.2em;
+    font-weight: bold;
+    border-radius: 50%;
+    width: 1.7rem;
+    height: 1.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.custom-notification .notif-close:hover {
+    color: #2c5530;
+    background: #e8f5e9;
+}
+@media (max-width: 600px) {
+    .custom-notification {
+        min-width: 90vw;
+        max-width: 95vw;
+        font-size: 0.82rem;
+        padding: 0.5rem 0.7rem 0.5rem 0.5rem;
+        border-radius: 8px;
+    }
+    .custom-notification .notif-message {
+        font-size: 0.88em;
+    }
+    .custom-notification .notif-close {
+        font-size: 2rem;
+        top: 2px;
+        right: 6px;
+        width: 2rem;
+        height: 2rem;
+    }
+}
     </style>
 
     <script type="module">
@@ -318,9 +437,27 @@
 
         fetchBookedDates();
 
+        // --- Notification Utility ---
+window.showNotification = function(message, type = 'info', duration = 25000) {
+    const notif = document.getElementById('customNotification');
+    const msg = document.getElementById('notifMessage');
+    notif.className = 'custom-notification';
+    msg.innerHTML = message;
+    notif.style.display = 'flex';
+    setTimeout(() => notif.classList.add('show'), 10);
+    if (notif._timeout) clearTimeout(notif._timeout);
+    notif._timeout = setTimeout(() => hideNotification(), 25000);
+};
+window.hideNotification = function() {
+    const notif = document.getElementById('customNotification');
+    notif.classList.remove('show');
+    setTimeout(() => { notif.style.display = 'none'; }, 300);
+};
+
         window.confirmBooking = async function() {
             const fullName = document.getElementById("fullName").value;
             const email = document.getElementById("email").value;
+            const phone = document.getElementById("phone").value;
             const selectedRoom = document.getElementById("selectedRoom").value;
             const numberOfRooms = document.getElementById("numberOfRooms").value;
             const checkInDate = document.getElementById("checkInDate").value;
@@ -334,12 +471,16 @@
             // Check if the email is a valid Gmail address
             const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
             if (!gmailRegex.test(email)) {
-                alert("Please enter a valid Gmail address (example@gmail.com).");
+                showNotification("Please enter a valid Gmail address (example@gmail.com).", 'info', 15000);
                 return;
             }
 
-            if (!fullName || !email || !checkInDate || !checkOutDate || !totalAmount) {
-                alert("Please fill in all required fields!");
+            if (!fullName || !email || !phone || !checkInDate || !checkOutDate || !totalAmount) {
+                showNotification("Please fill in all required fields!", 'info', 15000);
+                return;
+            }
+            if (!/^\d{11}$/.test(phone)) {
+                showNotification("Phone number must be exactly 11 digits.", 'info', 15000);
                 return;
             }
 
@@ -348,6 +489,7 @@
                 await push(bookingsRef, {
                     fullName,
                     email,
+                    phone,
                     selectedRoom,
                     numberOfRooms,
                     checkInDate,
@@ -361,12 +503,17 @@
                     createdAt: new Date().toISOString()
                 });
 
-                alert("Your booking request has been submitted and is now pending. Please wait for an email confirmation regarding the approval of your booking request.");
+                showNotification(
+                    'Reservation submitted successfully!<br><br>Please note that a <span class="notif-highlight">' + document.getElementById('paymentAmount').value + ' down payment</span> is required to confirm your reservation.',
+                    'info',
+                    15000
+                );
                 document.getElementById("bookingForm").reset();
                 fetchBookedDates();
+                setTimeout(function() { window.location.href = 'rooms.html'; }, 15000);
             } catch (error) {
                 console.error("Error saving booking:", error);
-                alert("Failed to confirm booking.");
+                showNotification('Error submitting reservation. Please try again.', 'info', 15000);
             }
         };
 
@@ -464,6 +611,12 @@
     </script>
 </head>
 <body>
+    <!-- Custom Notification Popup -->
+    <div id="customNotification" class="custom-notification" style="display:none;">
+        <span class="notif-message" id="notifMessage"></span>
+        <button class="notif-close" onclick="hideNotification()">&times;</button>
+    </div>
+
     <button class="back-button" onclick="window.location.href='rooms.html'">⬅ Back to Rooms</button>
 
     <h1>Stay With Us!</h1>
@@ -473,6 +626,10 @@
     
         <label for="email">Email Address:</label>
 <input type="email" id="email" required pattern="[a-zA-Z0-9._%+-]+@gmail\.com$" title="Please enter a valid Gmail address">
+
+    <label for="phone">Phone Number:</label>
+
+    <input type="tel" id="phone" name="phone" maxlength="11" inputmode="numeric" placeholder="09XXXXXXXXX" required oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value.length>11)this.value=this.value.slice(0,11);">
 
     
         <label for="selectedRoom">Selected Room:</label>
