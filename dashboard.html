@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,46 +18,139 @@
         }
       })();
       
-      // Send Email Function with better error handling
-      function sendBookingEmail(booking, status, type="room") {
-        const templateId = status === "confirmed" ? "template_fl2lfwg" : "template_bzwyu23";
-        
-        // Prepare template parameters with safe fallbacks
-        const templateParams = {
-          to_name: (booking.firstName || booking.fullName || "Customer") + " " + (booking.lastName || ""),
-          to_email: booking.email || "",
-          from_name: "Agcararao Mountain View Resort",
-          bookingId: booking.bookingId || booking.id || "N/A",
-          status: status,
-          type: type,
-          checkIn: booking.checkInDate || booking.checkIn || "",
-          checkOut: booking.checkOutDate || booking.checkOut || "",
-          guests: booking.guests || booking.numberOfRooms || "",
-          roomType: booking.roomType || booking.selectedRoom || "",
-          activityName: booking.activityName || booking.activityType || "",
-          activityDate: booking.activityDate || booking.date || "",
-          participants: booking.participants || "",
-          totalAmount: booking.totalAmount || "N/A"
-        };
+function sendBookingEmail(booking, status, type = "room") {
+  const templateId =
+    status === "confirmed"
+      ? "template_fl2lfwg"
+      : "template_bzwyu23";
 
-        // Log for debugging
-        console.log("Sending email with params:", templateParams);
-        
-        return emailjs.send("service_6o4e44f", templateId, templateParams)
-          .then(() => {
-            console.log("Email sent successfully");
-            alert(type + " booking " + status + " and email sent!");
-          })
-          .catch(err => {
-            console.error("Email failed with error:", err);
-            alert(type + " booking " + status + " (email failed: " + (err.text || err.message || "Unknown error") + ")");
-          });
-      }
-      
+  const formatCurrency = (amount) =>
+    amount || amount === 0
+      ? new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP" }).format(amount)
+      : "N/A";
+
+  const formatDate = (d) => {
+    if (!d) return "N/A";
+    const dateObj = new Date(d);
+    return isNaN(dateObj.getTime()) ? "N/A" : dateObj.toLocaleDateString("en-PH", { year: "numeric", month: "long", day: "numeric" });
+  };
+
+  const downPaymentRaw = booking.totalAmount ? booking.totalAmount * 0.3 : null;
+  const balanceRaw = booking.totalAmount ? booking.totalAmount * 0.7 : null;
+
+  const templateParams = {
+    to_name: `${(booking.firstName || booking.fullName || "Customer").trim()} ${(booking.lastName || "").trim()}`.trim(),
+    to_email: booking.email || "",
+    from_name: "Agcararao Mountain View Resort",
+    bookingId: booking.bookingId || booking.id || "N/A",
+    type,
+    status,
+    totalAmount: formatCurrency(booking.totalAmount),
+    downPayment: formatCurrency(downPaymentRaw),
+    balance: formatCurrency(balanceRaw),
+  };
+
+  if (type === "room") {
+    Object.assign(templateParams, {
+      roomType: booking.roomType || booking.selectedRoom || "N/A",
+      checkIn: formatDate(booking.checkInDate || booking.checkIn),
+      checkOut: formatDate(booking.checkOutDate || booking.checkOut),
+      numberOfRooms: booking.numberOfRooms || "N/A",
+      extraPax: booking.extraPax || "",
+    });
+  } else if (type === "activity") {
+    // Tent camping / Activity
+    const tentGuests = booking.guests || booking.numberOfPerson || 0;
+    const additionalGuests = booking.additionalGuest || booking.additionalGuests || 0;
+    const tentType = booking.hasTent === "yes" || booking.rented === false ? "Own Tent" : "Rented Tent";
+
+    Object.assign(templateParams, {
+      activityName: booking.activityName || booking.activityType || "N/A",
+      // pick first valid date
+      activityDate: formatDate(booking.activityDate || booking.date || booking.tentDate),
+      cottage: booking.cottage || "N/A",
+      details: `Persons: ${tentGuests}${additionalGuests ? `, Additional: ${additionalGuests}` : ""}, ${tentType}`,
+    });
+  }
+
+  console.log("Sending email with params:", templateParams);
+
+  return emailjs
+    .send("service_6o4e44f", templateId, templateParams)
+    .then((res) => {
+      console.log("✅ Email sent:", res);
+      alert(type + " booking " + status + " and email sent!");
+    })
+    .catch((err) => {
+      console.error("❌ Email failed:", err);
+      alert("Email failed: " + JSON.stringify(err));
+    });
+}
+
+
+
+
       
     </script>
     
     <style>
+        /* Smooth fade-in for dashboard after login */
+        #dashboardContent {
+            opacity: 0;
+            transition: opacity 0.7s cubic-bezier(.4,0,.2,1);
+        }
+        #dashboardContent.visible {
+            opacity: 1;
+        }
+            /* Login Modal Realistic Animated Background */
+            #loginModal {
+                animation: fadeInBg 1.2s;
+                overflow: hidden;
+            }
+            #loginModal::before {
+                content: '';
+                position: absolute;
+                top: 0; left: 0; width: 100vw; height: 100vh;
+                z-index: -1;
+                background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+                filter: blur(8px) brightness(0.9);
+                opacity: 0.95;
+                animation: gradientMove 8s ease-in-out infinite alternate;
+            }
+            #loginModal::after {
+                content: '';
+                position: absolute;
+                top: 0; left: 0; width: 100vw; height: 100vh;
+                z-index: -2;
+                background: radial-gradient(circle at 20% 30%, #b8c6db 0%, transparent 60%),
+                                        radial-gradient(circle at 80% 70%, #f5d6e3 0%, transparent 60%);
+                opacity: 0.7;
+                animation: blobMove 12s ease-in-out infinite alternate;
+            }
+            @keyframes gradientMove {
+                0% { background-position: 0% 50%; }
+                100% { background-position: 100% 50%; }
+            }
+            @keyframes blobMove {
+                0% { background-position: 20% 30%, 80% 70%; }
+                100% { background-position: 80% 70%, 20% 30%; }
+            }
+            #loginForm {
+                animation: popIn 1s cubic-bezier(.68,-0.55,.27,1.55);
+                box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.25);
+                background: rgba(255,255,255,0.85);
+                backdrop-filter: blur(8px);
+                border: 1.5px solid rgba(255,255,255,0.25);
+            }
+            @keyframes fadeInBg {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            @keyframes popIn {
+                0% { transform: scale(0.7) translateY(60px) rotateX(30deg); opacity: 0; }
+                60% { transform: scale(1.05) translateY(-10px) rotateX(-8deg); opacity: 1; }
+                100% { transform: scale(1) translateY(0) rotateX(0); opacity: 1; }
+            }
         body { 
             font-family: Arial, sans-serif; 
             background: #f4f4f4; 
@@ -84,7 +176,7 @@
         }
         /* Add padding to body to account for fixed header */
         body {
-            padding-top: 120px !important;
+            padding-top: 90px !important;
         }
 
         .header-content {
@@ -1293,6 +1385,184 @@
         }
 
         /* Add new styles for activities section */
+        /* Mobile view for sidebar toggle and dashboard layout */
+        @media (max-width: 900px) {
+            .sidebar-toggle-btn {
+                top: 90px;
+                left: 0;
+                font-size: 16px;
+                padding: 6px 8px 6px 6px;
+                border-radius: 0 14px 14px 0;
+            }
+        }
+        @media (max-width: 600px) {
+            body, .section, .feedback-section, .announcement-section, .gallery-section, .activities-section, .reservations-section {
+                font-size: 13px;
+            }
+            h1, h2, h3, h4, h5 {
+                font-size: 1.1em !important;
+            }
+            table, th, td {
+                font-size: 12px !important;
+                padding: 6px !important;
+            }
+            input, select, textarea, button {
+                font-size: 12px !important;
+                padding: 6px 8px !important;
+            }
+            .stat-card .value, .card-number {
+                font-size: 22px !important;
+            }
+            .feedback-content, .feedback-text, .announcement-item p, .gallery-card .image-description {
+                font-size: 12px !important;
+            }
+            .announcement-form input, .announcement-form textarea, .announcement-form select, .announcement-form button {
+                font-size: 12px !important;
+                padding: 6px 8px !important;
+            }
+            .announcement-item h3 {
+                font-size: 1em !important;
+            }
+            .gallery-card .image-title {
+                font-size: 13px !important;
+            }
+            .gallery-card .upload-date {
+                font-size: 11px !important;
+            }
+            .feedback-form textarea, .feedback-form input, .feedback-form button {
+                font-size: 12px !important;
+                padding: 6px 8px !important;
+            }
+            .btn, .card-button, .edit-btn, .delete-btn, .upload-btn, .logout-btn {
+                font-size: 12px !important;
+                padding: 6px 10px !important;
+            }
+            .stat-card h3 {
+                font-size: 12px !important;
+            }
+            .star, .rating {
+                font-size: 16px !important;
+            }
+            .sidebar-item {
+                font-size: 12px !important;
+                padding: 6px 4px !important;
+            }
+            .resort-logo {
+                width: 36px !important;
+                height: 36px !important;
+            }
+            .header-logout .logout-btn {
+                font-size: 12px !important;
+                padding: 6px 10px !important;
+            }
+            .card {
+                min-width: 0 !important;
+            }
+            .card-container {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 4px !important;
+                padding: -1px 2px !important;
+                justify-items: stretch;
+            }
+            .card {
+                width: 100% !important;
+                max-width: none !important;
+                margin: 4px 0 !important;
+            }
+            .card {
+                padding: 2px !important;
+                border-radius: 4px !important;
+                width: 88vw !important;
+                max-width: 100px !important;
+                min-width: 0 !important;
+                margin: 6px auto !important;
+                font-size: 11px !important;
+                box-shadow: 0 1.5px 6px rgba(44,85,48,0.08);
+            }
+            .card h2 {
+                font-size: 12px !important;
+                margin-bottom: 6px !important;
+            }
+            .card-number {
+                font-size: 18px !important;
+                margin: 6px 0 !important;
+            }
+            .card-button {
+                font-size: 10px !important;
+                padding: 4px 8px !important;
+                border-radius: 3px !important;
+            }
+            .card h2 {
+                font-size: 15px;
+                margin-bottom: 10px;
+            }
+            .card-number {
+                font-size: 32px;
+                margin: 10px 0;
+            }
+            .card-button {
+                font-size: 12px;
+                padding: 6px 12px;
+                border-radius: 5px;
+            }
+            .sidebar-toggle-btn {
+                top: 60px;
+                left: 0;
+                font-size: 14px;
+                padding: 4px 6px 4px 4px;
+                border-radius: 0 10px 10px 0;
+                box-shadow: 0 2px 8px rgba(44,85,48,0.13);
+            }
+            .sidebar {
+                position: fixed !important;
+                top: 50px;
+                left: 0;
+                width: 70vw !important;
+                max-width: 220px !important;
+                min-width: 140px !important;
+                min-height: 100vh;
+                background: #fff;
+                box-shadow: 2px 0 8px rgba(44,85,48,0.18);
+                z-index: 3000;
+                transition: transform 0.3s;
+                transform: translateX(-100%);
+            }
+            body.sidebar-open .sidebar {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0 !important;
+                padding: 10px 2vw 0 2vw;
+                transition: filter 0.3s;
+            }
+            body.sidebar-open .main-content {
+                filter: blur(2px) brightness(0.95);
+            }
+            .sidebar-toggle-btn {
+                z-index: 3100;
+            }
+            .admin-header {
+                flex-direction: row;
+                gap: 8px;
+                padding: 8px 2vw;
+            }
+            .header-content {
+                padding-right: 0;
+                flex-direction: row;
+                gap: 6px;
+            }
+            .resort-logo {
+                width: 48px;
+                height: 48px;
+            }
+            .resort-name {
+                font-size: 15px;
+            }
+            .resort-subtitle {
+                font-size: 12px;
+            }
+        }
         .activities-section {
             margin: 10px 0;
         }
@@ -1522,9 +1792,126 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
+         /* Sidebar toggle button */
+        .sidebar-toggle-btn {
+            position: fixed;
+            top: 130px;
+            left: 0;
+            z-index: 2001;
+            background: linear-gradient(135deg, #2c5530 60%, #99e388 100%);
+            color: #fff;
+            border: none;
+            border-radius: 0 18px 18px 10;
+            padding: 10px 8px 12px 2px;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 18px rgba(44,85,48,0.18), 0 1.5px 4px rgba(44,85,48,0.10);
+            transition: left 0.3s, background 0.2s, box-shadow 0.2s, color 0.2s, border-radius 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            letter-spacing: 1px;
+        }
+        .sidebar-toggle-btn .toggle-icon {
+            display: inline-block;
+            font-size: 1em;
+            transition: transform 0.3s;
+        }
+        .sidebar-hidden .sidebar-toggle-btn .toggle-icon {
+            transform: rotate(180deg);
+        }
+        .sidebar-toggle-btn .toggle-label {
+            font-size: 1em;
+            font-weight: 500;
+            color: #e6ffe6;
+            letter-spacing: 0.5px;
+            transition: color 0.2s;
+        }
+        .sidebar-toggle-btn:hover, .sidebar-toggle-btn:focus {
+            background: linear-gradient(135deg, #99e388 60%, #2c5530 100%);
+            color: #2c5530;
+            box-shadow: 0 6px 24px rgba(44,85,48,0.22), 0 2px 8px rgba(44,85,48,0.13);
+            outline: none;
+        }
+        .sidebar-toggle-btn:active {
+            background: #2c5530;
+            color: #fff;
+        }
+        .sidebar-hidden .sidebar {
+            left: -220px !important;
+            transition: left 0.3s;
+        }
+        .sidebar {
+            transition: left 0.3s;
+        }
+        .sidebar-hidden .main-content {
+            margin-left: 40px !important;
+            transition: margin-left 0.3s;
+        }
+        @media (max-width: 900px) {
+            .sidebar {
+                width: 160px !important;
+            }
+            .sidebar-toggle-btn {
+                top: 100px;
+                font-size: 18px;
+                padding: 8px 10px;
+            }
+        }
+        @media (max-width: 600px) {
+            .sidebar {
+                width: 120px !important;
+                padding: 8px !important;
+                font-size: 13px !important;
+            }
+            .sidebar-toggle-btn {
+                top: 80px;
+                font-size: 16px;
+                padding: 6px 8px;
+            }
+        }
+         /* Bubbles animation for login background */
+        .bubbles-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .bubble {
+            position: absolute;
+            bottom: -120px;
+            border-radius: 50%;
+            opacity: 0.45;
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            animation: bubbleUp 8s linear infinite;
+            filter: blur(1.5px);
+        }
+        @keyframes bubbleUp {
+            0% { transform: translateY(0) scale(1); opacity: 0.5; }
+            80% { opacity: 0.7; }
+            100% { transform: translateY(-110vh) scale(1.15); opacity: 0; }
+        }
     </style>
 </head>
 <body>
+        <div id="loginModal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:2000;overflow:hidden;">
+            <div class="bubbles-bg"></div>
+            <form id="loginForm" style="background:#fff;padding:48px 36px;border-radius:18px;box-shadow:0 8px 32px rgba(0,0,0,0.18);min-width:400px;max-width:480px;display:flex;flex-direction:column;gap:28px;align-items:center;position:relative;z-index:2;">
+                <h2 style="color:#2c5530;margin-bottom:8px;">Login</h2>
+                <input type="text" id="loginUser" placeholder="Username" style="padding:10px;width:100%;border-radius:6px;border:1px solid #ccc;" required>
+                <input type="password" id="loginPass" placeholder="Password" style="padding:10px;width:100%;border-radius:6px;border:1px solid #ccc;" required>
+                <button type="submit" style="background:#2c5530;color:#fff;padding:10px 0;width:100%;border:none;border-radius:6px;font-size:1rem;cursor:pointer;">Log In</button>
+                <div id="loginError" style="color:#c00;font-size:0.95rem;display:none;">Invalid credentials</div>
+            </form>
+        </div>
+       
+
+    <div id="dashboardContent" style="display:none;">
+    <button class="sidebar-toggle-btn" id="sidebarToggleBtn" title="Show/Hide Menu">
+        <span class="toggle-icon">&#9776;</span>
+    </button>
     <!-- Add header section -->
     <header class="admin-header">
         <div class="header-content">
@@ -1540,6 +1927,7 @@
     </header>
 
     <div class="sidebar">
+    <!-- Sidebar content -->
         <div class="sidebar-item active" data-section="dashboard">Dashboard</div>
         <div class="sidebar-item" data-section="reservations">
             Reservations
@@ -1616,6 +2004,7 @@
                 <tr>
                     <th>Full Name</th>
                     <th>Email</th>
+                    <th>Phone Number</th>
                     <th>Room</th>
                     <th>No. of Rooms</th>
                     <th>Extra Pax</th>
@@ -1800,6 +2189,7 @@
                 <tr>
                     <th>Full Name</th>
                     <th>Email</th>
+                    <th>Phone Number</th>
                     <th>Activity Type</th>
                     <th>Date</th>
                     <th>Details</th>
@@ -1815,6 +2205,28 @@
     </div>
 
     <script type="module">
+        // Sidebar toggle logic (mobile overlay)
+        (function(){
+            var btn = document.getElementById('sidebarToggleBtn');
+            function toggleSidebar() {
+                document.body.classList.toggle('sidebar-open');
+            }
+            btn && btn.addEventListener('click', toggleSidebar);
+            // Optional: close sidebar when clicking outside (mobile only)
+            document.addEventListener('click', function(e) {
+                if (window.innerWidth <= 600) {
+                    var sidebar = document.querySelector('.sidebar');
+                    if (
+                        document.body.classList.contains('sidebar-open') &&
+                        !sidebar.contains(e.target) &&
+                        e.target !== btn &&
+                        !btn.contains(e.target)
+                    ) {
+                        document.body.classList.remove('sidebar-open');
+                    }
+                }
+            });
+        })();
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
         import { getDatabase, ref, push, get, onValue, update, remove, set } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
@@ -2343,6 +2755,7 @@
                     <tr>
                         <th>Full Name</th>
                         <th>Email</th>
+                        <th>Phone Number</th>
                         <th>Room</th>
                         <th>No. of Rooms</th>
                         <th>Extra Pax</th>
@@ -2401,6 +2814,7 @@
                             <tr>
                                 <td>${data.fullName}</td>
                                 <td>${data.email}</td>
+                                <td>${data.phoneNumber || data.phone || ''}</td>
                                 <td>${data.selectedRoom}</td>
                                 <td>${data.numberOfRooms}</td>
                                 <td>${data.extraPax}</td>
@@ -3061,11 +3475,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Add logging to existing functions
         window.handleLogout = function() {
-            if (confirm('Are you sure you want to logout?')) {
-                addLogEntry('Admin Logout', 'Admin logged out of the system');
-                // Redirect to login page
-                window.location.href = 'login.html';
-            }
+            addLogEntry('Admin Logout', 'Admin logged out of the system');
+            sessionStorage.removeItem('isLoggedIn');
+            var dashboardContent = document.getElementById('dashboardContent');
+            var loginModal = document.getElementById('loginModal');
+            var loginForm = document.getElementById('loginForm');
+            var loginError = document.getElementById('loginError');
+            dashboardContent.classList.remove('visible');
+            setTimeout(function() {
+                dashboardContent.style.display = 'none';
+                loginModal.style.display = 'flex';
+                // Reset login form fields and error
+                if (loginForm) {
+                    loginForm.reset();
+                }
+                if (loginError) {
+                    loginError.style.display = 'none';
+                }
+            }, 400);
         };
 
         // Add activities loading function
@@ -3097,6 +3524,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <tr>
                         <th>Full Name</th>
                         <th>Email</th>
+                        <th>Phone Number</th>
                         <th>Activity Type</th>
                         <th>Date</th>
                         <th>Details</th>
@@ -3164,6 +3592,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     const emailDisplay = (data.email || data.cottageEmail || data.swimmingEmail || '').toString();
                     const cottageVal = (data.cottage || data.cottageNumber || '').toString();
 
+                  
+                  
                     let details = '';
                     if (data.activityType === 'swimming') {
                         // For swimming pool: show only cottage number
@@ -3210,6 +3640,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <tr>
                                 <td>${nameDisplay}</td>
                                 <td>${emailDisplay}</td>
+                                <td>${data.phoneNumber || data.phone || data.guestPhone || data.contactNumber || data.mobile || ''}</td>
                                 <td>${data.activityType === 'swimming' ? 'Swimming Pool' : 'Tent Camping'}</td>
                                 <td>${dateDisplay}</td>
                                 <td>${details}</td>
@@ -3219,7 +3650,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <td style="font-weight:bold; color:${
                                     status === "approved" ? "green" : 
                                     status === "rejected" ? "red" : "#FFC107"
-                                };">${status}</td>
+                                }">${status}</td>
                                 <td>
                                     ${status === "pending" ? `
                                         <button class="confirm-btn" onclick="confirmActivity('${data.id}')">✔</button>
@@ -3497,5 +3928,109 @@ document.addEventListener('DOMContentLoaded', () => {
         window.filterGalleryBySearch = filterGalleryBySearch;
     </script>
 
+        </div>
+<script>
+// Simple login logic for demo (username: admin, password: admin123)
+document.addEventListener('DOMContentLoaded', function() {
+    var loginModal = document.getElementById('loginModal');
+    var loginForm = document.getElementById('loginForm');
+    var loginUser = document.getElementById('loginUser');
+    var loginPass = document.getElementById('loginPass');
+    var loginError = document.getElementById('loginError');
+    var dashboardContent = document.getElementById('dashboardContent');
+    function showDashboard() {
+        loginModal.style.display = 'none';
+        dashboardContent.style.display = '';
+        // Smooth fade-in
+        setTimeout(function() {
+            dashboardContent.classList.add('visible');
+        }, 10);
+    }
+    // Always hide dashboard content by default
+    dashboardContent.style.display = 'none';
+    dashboardContent.classList.remove('visible');
+    // Check if already logged in (sessionStorage)
+    if (sessionStorage.getItem('isLoggedIn') === 'true') {
+    showDashboard();
+    } else {
+        loginModal.style.display = 'flex';
+    }
+    loginForm.onsubmit = function(e) {
+        e.preventDefault();
+        if (loginUser.value === 'nameknotfound' && loginPass.value === 'friedchicken11') {
+            sessionStorage.setItem('isLoggedIn', 'true');
+            showDashboard();
+        } else {
+            loginError.style.display = 'block';
+        }
+    };
+    // Bubbles animation
+    var bubblesBg = document.querySelector('.bubbles-bg');
+    if (bubblesBg) {
+        for (let i = 0; i < 18; i++) {
+            let bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            let size = Math.random() * 48 + 32;
+            bubble.style.width = size + 'px';
+            bubble.style.height = size + 'px';
+            bubble.style.left = (Math.random() * 100) + 'vw';
+            bubble.style.animationDuration = (6 + Math.random() * 5) + 's';
+            bubble.style.animationDelay = (Math.random() * 6) + 's';
+            bubble.style.background = `linear-gradient(120deg, rgba(168,237,234,${0.5+Math.random()*0.3}) 0%, rgba(254,214,227,${0.5+Math.random()*0.3}) 100%)`;
+            bubblesBg.appendChild(bubble);
+        }
+    }
+});
+</script>
+<script>
+    // Prevent dashboard access without login and add bubbles
+document.addEventListener('DOMContentLoaded', function() {
+    var dashboardContent = document.getElementById('dashboardContent');
+    var loginModal = document.getElementById('loginModal');
+    if (!sessionStorage.getItem('isLoggedIn')) {
+        dashboardContent.style.display = 'none';
+        loginModal.style.display = 'flex';
+    } else {
+        dashboardContent.style.display = '';
+        loginModal.style.display = 'none';
+    }
+    // Bubbles animation
+    var bubblesBg = document.querySelector('.bubbles-bg');
+    if (bubblesBg) {
+        for (let i = 0; i < 18; i++) {
+            let bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            let size = Math.random() * 48 + 32;
+            bubble.style.width = size + 'px';
+            bubble.style.height = size + 'px';
+            bubble.style.left = (Math.random() * 100) + 'vw';
+            bubble.style.animationDuration = (6 + Math.random() * 5) + 's';
+            bubble.style.animationDelay = (Math.random() * 6) + 's';
+            bubble.style.background = `linear-gradient(120deg, rgba(168,237,234,${0.5+Math.random()*0.3}) 0%, rgba(254,214,227,${0.5+Math.random()*0.3}) 100%)`;
+            bubblesBg.appendChild(bubble);
+        }
+    }
+});
+// Handle logout to show login modal again
+function handleLogout() {
+    sessionStorage.removeItem('isLoggedIn');
+    var dashboardContent = document.getElementById('dashboardContent');
+    var loginModal = document.getElementById('loginModal');
+    var loginForm = document.getElementById('loginForm');
+    var loginError = document.getElementById('loginError');
+    dashboardContent.classList.remove('visible');
+    setTimeout(function() {
+        dashboardContent.style.display = 'none';
+        loginModal.style.display = 'flex';
+        // Reset login form fields and error
+        if (loginForm) {
+            loginForm.reset();
+        }
+        if (loginError) {
+            loginError.style.display = 'none';
+        }
+    }, 400);
+}
+</script>
 </body>
 </html>
