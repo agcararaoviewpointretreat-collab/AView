@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -416,7 +417,6 @@ body {
         .footer-bottom {
     text-align: center;
     padding: 0.5rem;
-    font-size: 0.9rem;
     margin-top: 1rem;
     color: black;
 
@@ -446,20 +446,19 @@ body {
   .dessert-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
 }
 @media (max-width: 600px) {
-  body,
-  .container,
-  .menu-section,
-  .menu-section *,
-  .menu-grid,
-  .menu-grid *,
-  .dessert-grid,
-  .dessert-grid *,
-  .footer-bottom,
-  h1, h2, h3, h4, h5, h6,
-  p, label, input, select, textarea {
-    font-size: 12px !important;
-    line-height: 1.4 !important;
-  }
+    body,
+    .container,
+    .menu-section,
+    .menu-section *,
+    .menu-grid,
+    .menu-grid *,
+    .dessert-grid,
+    .dessert-grid *,
+    h1, h2, h3, h4, h5, h6,
+    p, label, input, select, textarea {
+        font-size: 12px !important;
+        line-height: 1.4 !important;
+    }
   .logo-text {
     font-size: 0.8rem !important;
   }
@@ -485,7 +484,14 @@ body {
     letter-spacing: 1px;
   }
 }
+       @media (max-width: 600px) {
+    html body .footer-bottom, html body .footer-bottom * {
+        font-size: 0.8rem !important;
+        line-height: 1.2 !important;
+    }
+}
     </style>
+
 </head>
 <body>
 
