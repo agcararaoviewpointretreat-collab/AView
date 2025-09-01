@@ -1797,13 +1797,11 @@ input:valid, select:valid, textarea:valid {
                         let total = 0;
                         
                         if (hasTentSelect.value === 'yes') {
-                            // For own tent: ₱400 per person (including additional guests)
-                            total = OWN_TENT_PER_PERSON * (persons + additionalPersons);
+                            // For own tent: main guests are ₱400 per head, additional guests are ₱300 per head
+                            total = (persons * 400) + (additionalPersons * 300);
                         } else {
-                            // For rented tent: ₱999 fixed, no overnight fee
-                            if (persons > 0) {
-                                total = RENT_TENT_FEE;
-                            }
+                            // For rented tent: ₱999 base + ₱300 per additional guest
+                            total = 999 + (additionalPersons * 300);
                         }
                         
                         const downPayment = Math.ceil(total * 0.3);
@@ -1914,6 +1912,10 @@ input:valid, select:valid, textarea:valid {
                     // Handle form submission
                     form.addEventListener('submit', async function(e) {
                         e.preventDefault();
+                        // Disable submit button to prevent double submission
+                        const submitBtn = form.querySelector('.submit-btn');
+                        submitBtn.disabled = true;
+                        submitBtn.textContent = 'Submitting...';
                         // Get form data
                         const formData = {
                             checkIn: checkInInput.value,
@@ -1944,6 +1946,8 @@ input:valid, select:valid, textarea:valid {
                         } catch (error) {
                             console.error('Error submitting reservation:', error);
                             showNotification('Error submitting reservation. Please try again.', 'info', 15000);
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = 'Submit Reservation';
                             return;
                         }
                         // Close modal
@@ -1952,6 +1956,8 @@ input:valid, select:valid, textarea:valid {
                         // Reset form
                         form.reset();
                         calculateTotal();
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Submit Reservation';
                     });
             
                     // Cottage Reservation Modal
@@ -2032,13 +2038,18 @@ input:valid, select:valid, textarea:valid {
                     // Handle cottage form submission
                     cottageForm.addEventListener('submit', async function(e) {
                         e.preventDefault();
-                        
+                        // Disable submit button to prevent double submission
+                        const submitBtn = cottageForm.querySelector('.submit-btn');
+                        submitBtn.disabled = true;
+                        submitBtn.textContent = 'Submitting...';
                         const cottageNumber = document.getElementById('cottageNumber').value;
                         const date = document.getElementById('cottageDate').value;
                         
                         const isAvailable = await checkCottageAvailability(cottageNumber, date);
                         if (!isAvailable) {
                             alert('This cottage is already reserved for the selected date. Please choose a different date or cottage.');
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = 'Submit Reservation';
                             return;
                         }
                         
@@ -2072,6 +2083,8 @@ input:valid, select:valid, textarea:valid {
                             console.error("Error saving reservation:", error);
                             alert('Failed to submit reservation. Please try again.');
                         }
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Submit Reservation';
                     });
             
                     // Initialize cottage total
@@ -2166,7 +2179,10 @@ input:valid, select:valid, textarea:valid {
                     // Handle swimming form submission
                     swimmingForm.addEventListener('submit', async function(e) {
                         e.preventDefault();
-                        
+                        // Disable submit button to prevent double submission
+                        const submitBtn = swimmingForm.querySelector('.submit-btn');
+                        submitBtn.disabled = true;
+                        submitBtn.textContent = 'Submitting...';
                         const cottageNumber = document.getElementById('swimmingCottage').value;
                         const date = document.getElementById('swimmingDate').value;
                         
@@ -2215,6 +2231,7 @@ input:valid, select:valid, textarea:valid {
                             console.error("Error saving reservation:", error);
                             showNotification('Failed to submit reservation. Please try again.', 'info', 15000);
                         }
+                        // Do not re-enable the button; only one submission per modal open
                     });
             
                     // Initialize swimming total
