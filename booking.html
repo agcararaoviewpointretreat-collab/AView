@@ -356,8 +356,8 @@
                         }
                     });
 
-                    // For Casa De Amon, check if the requested number of rooms is available
-                    if (selectedRoom === "Casa De Amon") {
+                    // For Casa De Amor, check if the requested number of rooms is available
+                    if (selectedRoom === "Casa De Amor") {
                         roomBookingsPerDate.forEach((bookedRooms, date) => {
                             if (bookedRooms + numberOfRooms > 3) {
                                 unavailableDates.push(date);
@@ -521,7 +521,7 @@ window.hideNotification = function() {
             const selectedRoom = document.getElementById("selectedRoom").value;
             const roomInput = document.getElementById("numberOfRooms");
 
-            if (selectedRoom === "Casa De Amon") {
+            if (selectedRoom === "Casa De Amor") {
                 roomInput.max = 3;
                 } else {
                 roomInput.max = 1;
@@ -534,14 +534,14 @@ window.hideNotification = function() {
             document.getElementById("numberOfNights").value = nights;
 
             const roomPrice = {
-                "Casa De Amon": 1500,
+                "Casa De Amor": 1500,
                 "Casa De Bella": 3000,
                 "Casa De Arced": 3500,
                 "Casa Y Agua": 4999
             };
 
             const maxExtraPax = {
-                "Casa De Amon": 4,
+                "Casa De Amor": 4,
                 "Casa De Bella": 10,
                 "Casa De Arced": 10,
                 "Casa Y Agua": 20
@@ -559,10 +559,10 @@ window.hideNotification = function() {
                 document.getElementById("extraPax").value = maxAllowedPax;
             }
 
-            if (selectedRoom === "Casa De Amon" && rooms > 3) {
+            if (selectedRoom === "Casa De Amor" && rooms > 3) {
                 rooms = 3;
                 document.getElementById("numberOfRooms").value = 3;
-            } else if (selectedRoom !== "Casa De Amon") {
+            } else if (selectedRoom !== "Casa De Amor") {
                 rooms = 1;
                 document.getElementById("numberOfRooms").value = 1;
             }
@@ -634,7 +634,7 @@ window.hideNotification = function() {
     
         <label for="selectedRoom">Selected Room:</label>
         <select id="selectedRoom" onchange="adjustRoomOptions(); updateTotal();">
-            <option value="Casa De Amon">Casa De Amon</option>
+            <option value="Casa De Amor">Casa De Amor</option>
             <option value="Casa De Arced">Casa De Arced</option>
             <option value="Casa De Bella">Casa De Bella</option>
             <option value="Casa Y Agua">Casa Y Agua</option>
@@ -701,7 +701,7 @@ window.hideNotification = function() {
             document.getElementById("selectedRoom").value = selectedRoom;
             adjustRoomOptions(); 
 
-            if (selectedRoom === "Casa De Amon") {
+            if (selectedRoom === "Casa De Amor") {
                 document.getElementById("numberOfRooms").value = roomsCount;
             }
         }
@@ -711,7 +711,7 @@ window.hideNotification = function() {
         const selectedRoom = document.getElementById("selectedRoom").value;
         const roomInput = document.getElementById("numberOfRooms");
 
-        if (selectedRoom === "Casa De Amon") {
+    if (selectedRoom === "Casa De Amor") {
             roomInput.max = 3;
         } else {
             roomInput.max = 1;
@@ -754,14 +754,14 @@ window.hideNotification = function() {
     document.getElementById("numberOfNights").value = nights;
 
     const roomPrice = {
-        "Casa De Amon": 1500,
+        "Casa De Amor": 1500,
         "Casa De Bella": 3000,
         "Casa De Arced": 3500,
         "Casa Y Agua": 4999
     };
 
     const maxExtraPax = {
-        "Casa De Amon": 4,
+        "Casa De Amor": 4,
         "Casa De Bella": 10,
         "Casa De Arced": 10,
         "Casa Y Agua": 20
@@ -779,10 +779,10 @@ window.hideNotification = function() {
         document.getElementById("extraPax").value = maxAllowedPax;
     }
 
-    if (selectedRoom === "Casa De Amon" && rooms > 3) {
+    if (selectedRoom === "Casa De Amor" && rooms > 3) {
         rooms = 3;
         document.getElementById("numberOfRooms").value = 3;
-    } else if (selectedRoom !== "Casa De Amon") {
+    } else if (selectedRoom !== "Casa De Amor") {
         rooms = 1;
         document.getElementById("numberOfRooms").value = 1;
     }
