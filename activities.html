@@ -1448,8 +1448,8 @@ input:valid, select:valid, textarea:valid {
                         <div class="activity-details">
                             <div class="price-list">
                                 <h4 style="color: #2c5530; margin-bottom: 10px; font-size: 1.2em;">Rates</h4>
-                                <span class="price-item">Adult: ₱100</span>
-                                <span class="price-item">Children: ₱80</span>
+                                <span class="price-item">Adult: ₱100.00</span>
+                                <span class="price-item">Children: ₱80.00</span>
             </div>
                             <a href="#" class="book-activity">Reserve</a>
                             <div class="inclusions">
@@ -1475,7 +1475,8 @@ input:valid, select:valid, textarea:valid {
                         <div class="activity-details">
                             <div class="price-list">
                                 <h4 style="color: #2c5530; margin-bottom: 10px; font-size: 1.2em;">Rates</h4>
-                                <span class="price-item">₱400 per head (With Own Tent)</span>
+                                <span class="price-item">₱400.00 per head (With Own Tent)</span>
+                                  <span class="price-item">₱999.00 per head (Tent Rental)</span>
                             </div>
                             <a href="#" class="book-activity">View All Details</a>
                             
@@ -1531,8 +1532,7 @@ input:valid, select:valid, textarea:valid {
                             <p>₱400 per head (entrance & swimming)</p>
                         </div>
                         <div class="fee-info" id="rentTentFee" style="display: none;">
-                            <p>₱1000 (tent rental)</p>
-                            <p>₱200 per head (overnight fee)</p>
+                            <p>₱999.00 (tent rental)</p>
                         </div>
                     </div>
 
@@ -1764,8 +1764,7 @@ input:valid, select:valid, textarea:valid {
             
                     // Constants
                     const OWN_TENT_PER_PERSON = 400;  // Per person fee when bringing own tent
-                    const RENT_TENT_FEE = 1000;  // Fixed tent rental fee
-                    const RENT_TENT_PER_PERSON = 200;  // Per person fee when renting tent
+                    const RENT_TENT_FEE = 999;  // Fixed tent rental fee
             
                     // Set minimum date for check-in to today
                     const today = new Date().toISOString().split('T')[0];
@@ -1801,9 +1800,9 @@ input:valid, select:valid, textarea:valid {
                             // For own tent: ₱400 per person (including additional guests)
                             total = OWN_TENT_PER_PERSON * (persons + additionalPersons);
                         } else {
-                            // For rented tent: ₱1000 fixed + ₱200 per person (including additional guests)
+                            // For rented tent: ₱999 fixed, no overnight fee
                             if (persons > 0) {
-                                total = RENT_TENT_FEE + (RENT_TENT_PER_PERSON * (persons + additionalPersons));
+                                total = RENT_TENT_FEE;
                             }
                         }
                         
