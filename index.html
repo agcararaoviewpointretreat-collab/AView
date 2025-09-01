@@ -1,5 +1,5 @@
+              
 
-           
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -196,7 +196,28 @@ body {
         .dropdown-content a:hover {
             background: #f8f9fa;
         }
-
+@media (min-width: 1025px) {
+    .fees-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 3rem;
+        max-width: 900px;
+        margin-left: 500px;
+        margin-right: auto;
+        width: 100%;
+    }
+    .fee-card {
+        margin: 0;
+        min-width: 340px;
+        max-width: 400px;
+    }
+    section {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+}
         /* Responsive Design */
         @media (max-width: 992px) {
             .nav-container {
@@ -243,7 +264,7 @@ body {
                 margin-bottom: 0.5rem;
             }
         }
-
+      
         /* Mobile-First Responsive Design */
         @media (max-width: 768px) {
             /* General mobile adjustments */
@@ -789,14 +810,63 @@ body {
             }
 
             .fees-container {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-                
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                gap: 2.5rem;
+                flex-wrap: nowrap;
+                max-width: 900px;
+                margin: 0 auto;
+                width: 100%;
+            }
+
+            @media (min-width: 769px) {
+                .fees-container {
+                    justify-content: center;
+                    align-items: center;
+                }
+                .fee-card {
+                    margin-left: 1.5rem;
+                    margin-right: 1.5rem;
+                }
             }
 
             .fee-card {
                 padding: 1.5rem;
-              
+                margin: 0;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                max-width: 400px;
+                box-sizing: border-box;
+            }
+            /* Center fee card in mobile view only */
+            @media (max-width: 900px) {
+                .fees-container {
+                    display: flex !important;
+                    flex-direction: column !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    gap: 1.5rem;
+                    width: 100% !important;
+                    max-width: 350px !important;
+                    margin: 0 auto !important;
+                    padding: 0 !important;
+                }
+                .fee-card {
+                    width: 92vw !important;
+                    max-width: 290px !important;
+                    min-width: 0 !important;
+                    margin: 0.75rem auto !important;
+                    font-size: 0.93rem !important;
+                    padding: 0.8rem !important;
+                    display: block !important;
+                    text-align: center !important;
+                }
+                .fee-card h3 {
+                    font-size: 1.08rem !important;
+                }
             }
 
 
@@ -2359,13 +2429,15 @@ body {
 }
 
 .fees-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
-    max-width: 1200px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 2.5rem;
+    max-width: 900px;
     margin: 0 auto;
-    padding: 0 1rem;
-   margin-left: 380px;
+    width: 100%;
+    padding: 0;
 }
 
 .fee-card {
