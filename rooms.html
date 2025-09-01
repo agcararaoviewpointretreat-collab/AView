@@ -7,14 +7,14 @@
   <title>AMVR Accommodation</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    /* Hide mobile menu and nav in desktop view */
+   
     @media (min-width: 601px) {
       .mobile-menu-btn,
       .mobile-nav {
         display: none !important;
       }
     }
-    /* Base Styles */
+   
      * {
     margin: 0;
     padding: 0;
@@ -23,14 +23,14 @@
 }
 
 body {
-    background: url('aga.jpg') no-repeat top center fixed; /* Image at the top */
-            background-size: cover; /* Ensures it covers the entire page */
+    background: url('aga.jpg') no-repeat top center fixed; 
+            background-size: cover; 
             line-height: 1.6;
           
             
         }
 
-        /* Overlay to improve readability */
+     
         body::before {
             content: "";
             position: fixed;
@@ -38,7 +38,7 @@ body {
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(157, 153, 153, 0.4); /* Dark overlay */
+            background: rgba(157, 153, 153, 0.4); 
             z-index: -1;
         }
 
@@ -52,11 +52,11 @@ body {
     position: fixed;
     top: 0;
     width: 100%;
-    background: rgba(255, 255, 255, 0.02);    /* extremely transparent */
-    backdrop-filter: blur(2px);             /* more intense blur */
-    -webkit-backdrop-filter: blur(2px);     /* Safari support */
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* soft deep shadow */
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* faint border */
+    background: rgba(255, 255, 255, 0.02);   
+    backdrop-filter: blur(2px);            
+    -webkit-backdrop-filter: blur(2px);     
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); 
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
     z-index: 1000;
 }
 
@@ -78,18 +78,18 @@ body {
         }
 
         .logo img {
-    /* Increase height for a bigger logo; set width to auto so it scales proportionally */
+   
     height: 50px;
     width: auto;
 }
 
 .logo-text {
-    /* Increase the font size to make the text larger */
+    
     font-size: 1.2rem;
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
     font-weight: bold;
     color: #070707;
-    white-space: nowrap; /* Ensures the text remains on one line */
+    white-space: nowrap; 
     transition: color 0.3s ease-in-out;
 }
 
@@ -124,7 +124,7 @@ body {
             transition: color 0.3s ease;
         }
 
-        /* Underline effect for nav links */
+
         .nav-links a::after {
             content: '';
             position: absolute;
@@ -144,7 +144,7 @@ body {
             width: 100%;
         }
 
-        /* Dropdown Styles */
+     
         .dropdown {
             position: relative;
         }
@@ -192,7 +192,7 @@ body {
             background: #f8f9fa;
         }
 
-        /* Responsive Design */
+      
         @media (max-width: 992px) {
             .nav-container {
                 padding: 1rem;
@@ -239,17 +239,17 @@ body {
             }
         }
 
-        /* Scroll Effect */
+      
         .navbar.scrolled {
             background: rgba(255, 255, 255, 0.98);
         }
 
-        /* Add smooth transition for scroll effect */
+       
         .navbar {
             transition: background-color 0.3s ease;
         }
 
-    /* Hero Section */
+   
     .hero {
       height: 90vh;
       background-image: url('jj.jpeg');
@@ -266,7 +266,7 @@ body {
       margin-right: 20px;
     }
 
-    /* Accommodation Content */
+   
     .accommodation-content {
       max-width: 700px;
       margin: -90px auto 50px;
@@ -309,7 +309,7 @@ body {
       line-height: 1.8;
     }
 
-    /* Main Slider */
+  
     .slider-container {
       position: relative;
       width: 100%;
@@ -408,7 +408,7 @@ body {
       background-color: rgba(255, 255, 255, 1);
     }
 
-    /* Room sections */
+  
 .room-section {
   display: flex;
   flex-direction: column;
@@ -430,7 +430,7 @@ body {
   }
 }
 
-/* Room info */
+
 .room-info {
   padding: 2rem;
   flex: 1;
@@ -461,7 +461,7 @@ body {
   line-height: 1.8;
 }
 
-/* Inclusions */
+
 .room-inclusions {
   display: flex;
   flex-wrap: wrap;
@@ -491,7 +491,7 @@ body {
   font-weight: 500;
 }
 
-/* Room price and booking */
+
 .room-price {
   font-size: 1.8rem;
   font-weight: 700;
@@ -518,7 +518,7 @@ body {
             background-color: #0056b3;
         }
 
-/* Room selection dropdown */
+
 .room-selection {
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
@@ -552,7 +552,7 @@ body {
   box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
 }
 
-/* Image sliders */
+
 .section-slider {
   position: relative;
   overflow: hidden;
@@ -590,7 +590,7 @@ body {
   display: block;
 }
 
-/* Navigation buttons */
+
 .section-nav {
   position: absolute;
   top: 50%;
@@ -625,7 +625,7 @@ body {
   transform: scale(1.1);
 }
 
-/* Dots navigation */
+
 .section-dots {
   position: absolute;
   bottom: 1.5rem;
@@ -653,7 +653,7 @@ body {
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 0 0 3px rgba(255, 255, 255, 0.3);
 }
 
-/* Responsive adjustments */
+
 @media (max-width: 900px) {
   .room-section {
     flex-direction: column;
@@ -739,7 +739,7 @@ body {
   }
 }
 
-/* Add some subtle animations */
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -749,13 +749,13 @@ body {
   animation: fadeIn 0.6s ease forwards;
 }
 
-/* Staggered animation for multiple room sections */
+
 .room-section:nth-child(1) { animation-delay: 0.1s; }
 .room-section:nth-child(2) { animation-delay: 0.2s; }
 .room-section:nth-child(3) { animation-delay: 0.3s; }
 .room-section:nth-child(4) { animation-delay: 0.4s; }
 
-/* Footer Bottom */
+
 .footer-bottom {
     text-align: center;
     padding: 0.5rem;
@@ -773,7 +773,7 @@ body {
 </head>
 
 <body>
-    <!-- Navigation -->
+   
     <nav class="navbar" aria-label="Main navigation">
   <div class="nav-container">
     <a href="index.html" class="logo" aria-label="Agcararao Mountain View Resort Home">
@@ -796,7 +796,7 @@ body {
     </ul>
   </div>
 </nav>
-    <!-- Mobile drawer and overlay -->
+  
     <div id="mobileNav" class="mobile-nav" aria-hidden="true">
       <button class="close-drawer" id="closeMobileNav" aria-label="Close menu">&times;</button>
       <ul class="mobile-nav-links">
@@ -813,7 +813,7 @@ body {
    
   </section>
 
-  <!-- Introduction Section -->
+  
   <section class="accommodation-content" aria-labelledby="accommodation-title">
     <h1 id="accommodation-title" class="agcararao-title">Discover Your Perfect Haven</h1>
     <p class="agcararao-subtitle">Step into a world where rustic charm meets modern elegance at Agcararao Mountain View Resort.</p>
@@ -821,9 +821,9 @@ body {
     <p class="agcararao-description">Thoughtfully curated spaces combine local charm with modern comforts for a serene retreat. Imagine waking to panoramic views of lush landscapes, crowned by an ethereal sea of clouds at dawn.</p>
   </section>
 
-  <!-- Main Content -->
+  
   <div class="container">
-    <!-- Main Highlight Slider -->
+    
     <div class="slider-container" aria-label="Featured accommodations gallery">
       <div class="slider-wrapper">
         <div class="slide active">
@@ -836,22 +836,22 @@ body {
             <img src="8.jpg">
           </div>
           <div class="slide next-3">
-            <img src="096.jpg"> <!-- Add new image -->
+            <img src="096.jpg"> 
           </div>
           <div class="slide next-4">
-            <img src="ge.jpg"> <!-- Add new image -->
+            <img src="ge.jpg"> 
           </div>
           <div class="slide prev-2">
             <img src="56.jpg">
           </div>
           <div class="slide prev-1">
-            <img src="u7.jpg"> <!-- Replace empty src -->
+            <img src="u7.jpg"> 
           </div>
           <div class="slide prev-3">
-            <img src="74.jpg"> <!-- Add new image -->
+            <img src="74.jpg"> 
           </div>
           <div class="slide prev-4">
-            <img src="[7.jpg"> <!-- Add new image -->
+            <img src="[7.jpg"> 
           </div>
           
       </div>
@@ -862,7 +862,7 @@ body {
       </div>
     </div>
 
-      <!-- Room Section 1: Casa De Amon -->
+     
       <section class="room-section" aria-labelledby="Casa-de-amor">
         <div class="section-slider" aria-label="Casa De Amor room gallery">
           <div class="section-slider-wrapper">
@@ -913,7 +913,7 @@ body {
             <span class="inclusion">✔ Bonfire</span>
             <span class="extra-pax">➕ Extra Pax: ₱300.00 per head (can accommodate 2-4 pax)</span>
             
-           <!-- Room Selection Dropdown -->
+          
     <div class="room-selection">
         <label for="room-count">Select Number of Rooms:</label>
         <select id="room-count" onchange="updatePrice()">
@@ -1059,7 +1059,7 @@ body {
         <button class="book-now-btn" onclick="openBookingForm('Casa De Arced', 3500)">BOOK NOW</button>
 
     </section>
-    <!-- Room Section 4: Casa Y Agua -->
+   
     <section class="room-section" aria-labelledby="casa-y-agua">
         <div class="section-slider" aria-label="Casa Y Agua room gallery">
           <div class="section-slider-wrapper">
@@ -1128,33 +1128,33 @@ body {
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Main slider functionality
+        
         const slides = document.querySelectorAll('.slide');
         const prevBtn = document.querySelector('.prev-btn');
         const nextBtn = document.querySelector('.next-btn');
         
         const totalSlides = slides.length;
         
-        // Function to update the slides
+       
         function updateSlides() {
-            // Find current active slide
+          
             let activeIndex = 0;
             slides.forEach((slide, index) => {
                 if (slide.classList.contains('active')) {
                     activeIndex = index;
                 }
                 
-                // Remove all classes
+           
                 slide.classList.remove('active', 'prev-1', 'prev-2', 'next-1', 'next-2');
             });
             
-            // Calculate indices for all positions
+          
             const prevIndex1 = (activeIndex - 1 + totalSlides) % totalSlides;
             const prevIndex2 = (activeIndex - 2 + totalSlides) % totalSlides;
             const nextIndex1 = (activeIndex + 1) % totalSlides;
             const nextIndex2 = (activeIndex + 2) % totalSlides;
             
-            // Apply proper classes
+         
             slides[activeIndex].classList.add('active');
             slides[prevIndex1].classList.add('prev-1');
             slides[prevIndex2].classList.add('prev-2');
@@ -1162,10 +1162,9 @@ body {
             slides[nextIndex2].classList.add('next-2');
         }
         
-        // Initialize slider
         updateSlides();
         
-        // Next button click event
+        
         nextBtn.addEventListener('click', function() {
             let activeIndex = 0;
             slides.forEach((slide, index) => {
@@ -1174,19 +1173,19 @@ body {
                 }
             });
             
-            // Calculate new active index
+           
             const newActiveIndex = (activeIndex + 1) % totalSlides;
             
-            // Remove active from current slide
+           
             slides[activeIndex].classList.remove('active');
-            // Add active to new slide
+            
             slides[newActiveIndex].classList.add('active');
             
-            // Update all slides
+           
             updateSlides();
         });
         
-        // Previous button click event
+      
         prevBtn.addEventListener('click', function() {
             let activeIndex = 0;
             slides.forEach((slide, index) => {
@@ -1195,19 +1194,19 @@ body {
                 }
             });
             
-            // Calculate new active index
+            
             const newActiveIndex = (activeIndex - 1 + totalSlides) % totalSlides;
             
-            // Remove active from current slide
+           
             slides[activeIndex].classList.remove('active');
-            // Add active to new slide
+           
             slides[newActiveIndex].classList.add('active');
             
-            // Update all slides
+           
             updateSlides();
         });
         
-        // Section sliders functionality
+   
         const sectionSliders = document.querySelectorAll('.section-slider');
         
         sectionSliders.forEach(function(slider) {
@@ -1219,7 +1218,7 @@ body {
             const totalSectionSlides = sectionSlides.length;
             let currentSlideIndex = 0;
             
-            // Function to show a specific slide
+        
             function showSlide(index) {
                 sectionSlides.forEach(slide => {
                     slide.classList.remove('active');
@@ -1234,19 +1233,19 @@ body {
                 currentSlideIndex = index;
             }
             
-            // Next button click
+         
             sectionNext.addEventListener('click', function() {
                 const newIndex = (currentSlideIndex + 1) % totalSectionSlides;
                 showSlide(newIndex);
             });
             
-            // Previous button click
+        
             sectionPrev.addEventListener('click', function() {
                 const newIndex = (currentSlideIndex - 1 + totalSectionSlides) % totalSectionSlides;
                 showSlide(newIndex);
             });
             
-            // Dot click events
+          
             dots.forEach(dot => {
                 dot.addEventListener('click', function() {
                     const index = parseInt(this.getAttribute('data-index'));
@@ -1257,7 +1256,7 @@ body {
     });
 </script>
     <style>
-    /* Mobile drawer styles */
+  
     .mobile-menu-btn { display: none; background: none; border: none; font-size: 24px; color: #2c5530; cursor: pointer; }
     .mobile-nav { position: fixed; top: 0; right: 0; height: 100vh; width: 65%; max-width: 150px; background: #fff; box-shadow: -2px 0 12px rgba(0,0,0,0.15); transform: translateX(100%); transition: transform 0.3s ease; z-index: 2000; padding: 12px; }
     .mobile-nav.open { transform: translateX(0); }
