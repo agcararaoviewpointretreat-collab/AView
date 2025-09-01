@@ -1004,38 +1004,7 @@ input:valid, select:valid, textarea:valid {
                 }
                 
             </style>
- 
-       
-      <ul class="nav-links" id="nav-links">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="about.html">About</a></li>
-        <li class="dropdown">
-          <a href="#amenities" aria-haspopup="true" aria-expanded="false">Amenities <i class="fas fa-chevron-down"></i></a>
-          <div class="dropdown-content" aria-label="Amenities submenu">
-            <a href="rooms.html">Rooms</a>
-            <a href="activities.html">Activities</a>
-            <a href="foods.html">Foods</a>
-          </div>
-        </li>
-        <li><a href="gallery.html">Gallery</a></li>
-      </ul>
-    </div>
-  </nav>
-  <!-- Mobile drawer and overlay -->
-  <div id="mobileNav" class="mobile-nav" aria-hidden="true">
-    <button class="close-drawer" id="closeMobileNav" aria-label="Close menu">&times;</button>
-    <ul class="mobile-nav-links">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="about.html">About</a></li>
-      <li><a href="rooms.html">Rooms</a></li>
-      <li><a href="activities.html">Activities</a></li>
-      <li><a href="foods.html">Foods</a></li>
-      <li><a href="gallery.html">Gallery</a></li>
-    </ul>
-  </div>
-  <div id="navOverlay" class="nav-overlay" aria-hidden="true"></div>
-
-  <style>
+   <style>
   /* Hamburger button */
   .mobile-menu-btn {
     display: none;
@@ -1273,6 +1242,37 @@ input:valid, select:valid, textarea:valid {
         }
     }
     </style>
+       
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li class="dropdown">
+          <a href="#amenities" aria-haspopup="true" aria-expanded="false">Amenities <i class="fas fa-chevron-down"></i></a>
+          <div class="dropdown-content" aria-label="Amenities submenu">
+            <a href="rooms.html">Rooms</a>
+            <a href="activities.html">Activities</a>
+            <a href="foods.html">Foods</a>
+          </div>
+        </li>
+        <li><a href="gallery.html">Gallery</a></li>
+      </ul>
+    </div>
+  </nav>
+  <!-- Mobile drawer and overlay -->
+  <div id="mobileNav" class="mobile-nav" aria-hidden="true">
+    <button class="close-drawer" id="closeMobileNav" aria-label="Close menu">&times;</button>
+    <ul class="mobile-nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="rooms.html">Rooms</a></li>
+      <li><a href="activities.html">Activities</a></li>
+      <li><a href="foods.html">Foods</a></li>
+      <li><a href="gallery.html">Gallery</a></li>
+    </ul>
+  </div>
+  <div id="navOverlay" class="nav-overlay" aria-hidden="true"></div>
+
+
   <script>
   // Insert hamburger button to the right side of the header if not present
   (function ensureHamburger() {
@@ -1532,13 +1532,13 @@ input:valid, select:valid, textarea:valid {
                         </div>
                         <div class="fee-info" id="rentTentFee" style="display: none;">
                             <p>₱1000 (tent rental)</p>
-                            <p>₱300 per head (overnight fee)</p>
+                            <p>₱200 per head (overnight fee)</p>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="additionalGuests">Additional Guests</label>
-                        <input type="number" id="additionalGuests" name="additionalGuests" min="0" max="2" value="0">
+                        <input type="number" id="additionalGuests" name="additionalGuests" min="0" max="2" value="0" maxlength="1" pattern="[0-2]" oninput="if(this.value.length>1)this.value=this.value.slice(0,1);if(this.value>2)this.value=2;">
                         <div class="fee-info">
                             <p>₱300 per additional guest (overnight fee)</p>
                         </div>
