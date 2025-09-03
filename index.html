@@ -3270,6 +3270,16 @@ body {
 .navbar { padding: 16px 0 !important; }
 
  @media (max-width: 600px) {
+    .feedback-guest,
+    .guest-name,
+    .feedback-list .guest,
+    #guestNameDisplay {
+        font-size: 10px !important;
+    }
+    .feedback-guest,
+    .feedback-date {
+        font-size: 11px !important;
+    }
             .announcements-section,
             .announcements-section *,
             .announcements-hero h1,
@@ -3349,6 +3359,10 @@ body {
 </style>
 </head>
 <body>
+    <!-- Toast Notification -->
+    <div id="feedbackToast" style="display:none;position:fixed;top:32px;left:50%;transform:translateX(-50%);background:#2c5530;color:#fff;padding:16px 32px;border-radius:8px;box-shadow:0 4px 16px rgba(44,85,48,0.15);font-size:16px;z-index:9999;transition:opacity 0.3s;opacity:0;">
+        Thank you for your feedback!
+    </div>
    <!-- Navigation -->
   <nav class="navbar" aria-label="Main navigation">
     <div class="nav-container">
@@ -4008,25 +4022,39 @@ document.addEventListener("DOMContentLoaded", () => {
             const feedback = document.getElementById('feedbackText').value.trim();
             const guestName = document.getElementById('guestName').value.trim();
 
-            if (currentRating === 0 || feedback === '' || guestName === '') {
-                alert('Please complete all fields and select a rating');
+            // Allow: rating only, name/message only, or both. Block only if all are empty.
+            if (currentRating === 0 && feedback === '' && guestName === '') {
+                showFeedbackToast('Please provide a rating, a message, or your name.', true);
                 return;
             }
 
             push(ref(db, 'feedback'), {
-                rating: currentRating,
+                rating: currentRating || null,
                 feedback: feedback,
                 guest: guestName,
                 date: new Date().toISOString(),
                 isApproved: false,
                 isRejected: false
             }).then(() => {
-                alert('Thank you for your feedback!');
+                showFeedbackToast('Thank you for your feedback!');
                 document.getElementById('feedbackText').value = '';
                 document.getElementById('guestName').value = '';
                 resetStars();
                 loadFeedback();
             });
+    // Toast notification for feedback
+    window.showFeedbackToast = function(message, isError) {
+        const toast = document.getElementById('feedbackToast');
+        if (!toast) return;
+        toast.textContent = message;
+        toast.style.background = isError ? '#ff4444' : '#2c5530';
+        toast.style.opacity = '1';
+        toast.style.display = 'block';
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => { toast.style.display = 'none'; }, 400);
+        }, 2200);
+    }
         });
 
 
