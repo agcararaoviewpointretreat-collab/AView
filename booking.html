@@ -455,6 +455,11 @@ window.hideNotification = function() {
 };
 
         window.confirmBooking = async function() {
+            const submitBtn = document.querySelector('button[onclick="confirmBooking()"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.style.pointerEvents = 'none';
+            }
             const fullName = document.getElementById("fullName").value;
             const email = document.getElementById("email").value;
             const phone = document.getElementById("phone").value;
@@ -468,22 +473,69 @@ window.hideNotification = function() {
             const paymentType = document.getElementById("paymentType").value;
             const paymentAmount = document.getElementById("paymentAmount").value;
 
+            // --- Prevent booking if any date in the range is unavailable (including all nights of stay) ---
+            if (checkInDate && checkOutDate) {
+                let start = new Date(checkInDate);
+                let end = new Date(checkOutDate);
+                let invalid = false;
+                // Check every night of the stay (from check-in to the night before check-out)
+                while (start < end) {
+                    const dateStr = start.toISOString().split('T')[0];
+                    if (unavailableDates.includes(dateStr)) {
+                        invalid = true;
+                        break;
+                    }
+                    start.setDate(start.getDate() + 1);
+                }
+                // Strict: block if the first night after check-in is unavailable
+                let firstNight = new Date(checkInDate);
+                firstNight.setDate(firstNight.getDate() + 1);
+                const firstNightStr = firstNight.toISOString().split('T')[0];
+                if (unavailableDates.includes(firstNightStr)) {
+                    showNotification("You cannot book this check-in date because the next night is unavailable.", 'info', 15000);
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.style.pointerEvents = '';
+                    }
+                    return;
+                }
+                if (invalid) {
+                    showNotification("You cannot book this range. One or more dates between your check-in and check-out are unavailable.", 'info', 15000);
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.style.pointerEvents = '';
+                    }
+                    return;
+                }
+            }
+
             // Check if the email is a valid Gmail address
             const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
             if (!gmailRegex.test(email)) {
                 showNotification("Please enter a valid Gmail address (example@gmail.com).", 'info', 15000);
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.style.pointerEvents = '';
+                }
                 return;
             }
 
             if (!fullName || !email || !phone || !checkInDate || !checkOutDate || !totalAmount) {
                 showNotification("Please fill in all required fields!", 'info', 15000);
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.style.pointerEvents = '';
+                }
                 return;
             }
             if (!/^\d{11}$/.test(phone)) {
                 showNotification("Phone number must be exactly 11 digits.", 'info', 15000);
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.style.pointerEvents = '';
+                }
                 return;
             }
-
             try {
                 const bookingsRef = ref(db, "bookings");
                 await push(bookingsRef, {
@@ -510,10 +562,15 @@ window.hideNotification = function() {
                 );
                 document.getElementById("bookingForm").reset();
                 fetchBookedDates();
+                // Do NOT re-enable the button after successful booking
                 setTimeout(function() { window.location.href = 'rooms.html'; }, 15000);
             } catch (error) {
                 console.error("Error saving booking:", error);
                 showNotification('Error submitting reservation. Please try again.', 'info', 15000);
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.style.pointerEvents = '';
+                }
             }
         };
 
