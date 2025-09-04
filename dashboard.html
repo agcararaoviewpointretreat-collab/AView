@@ -3,8 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="lowo.png"> 
-
     <title>AVR Dashboard</title>
     
     <!-- EmailJS SDK -->
@@ -437,7 +435,7 @@ function sendBookingEmail(booking, status, type = "room") {
   console.log("📧 Final template params:", templateParams);
   
   return emailjs
-    .send("service_saq5ceq", templateId, templateParams)
+    .send("service_xfp5vw1", templateId, templateParams)
     .then((res) => {
       console.log("✅ Email sent:", res);
       alert(type + " booking " + status + " and email sent!");
@@ -594,15 +592,16 @@ function sendBookingEmail(booking, status, type = "room") {
             color: white;
         }
         .sidebar {
-            width: 200px; 
-            background: transparent; 
-            padding: 15px; 
-            border-radius: 5px; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
-            float: left; 
-            margin-right: 20px; 
+            width: 200px;
+            background: transparent;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            float: left;
+            margin-right: 20px;
             position: fixed;
-            top: 120px;
+            top: 115px;
+            height: calc(50vh - 40px);
         }
         .sidebar-item { position: relative; padding: 10px; margin: 5px 0; cursor: pointer; }
         .sidebar-item:hover, .sidebar-item.active { background: #e0e0e0; font-weight: bold; }
@@ -2205,8 +2204,8 @@ function sendBookingEmail(booking, status, type = "room") {
             transition: color 0.2s;
         }
         .sidebar-toggle-btn:hover, .sidebar-toggle-btn:focus {
-            background: linear-gradient(135deg, #99e388 60%, #2c5530 100%);
-            color: #2c5530;
+            background: linear-gradient(135deg, #a9d760 60%, #2c5530 100%);
+            color: #6e973c;
             box-shadow: 0 6px 24px rgba(44,85,48,0.22), 0 2px 8px rgba(44,85,48,0.13);
             outline: none;
         }
@@ -2269,17 +2268,126 @@ function sendBookingEmail(booking, status, type = "room") {
             80% { opacity: 0.7; }
             100% { transform: translateY(-110vh) scale(1.15); opacity: 0; }
         }
+        /* Enhanced Login Modal & Form Styles */
+    #loginModal {
+        animation: fadeInBg 1.2s, modalPop 0.8s cubic-bezier(.68,-0.55,.27,1.55);
+        background: radial-gradient(circle at 60% 40%, #a8edea 0%, #fed6e3 100%);
+        box-shadow: 0 0 80px 0 rgba(44,85,48,0.18);
+    }
+    @keyframes modalPop {
+        0% { transform: scale(0.7) translateY(60px) rotateX(30deg); opacity: 0; }
+        60% { transform: scale(1.05) translateY(-10px) rotateX(-8deg); opacity: 1; }
+        100% { transform: scale(1) translateY(0) rotateX(0); opacity: 1; }
+    }
+    #loginForm {
+        background: linear-gradient(135deg, #fff 80%, #e3ffe8 100%);
+        box-shadow: 0 12px 48px 0 rgba(44,85,48,0.18);
+        border: 2px solid #a8edea;
+        animation: popIn 1s cubic-bezier(.68,-0.55,.27,1.55);
+        position: relative;
+        overflow: hidden;
+    }
+    #loginForm::before {
+        content: '';
+        position: absolute;
+        top: -40px; left: -40px; right: -40px; bottom: -40px;
+        background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+        opacity: 0.18;
+        z-index: 0;
+        pointer-events: none;
+    }
+    #loginForm h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2c5530;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+        text-shadow: 0 2px 8px rgba(44,85,48,0.08);
+        animation: fadeInTitle 0.7s;
+    }
+    @keyframes fadeInTitle {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    #loginForm input[type="text"], #loginForm input[type="password"] {
+        padding: 12px;
+        border-radius: 8px;
+        border: 1.5px solid #a8edea;
+        box-sizing: border-box;
+        font-size: 1.08rem;
+        background: #f8f8f8;
+        transition: border-color 0.3s, box-shadow 0.3s;
+        box-shadow: 0 2px 8px rgba(44,85,48,0.07);
+    }
+    #loginForm input[type="text"]:focus, #loginForm input[type="password"]:focus {
+        border-color: #2c5530;
+        box-shadow: 0 0 0 2px #a8edea;
+        outline: none;
+    }
+    #togglePass {
+        transition: color 0.3s, transform 0.3s;
+    }
+    #togglePass:hover {
+        color: #2c5530;
+        transform: scale(1.2);
+    }
+    #loginForm button[type="submit"] {
+        background: linear-gradient(90deg, #2c5530 60%, #99e388 100%);
+        color: #fff;
+        padding: 12px 0;
+        width: 100%;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.08rem;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(44,85,48,0.09);
+        letter-spacing: 1px;
+        transition: background 0.3s, transform 0.2s;
+        margin-top: 8px;
+    }
+    #loginForm button[type="submit"]:hover {
+        background: linear-gradient(90deg, #99e388 0%, #2c5530 100%);
+        transform: translateY(-2px) scale(1.04);
+    }
+    #loginError {
+        color: #c00;
+        font-size: 0.98rem;
+        background: #ffeaea;
+        border-radius: 6px;
+        padding: 6px 0;
+        margin-top: 6px;
+        box-shadow: 0 1px 4px rgba(200,0,0,0.07);
+        animation: shakeError 0.5s;
+        display: none;
+    }
+    @keyframes shakeError {
+        0% { transform: translateX(0); }
+        20% { transform: translateX(-6px); }
+        40% { transform: translateX(6px); }
+        60% { transform: translateX(-4px); }
+        80% { transform: translateX(4px); }
+        100% { transform: translateX(0); }
+    }
     </style>
+    
 </head>
 <body>
         <div id="loginModal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:2000;overflow:hidden;">
             <div class="bubbles-bg"></div>
             <form id="loginForm" style="background:#fff;padding:48px 36px;border-radius:18px;box-shadow:0 8px 32px rgba(0,0,0,0.18);min-width:400px;max-width:480px;display:flex;flex-direction:column;gap:28px;align-items:center;position:relative;z-index:2;">
-                <h2 style="color:#2c5530;margin-bottom:8px;">Login</h2>
-                <input type="text" id="loginUser" placeholder="Username" style="padding:10px;width:100%;border-radius:6px;border:1px solid #ccc;" required>
-                <input type="password" id="loginPass" placeholder="Password" style="padding:10px;width:100%;border-radius:6px;border:1px solid #ccc;" required>
-                <button type="submit" style="background:#2c5530;color:#fff;padding:10px 0;width:100%;border:none;border-radius:6px;font-size:1rem;cursor:pointer;">Log In</button>
-                <div id="loginError" style="color:#c00;font-size:0.95rem;display:none;">Invalid credentials</div>
+                                <h2 style="color:#2c5530;margin-bottom:0;">Admin Login</h2>
+                                <h3 style="color:#2c5530;margin-bottom:0;margin-top: -12px;font-size:1.1em;font-weight:600;">Agcararao Viewpoint Retreat</h3>
+                                <div style="width:100%;display:flex;flex-direction:column;gap:18px;">
+                                    <input type="text" id="loginUser" placeholder="Username" style="padding:10px;width:100%;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;" required>
+                                    <div style="position:relative;width:100%;">
+                                        <input type="password" id="loginPass" placeholder="Password" style="padding:10px;width:100%;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;" required>
+                                        <span id="togglePass" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:1.1em;color:#888;user-select:none;">👁️</span>
+                                    </div>
+                                </div>
+                                <button type="submit" style="background:#2c5530;color:#fff;padding:10px 0;width:100%;border:none;border-radius:6px;font-size:1rem;cursor:pointer;">Log In</button>
+                                    <!-- Forgot password link removed -->
+                                <div id="loginError" style="color:#c00;font-size:0.95rem;display:none;">Invalid credentials</div>
             </form>
         </div>
        
@@ -2460,7 +2568,7 @@ function sendBookingEmail(booking, status, type = "room") {
             </div>
             
             <div class="feedback-form">
-                <h3>Submit Feedback (Admin Test)</h3>
+                <h3>Submit Feedback</h3>
                 <div>
                     <span class="star" data-rating="1">★</span>
                     <span class="star" data-rating="2">★</span>
@@ -3282,12 +3390,24 @@ function sendBookingEmail(booking, status, type = "room") {
                 snapshot.forEach((child) => {
                     const data = child.val();
                     data.id = child.key;
+                    // Add a fallback for creation time if available, else use checkInDate
+                    data._sortDate = data.createdAt || data.created_at || data.checkInDate || data.checkinDate || data.dateCreated || '';
                     bookingsArray.push(data);
                 });
 
-                // Sort bookings by check-in date in descending order
-                bookingsArray.sort((a, b) => new Date(b.checkInDate) - new Date(a.checkInDate));
+                // Sort bookings by _sortDate in descending order (newest first)
+                bookingsArray.sort((a, b) => {
+                    const dateA = new Date(a._sortDate);
+                    const dateB = new Date(b._sortDate);
+                    return dateB - dateA;
+                });
 
+                // Sort bookings by _sortDate in descending order (newest first)
+                bookingsArray.sort((a, b) => {
+                    const dateA = new Date(a._sortDate);
+                    const dateB = new Date(b._sortDate);
+                    return dateB - dateA;
+                });
                 bookingsArray.forEach((data) => {
                     let status = data.status || "pending";
                     let pastStay = data.checkOutDate < today;
@@ -3325,39 +3445,37 @@ function sendBookingEmail(booking, status, type = "room") {
                                 <td>${data.totalAmount}</td>
                                 <td style="color: #e74c3c; white-space:nowrap;">
                                     ${data.totalAmount ? '₱' + (parseFloat(data.totalAmount.replace(/[^0-9.-]+/g, '')) * 0.3).toLocaleString() : '₱0'}
-                                    <input type="checkbox" class="dp-paid-checkbox" title="Mark as paid" style="margin-left:8px;vertical-align:middle;" data-id="${data.id}" ${dpPaid ? 'checked' : ''}>
+                                    ${(status !== 'pending' && status !== 'rejected') ? `<input type="checkbox" class="dp-paid-checkbox" title="Mark as paid" style="margin-left:8px;vertical-align:middle;" data-id="${data.id}" ${dpPaid ? 'checked' : ''}>` : ''}
                                 </td>
                                 <td style="color: #27ae60;">${data.totalAmount ? '₱' + (parseFloat(data.totalAmount.replace(/[^0-9.-]+/g, '')) * 0.7).toLocaleString() : '₱0'}</td>
                                 <td id="status-${data.id}" style="font-weight:bold; color:${status === "approved" ? "green" : status === "rejected" ? "red" : "#FFC107"};">
                                     ${status}
                                 </td>
                                 <td id="actions-${data.id}">
-                                    ${status === "pending" ? `
+                                    ${pastStay ? `
+                                        <span class="delete-icon" onclick="deleteBooking('${data.id}')">🗑</span>
+                                    ` : status === "pending" ? `
                                         <button class="confirm-btn" onclick="confirmBooking('${data.id}')">✔</button>
                                         <button class="reject-btn" onclick="rejectBooking('${data.id}')">✖</button>
-                                        ` : pastStay || status === "rejected" ? `
-                                        ${pastStay ? `
+                                    ` : status === "rejected" ? `
+                                        <button class="disabled-btn" disabled>✖ Rejected</button>
                                         <span class="delete-icon" onclick="deleteBooking('${data.id}')">🗑</span>
-                                        ` : `
-                                        <button class="disabled-btn" disabled>${status === "approved" ? "✔ Confirmed" : "✖ Rejected"}</button>
-                                        <span class="delete-icon" onclick="deleteBooking('${data.id}')">🗑</span>
-                                        `}
-                                        ` : `
-                                        <button class="disabled-btn" disabled>${status === "approved" ? "✔ Confirmed" : "✖ Rejected"}</button>
+                                    ` : `
+                                        <button class="disabled-btn" disabled>✔ Confirmed</button>
                                         ${canDeleteAfter24h ? `<span class=\"delete-icon\" onclick=\"deleteBooking('${data.id}')\">🗑</span>` : ''}
                                     `}
                                 </td>
                             </tr>`;
-                // Attach event listeners for dp-paid-checkboxes (Firebase save)
-                setTimeout(() => {
-                    document.querySelectorAll('.dp-paid-checkbox[data-id]').forEach(checkbox => {
-                        checkbox.addEventListener('change', function() {
-                            const id = this.getAttribute('data-id');
-                            const checked = this.checked;
-                            update(ref(db, `bookings/${id}`), { dpPaid: checked });
-                        });
-                    });
-                }, 0);
+                        // Attach event listeners for dp-paid-checkboxes (Firebase save)
+                        setTimeout(() => {
+                            document.querySelectorAll('.dp-paid-checkbox[data-id]').forEach(checkbox => {
+                                checkbox.addEventListener('change', function() {
+                                    const id = this.getAttribute('data-id');
+                                    const checked = this.checked;
+                                    update(ref(db, `bookings/${id}`), { dpPaid: checked });
+                                });
+                            });
+                        }, 0);
                     }
                 });
 
@@ -4061,20 +4179,44 @@ document.addEventListener('DOMContentLoaded', () => {
                 snapshot.forEach((child) => {
                     const data = child.val();
                     data.id = child.key;
+                    // Always use Firebase push key timestamp (first 8 chars, base-36 ms) as primary sort
+                    let sortTimestamp = 0;
+                    if (/^[\-A-Za-z0-9]{20}$/.test(data.id)) {
+                        try {
+                            sortTimestamp = parseInt(data.id.substring(0, 8), 36);
+                        } catch (e) {
+                            sortTimestamp = 0;
+                        }
+                    }
+                    // If push key timestamp is 0 (shouldn't happen), fallback to createdAt or date fields
+                    if (!sortTimestamp) {
+                        if (data.createdAt) {
+                            sortTimestamp = new Date(data.createdAt).getTime();
+                        } else {
+                            let dateField = data.date || data.swimmingDate || data.checkOut || data.checkOutDate || data.checkIn || data.checkInDate || data.dateCreated;
+                            sortTimestamp = dateField ? new Date(dateField).getTime() : 0;
+                        }
+                    }
+                    data._sortTimestamp = sortTimestamp;
+                    // For tiebreaker, store createdAt/date fallback
+                    let tiebreaker = 0;
+                    if (data.createdAt) {
+                        tiebreaker = new Date(data.createdAt).getTime();
+                    } else {
+                        let dateField = data.date || data.swimmingDate || data.checkOut || data.checkOutDate || data.checkIn || data.checkInDate || data.dateCreated;
+                        tiebreaker = dateField ? new Date(dateField).getTime() : 0;
+                    }
+                    data._tiebreaker = tiebreaker;
                     activitiesArray.push(data);
                 });
 
-                // Sort activities by date in descending order
+                // Sort activities by _sortTimestamp descending (newest first), tiebreaker by _tiebreaker
                 activitiesArray.sort((a, b) => {
-                    const tsA = a.createdAt || (a.activityType === 'swimming'
-                        ? new Date(a.date || a.swimmingDate || 0).getTime()
-                        : new Date(a.checkOut || a.checkOutDate || a.checkIn || a.checkInDate || 0).getTime());
-                    const tsB = b.createdAt || (b.activityType === 'swimming'
-                        ? new Date(b.date || b.swimmingDate || 0).getTime()
-                        : new Date(b.checkOut || b.checkOutDate || b.checkIn || b.checkInDate || 0).getTime());
-                    return tsB - tsA;
+                    if (b._sortTimestamp !== a._sortTimestamp) {
+                        return b._sortTimestamp - a._sortTimestamp;
+                    }
+                    return b._tiebreaker - a._tiebreaker;
                 });
-
                 activitiesArray.forEach((data) => {
                     let status = data.status || "pending";
                     count++;
@@ -4168,9 +4310,9 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <td>${dateDisplay}</td>
                                 <td>${details}</td>
                                 <td>${pesoTotal}</td>
-                                <td style="color: #e74c3c; font-weight: bold; white-space:nowrap;">
-                                    ${pesoDown}
-                                    <input type="checkbox" class="dp-paid-checkbox" title="Mark as paid" style="margin-left:8px;vertical-align:middle;" data-id="${data.id}" ${dpPaid ? 'checked' : ''}>
+                                    <td style="color: #e74c3c; font-weight: bold; white-space:nowrap;">
+                                        ${pesoDown}
+                                        ${(status !== 'pending' && status !== 'rejected') ? `<input type="checkbox" class="dp-paid-checkbox" title="Mark as paid" style="margin-left:8px;vertical-align:middle;" data-id="${data.id}" ${dpPaid ? 'checked' : ''}>` : ''}
                                 </td>
                                 <td style="color: #27ae60; font-weight: bold;">${pesoBalance}</td>
                                 <td style="font-weight:bold; color:${statusColor};">${statusText}</td>
@@ -4463,12 +4605,52 @@ document.addEventListener('DOMContentLoaded', () => {
 <script>
 // Simple login logic for demo (username: admin, password: admin123)
 document.addEventListener('DOMContentLoaded', function() {
-    var loginModal = document.getElementById('loginModal');
-    var loginForm = document.getElementById('loginForm');
-    var loginUser = document.getElementById('loginUser');
-    var loginPass = document.getElementById('loginPass');
-    var loginError = document.getElementById('loginError');
-    var dashboardContent = document.getElementById('dashboardContent');
+        var loginModal = document.getElementById('loginModal');
+        var loginForm = document.getElementById('loginForm');
+        var loginUser = document.getElementById('loginUser');
+        var loginPass = document.getElementById('loginPass');
+        var loginError = document.getElementById('loginError');
+        var dashboardContent = document.getElementById('dashboardContent');
+        // Show/hide password toggle
+        var toggle = document.getElementById('togglePass');
+        if (toggle && loginPass) {
+            toggle.addEventListener('click', function() {
+                if (loginPass.type === 'password') {
+                    loginPass.type = 'text';
+                    toggle.textContent = '🙈';
+                } else {
+                    loginPass.type = 'password';
+                    toggle.textContent = '👁️';
+                }
+            });
+        }
+        // Forgot password modal
+        var forgot = document.getElementById('forgotPasswordLink');
+        if (forgot) {
+            forgot.addEventListener('click', function(e) {
+                e.preventDefault();
+                var modal = document.createElement('div');
+                modal.style.position = 'fixed';
+                modal.style.top = '0';
+                modal.style.left = '0';
+                modal.style.width = '100vw';
+                modal.style.height = '100vh';
+                modal.style.background = 'rgba(0,0,0,0.4)';
+                modal.style.display = 'flex';
+                modal.style.alignItems = 'center';
+                modal.style.justifyContent = 'center';
+                modal.style.zIndex = '3000';
+                modal.innerHTML = '<div style="background:#fff;padding:32px 24px;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,0.18);min-width:320px;max-width:400px;text-align:center;">'+
+                    '<h3 style="color:#2c5530;margin-bottom:12px;">Forgot Password</h3>'+
+                    '<p style="margin-bottom:18px;">Please contact the system administrator to reset your password.<br>Email: <b>admin@yourdomain.com</b></p>'+
+                    '<button id="closeForgotModal" style="background:#2c5530;color:#fff;padding:8px 24px;border:none;border-radius:6px;font-size:1rem;cursor:pointer;">Close</button>'+
+                    '</div>';
+                document.body.appendChild(modal);
+                document.getElementById('closeForgotModal').onclick = function() {
+                    document.body.removeChild(modal);
+                };
+            });
+        }
     function showDashboard() {
         loginModal.style.display = 'none';
         dashboardContent.style.display = '';
