@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="lowo.png"> 
+
     <title>AVR Dashboard</title>
     
     <!-- EmailJS SDK -->
@@ -11,33 +13,303 @@
       // Initialize EmailJS
       (function(){
         try {
-          emailjs.init("WuF63nYKHHDtOY9dR");
+          emailjs.init("Rpyi9nQE1VT9z90Sj");
           console.log("EmailJS initialized successfully");
         } catch (error) {
           console.error("EmailJS initialization failed:", error);
         }
       })();
-      
+
 function sendBookingEmail(booking, status, type = "room") {
-  const templateId =
-    status === "confirmed"
-      ? "template_fl2lfwg"
-      : "template_bzwyu23";
-
-  const formatCurrency = (amount) =>
-    amount || amount === 0
-      ? new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP" }).format(amount)
-      : "N/A";
-
+  const templateId = status === "confirmed" ? "template_qi6nr6r" : "template_8avm8qk";
+  
+  const formatCurrency = (amount) => {
+    if (amount === null || amount === undefined || amount === "") return "N/A";
+    const numAmount = parseFloat(amount);
+    return isNaN(numAmount) || numAmount === 0
+      ? "N/A"
+      : new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP" }).format(numAmount);
+  };
+  
   const formatDate = (d) => {
     if (!d) return "N/A";
     const dateObj = new Date(d);
-    return isNaN(dateObj.getTime()) ? "N/A" : dateObj.toLocaleDateString("en-PH", { year: "numeric", month: "long", day: "numeric" });
+    return isNaN(dateObj.getTime())
+      ? "N/A"
+      : dateObj.toLocaleDateString("en-PH", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
   };
-
-  const downPaymentRaw = booking.totalAmount ? booking.totalAmount * 0.3 : null;
-  const balanceRaw = booking.totalAmount ? booking.totalAmount * 0.7 : null;
-
+  
+  let totalAmount = 0;
+  let cottageDisplayName = "N/A"; // Track cottage name for email display
+  
+  // Calculate total amount based on booking type
+  if (type === "room") {
+    // ✅ CALCULATE ROOM PRICING
+    console.log("🏨 ROOM PRICING CALCULATION:");
+    console.log("   Raw booking object for room:");
+    console.log("   - booking.roomType:", booking.roomType);
+    console.log("   - booking.selectedRoom:", booking.selectedRoom);
+    console.log("   - booking.numberOfRooms:", booking.numberOfRooms);
+    console.log("   - booking.nights:", booking.nights);
+    console.log("   - booking.totalAmount:", booking.totalAmount);
+    console.log("   - booking.total:", booking.total);
+    console.log("   - booking.amount:", booking.amount);
+    console.log("   - booking.price:", booking.price);
+    
+    // Try to get from existing calculated fields first
+    const existingAmount = parseFloat(
+      booking.totalAmount || 
+      booking.total || 
+      booking.amount || 
+      booking.price || 
+      0
+    );
+    
+    if (existingAmount > 0) {
+      totalAmount = existingAmount;
+      console.log("   Using existing total amount:", totalAmount);
+    } else {
+      // Calculate based on room type, number of rooms, nights, and extra pax
+      const roomType = (booking.roomType || booking.selectedRoom || "").toLowerCase();
+      const numberOfRooms = parseInt(booking.numberOfRooms || 1);
+      const numberOfNights = parseInt(booking.nights || booking.numberOfNights || 1);
+      const extraPax = parseInt(booking.extraPax || booking.extraPerson || booking.additionalPerson || 0);
+      
+      let roomRate = 0;
+      let maxRoomsForType = 1; // Default max rooms
+      
+      console.log("   Room details:");
+      console.log("   - Room type:", roomType);
+      console.log("   - Number of rooms:", numberOfRooms);
+      console.log("   - Number of nights:", numberOfNights);
+      console.log("   - Extra pax:", extraPax);
+      
+      // ✅ ACTUAL ROOM RATES
+      if (roomType.includes("casa de amor") || roomType.includes("amor")) {
+        roomRate = 1500;
+        maxRoomsForType = 3; // Casa de Amor has 3 rooms available
+        console.log("   Casa de Amor selected: ₱1,500 per night");
+      } else if (roomType.includes("casa de bella") || roomType.includes("bella")) {
+        roomRate = 3000;
+        maxRoomsForType = 1; // Only 1 Casa de Bella
+        console.log("   Casa de Bella selected: ₱3,000 per night");
+      } else if (roomType.includes("casa de arced") || roomType.includes("arced")) {
+        roomRate = 3500;
+        maxRoomsForType = 1; // Only 1 Casa de Arced
+        console.log("   Casa de Arced selected: ₱3,500 per night");
+      } else if (roomType.includes("casa y agua") || roomType.includes("agua")) {
+        roomRate = 4999;
+        maxRoomsForType = 1; // Only 1 Casa y Agua
+        console.log("   Casa y Agua selected: ₱4,999 per night");
+      } else {
+        // Default to Casa de Amor rate if room type is unclear
+        roomRate = 1500;
+        console.log("   Unknown room type, defaulting to Casa de Amor rate: ₱1,500");
+      }
+      
+      // Ensure we don't book more rooms than available for the type
+      const actualRooms = Math.min(numberOfRooms, maxRoomsForType);
+      if (actualRooms < numberOfRooms) {
+        console.log(`   ⚠️  Requested ${numberOfRooms} rooms but only ${maxRoomsForType} available for ${roomType}`);
+      }
+      
+      // Calculate base room cost
+      const roomCost = roomRate * actualRooms * numberOfNights;
+      
+      // Calculate extra pax cost (₱300 per head)
+      const extraPaxCost = extraPax * 300;
+      
+      // Total amount = room cost + extra pax cost
+      totalAmount = roomCost + extraPaxCost;
+      
+      console.log(`   Room calculation: ${roomRate} × ${actualRooms} rooms × ${numberOfNights} nights = ₱${roomCost}`);
+      if (extraPax > 0) {
+        console.log(`   Extra pax: ${extraPax} × ₱300 = ₱${extraPaxCost}`);
+      }
+      console.log(`   Total amount: ₱${roomCost} + ₱${extraPaxCost} = ₱${totalAmount}`);
+      
+      // If calculation still results in 0, use fallback
+      if (totalAmount === 0) {
+        totalAmount = 1500; // Minimum Casa de Amor rate
+        console.log("   Using fallback minimum rate:", totalAmount);
+      }
+    }
+  } else if (type === "activity") {
+    // Determine activity type first
+    const activityType = booking.activityName || booking.activityType || "activity";
+    const isSwimming = activityType.toLowerCase().includes("swimming") || 
+                      activityType.toLowerCase().includes("pool") ||
+                      activityType.toLowerCase().includes("swim");
+    
+    if (isSwimming) {
+      // ✅ CALCULATE SWIMMING PRICING - IMPROVED VERSION
+      const cottageType = (booking.cottage || booking.selectedCottage || booking.cottageType || booking.cottageSelection || booking.choosenCottage || "").toLowerCase().trim();
+      
+      console.log("🏊 SWIMMING PRICING CALCULATION:");
+      console.log("   Raw booking object cottage fields:");
+      console.log("   - booking.cottage:", booking.cottage);
+      console.log("   - booking.selectedCottage:", booking.selectedCottage);
+      console.log("   - booking.cottageType:", booking.cottageType);
+      console.log("   - booking.cottageSelection:", booking.cottageSelection);
+      console.log("   - booking.choosenCottage:", booking.choosenCottage);
+      console.log("   Final cottage type (lowercase):", cottageType);
+      
+      // Get all possible cottage field values to check
+      const allCottageFields = [
+        booking.cottage,
+        booking.selectedCottage, 
+        booking.cottageType,
+        booking.cottageSelection,
+        booking.choosenCottage,
+        booking.cottageNumber,
+        booking.cottageChoice,
+        booking.selectedCottageType,
+        booking.cottageSelected
+      ];
+      
+      console.log("   All cottage field values:", allCottageFields);
+      
+      // More specific matching for cottage types
+      if (cottageType.includes("big cottage 4") || 
+          cottageType === "big cottage" ||
+          cottageType === "bigcottage4") {
+        totalAmount = 500;
+        cottageDisplayName = "Big Cottage 4";
+        console.log("   Big Cottage 4 selected: ₱500");
+      } else if (cottageType.includes("cottage 1") || 
+                 cottageType === "cottage1" ||
+                 cottageType === "1") {
+        totalAmount = 300;
+        cottageDisplayName = "Cottage 1";
+        console.log(`   Cottage 1 selected: ₱300`);
+      } else if (cottageType.includes("cottage 2") ||
+                 cottageType === "cottage2" ||
+                 cottageType === "2") {
+        totalAmount = 300;
+        cottageDisplayName = "Cottage 2";
+        console.log(`   Cottage 2 selected: ₱300`);
+      } else if (cottageType.includes("cottage 3") ||
+                 cottageType === "cottage3" ||
+                 cottageType === "3") {
+        totalAmount = 300;
+        cottageDisplayName = "Cottage 3";
+        console.log(`   Cottage 3 selected: ₱300`);
+      } else if (cottageType.includes("cottage 4") ||
+                 cottageType === "cottage4" ||
+                 cottageType === "4") {
+        totalAmount = 300;
+        cottageDisplayName = "Cottage 4";
+        console.log(`   Cottage 4 selected: ₱300`);
+      } else if (cottageType.includes("cottage") && cottageType !== "") {
+        // Default to regular cottage price if cottage is mentioned but not specifically identified
+        totalAmount = 300;
+        // Try to extract cottage name from the original value for display
+        const originalValue = booking.cottage || booking.selectedCottage || booking.cottageType || booking.cottageSelection || booking.choosenCottage || "";
+        cottageDisplayName = originalValue || "Cottage";
+        console.log("   Regular cottage (default): ₱300, Display name:", cottageDisplayName);
+      } else {
+        // Check if we can infer cottage from the total amount (₱300 = regular cottage)
+        const existingAmount = parseFloat(
+          booking.totalAmount || 
+          booking.total || 
+          booking.amount || 
+          booking.price || 
+          0
+        );
+        
+        console.log("   Existing amount from booking:", existingAmount);
+        
+        if (existingAmount === 300) {
+          // If amount is ₱300, it's likely a regular cottage
+          totalAmount = 300;
+          // Try to find any non-empty cottage field value
+          const foundCottageValue = allCottageFields.find(field => 
+            field !== null && field !== undefined && field !== "" && field !== "N/A"
+          );
+          
+          if (foundCottageValue) {
+            // Clean up the cottage name for display
+            const cleanName = String(foundCottageValue).trim();
+            if (cleanName.match(/^[1-4]$/)) {
+              cottageDisplayName = `Cottage ${cleanName}`;
+            } else if (cleanName.toLowerCase().includes("cottage")) {
+              cottageDisplayName = cleanName;
+            } else {
+              cottageDisplayName = `Cottage ${cleanName}`;
+            }
+          } else {
+            cottageDisplayName = "Cottage (Regular)";
+          }
+          console.log("   Inferred regular cottage from ₱300 amount, Display name:", cottageDisplayName);
+        } else if (existingAmount === 500) {
+          // If amount is ₱500, it's big cottage 4
+          totalAmount = 500;
+          cottageDisplayName = "Big Cottage 4";
+          console.log("   Inferred Big Cottage 4 from ₱500 amount");
+        } else {
+          // Unknown case
+          totalAmount = existingAmount;
+          const foundCottageValue = allCottageFields.find(field => 
+            field !== null && field !== undefined && field !== "" && field !== "N/A"
+          );
+          cottageDisplayName = foundCottageValue || "N/A";
+          console.log("   Unknown case - Amount:", totalAmount, "Display name:", cottageDisplayName);
+        }
+      }
+    } else {
+      // ✅ CALCULATE TENT PRICING
+      const mainGuests = parseInt(booking.guests || booking.numberOfPerson || booking.persons || 1);
+      const additionalGuests = parseInt(booking.additionalGuest || booking.additionalGuests || 0);
+      const hasOwnTent = booking.hasTent === "yes" || booking.rented === false || booking.tentType === "own";
+      
+      console.log("🏕️ TENT PRICING CALCULATION:");
+      console.log("   Main guests:", mainGuests);
+      console.log("   Additional guests:", additionalGuests);
+      console.log("   Has own tent:", hasOwnTent);
+      
+      if (hasOwnTent) {
+        // Own tent: ₱400 per person + ₱300 per additional guest
+        totalAmount = (mainGuests * 400) + (additionalGuests * 300);
+        console.log(`   Own tent calculation: (${mainGuests} × ₱400) + (${additionalGuests} × ₱300) = ₱${totalAmount}`);
+      } else {
+        // Rented tent: ₱999 base + ₱300 per additional guest
+        totalAmount = 999 + (additionalGuests * 300);
+        console.log(`   Rented tent calculation: ₱999 + (${additionalGuests} × ₱300) = ₱${totalAmount}`);
+      }
+    }
+    
+    // If calculation results in 0 or seems wrong, try to get from booking object
+    if (totalAmount === 0 || (totalAmount < 300 && !isSwimming)) {
+      const fallbackAmount = parseFloat(
+        booking.totalAmount || 
+        booking.total || 
+        booking.amount || 
+        booking.price || 
+        booking.cost || 
+        0
+      );
+      if (fallbackAmount > 0) {
+        totalAmount = fallbackAmount;
+        console.log("   Using fallback amount from booking:", totalAmount);
+      }
+    }
+  }
+  
+  const downPaymentRaw = totalAmount > 0 ? totalAmount * 0.3 : 0;
+  const balanceRaw = totalAmount > 0 ? totalAmount * 0.7 : 0;
+  
+  console.log("💰 FINAL PAYMENT CALCULATIONS:");
+  console.log("   Total Amount:", totalAmount);
+  console.log("   Down Payment (30%):", downPaymentRaw);
+  console.log("   Balance (70%):", balanceRaw);
+  
+  const statusColor = status === "confirmed" ? "#28a745" : "#dc3545";
+  const isRoomType = type === "room";
+  
   const templateParams = {
     to_name: `${(booking.firstName || booking.fullName || "Customer").trim()} ${(booking.lastName || "").trim()}`.trim(),
     to_email: booking.email || "",
@@ -45,11 +317,14 @@ function sendBookingEmail(booking, status, type = "room") {
     bookingId: booking.bookingId || booking.id || "N/A",
     type,
     status,
-    totalAmount: formatCurrency(booking.totalAmount),
+    status_color: statusColor,
+    totalAmount: formatCurrency(totalAmount),
     downPayment: formatCurrency(downPaymentRaw),
     balance: formatCurrency(balanceRaw),
+    room_section_style: isRoomType ? "display: block;" : "display: none;",
+    activity_section_style: isRoomType ? "display: none;" : "display: block;",
   };
-
+  
   if (type === "room") {
     Object.assign(templateParams, {
       roomType: booking.roomType || booking.selectedRoom || "N/A",
@@ -57,26 +332,112 @@ function sendBookingEmail(booking, status, type = "room") {
       checkOut: formatDate(booking.checkOutDate || booking.checkOut),
       numberOfRooms: booking.numberOfRooms || "N/A",
       extraPax: booking.extraPax || "",
+      activityName: "", activityDate: "", cottage: "", details: "",
     });
   } else if (type === "activity") {
-    // Tent camping / Activity
-    const tentGuests = booking.guests || booking.numberOfPerson || 0;
+    const tentGuests = booking.guests || booking.numberOfPerson || booking.persons || 0;
     const additionalGuests = booking.additionalGuest || booking.additionalGuests || 0;
     const tentType = booking.hasTent === "yes" || booking.rented === false ? "Own Tent" : "Rented Tent";
-
+    
+    // Determine if this is swimming or tent camping
+    const activityType = booking.activityName || booking.activityType || "activity";
+    const isSwimming = activityType.toLowerCase().includes("swimming") || 
+                      activityType.toLowerCase().includes("pool") ||
+                      activityType.toLowerCase().includes("swim");
+    
+    console.log("🏊 ACTIVITY TYPE DETECTION:");
+    console.log("   Activity type:", activityType);
+    console.log("   Is swimming:", isSwimming);
+    
+    // ✅ Enhanced date handling - different for swimming vs tent
+    let activityDate = "N/A";
+    const possibleDateFields = [
+      booking.activityDate, booking.date, booking.tentDate, booking.checkInDate, 
+      booking.checkIn, booking.startDate, booking.selectedDate, booking.reservationDate,
+      booking.bookingDate, booking.dateRange, booking.dates, booking.selectedDates
+    ];
+    
+    const rawDate = possibleDateFields.find(field => 
+      field !== null && field !== undefined && field !== ""
+    );
+    
+    console.log("📅 DATE PROCESSING:");
+    console.log("   Found date field:", rawDate);
+    
+    if (rawDate) {
+      if (typeof rawDate === "string") {
+        if (isSwimming) {
+          // ✅ Swimming: Single date only (no date range)
+          if (rawDate.includes(" to ")) {
+            const [start] = rawDate.split(" to ").map(s => s.trim());
+            activityDate = formatDate(start);
+          } else if (rawDate.includes(" - ")) {
+            const [start] = rawDate.split(" - ").map(s => s.trim());
+            activityDate = formatDate(start);
+          } else {
+            activityDate = formatDate(rawDate);
+          }
+        } else {
+          // Tent camping: Date range
+          if (rawDate.includes(" to ")) {
+            const [start, end] = rawDate.split(" to ").map(s => s.trim());
+            activityDate = `${formatDate(start)} - ${formatDate(end)}`;
+          } else if (rawDate.includes(" - ")) {
+            const [start, end] = rawDate.split(" - ").map(s => s.trim());
+            activityDate = `${formatDate(start)} - ${formatDate(end)}`;
+          } else {
+            // Single date - add next day for tent checkout
+            const startDate = new Date(rawDate);
+            const endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + 1);
+            activityDate = `${formatDate(startDate)} - ${formatDate(endDate)}`;
+          }
+        }
+      } else {
+        if (isSwimming) {
+          // Swimming: Single date only
+          activityDate = formatDate(rawDate);
+        } else {
+          // Tent: Add next day for checkout
+          const startDate = new Date(rawDate);
+          const endDate = new Date(startDate);
+          endDate.setDate(startDate.getDate() + 1);
+          activityDate = `${formatDate(startDate)} - ${formatDate(endDate)}`;
+        }
+      }
+    }
+    
+    console.log("   Final activity date:", activityDate);
+    
+    // ✅ Handle cottage and details based on activity type
+    let cottageInfo = "N/A";
+    let activityDetails = "N/A";
+    
+    if (isSwimming) {
+      // Swimming: Use the cottage display name we determined during pricing calculation
+      cottageInfo = cottageDisplayName;
+      activityDetails = "N/A";
+      console.log("🏊 Swimming booking - Using cottage display name:", cottageInfo);
+    } else {
+      // Tent camping: Show N/A for cottage, show tent details
+      cottageInfo = "N/A";
+      activityDetails = `Persons: ${tentGuests}${additionalGuests ? `, Additional: ${additionalGuests}` : ""}, ${tentType}`;
+      console.log("🏕️ Tent camping - Cottage: N/A, Details:", activityDetails);
+    }
+    
     Object.assign(templateParams, {
-      activityName: booking.activityName || booking.activityType || "N/A",
-      // pick first valid date
-      activityDate: formatDate(booking.activityDate || booking.date || booking.tentDate),
-      cottage: booking.cottage || "N/A",
-      details: `Persons: ${tentGuests}${additionalGuests ? `, Additional: ${additionalGuests}` : ""}, ${tentType}`,
+      activityName: booking.activityName || booking.activityType || "Activity",
+      activityDate,
+      cottage: cottageInfo,
+      details: activityDetails,
+      roomType: "", checkIn: "", checkOut: "", numberOfRooms: "", extraPax: "",
     });
   }
-
-  console.log("Sending email with params:", templateParams);
-
+  
+  console.log("📧 Final template params:", templateParams);
+  
   return emailjs
-    .send("service_6o4e44f", templateId, templateParams)
+    .send("service_saq5ceq", templateId, templateParams)
     .then((res) => {
       console.log("✅ Email sent:", res);
       alert(type + " booking " + status + " and email sent!");
@@ -87,6 +448,7 @@ function sendBookingEmail(booking, status, type = "room") {
     });
 }
 
+  
 
 
 
@@ -244,7 +606,10 @@ function sendBookingEmail(booking, status, type = "room") {
         }
         .sidebar-item { position: relative; padding: 10px; margin: 5px 0; cursor: pointer; }
         .sidebar-item:hover, .sidebar-item.active { background: #e0e0e0; font-weight: bold; }
-        .main-content { margin-left: 240px; padding-top: 20px; }
+    .main-content { margin-left: 240px; padding-top: 20px; transition: margin-left 0.3s, justify-content 0.3s, display 0.3s; }
+    .main-content.centered { margin-left: 0 !important; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; width: 100vw; max-width: 100vw; }
+    .main-content.centered .reservations-section { width: 100%; }
+    .main-content.centered table { width: 100% !important; max-width: 100vw !important; }
         .card-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -329,6 +694,11 @@ function sendBookingEmail(booking, status, type = "room") {
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            transition: width 0.3s;
+        }
+        .main-content.centered table {
+            width: 100vw !important;
+            max-width: 100vw !important;
         }
         th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
         th { background: #ff758c; color: white; }
@@ -876,6 +1246,7 @@ function sendBookingEmail(booking, status, type = "room") {
             border-radius: 16px 16px 0 0;
         }
         #bookingsTable {
+            font-size: 13px;
             width: 120%;
             border-collapse: collapse;
             background: transparent !important;
@@ -1304,6 +1675,7 @@ function sendBookingEmail(booking, status, type = "room") {
         }
 
         #bookingsTable th {
+            font-size: 13px;
             background: #ff758c;
             color: white;
             padding: 12px;
@@ -1312,6 +1684,7 @@ function sendBookingEmail(booking, status, type = "room") {
         }
 
         #bookingsTable td {
+            font-size: 13px;
             padding: 12px;
             border-bottom: 1px solid #eee;
         }
@@ -1577,6 +1950,7 @@ function sendBookingEmail(booking, status, type = "room") {
         }
 
         #activitiesTable {
+            font-size: 13px;
             width: 125%;
             border-collapse: collapse;
             border-radius: 0 0 12px 12px;
@@ -1584,6 +1958,7 @@ function sendBookingEmail(booking, status, type = "room") {
         }
 
         #activitiesTable th {
+            font-size: 13px;
             background: #ff758c;
             color: white;
             padding: 12px;
@@ -1592,6 +1967,7 @@ function sendBookingEmail(booking, status, type = "room") {
         }
 
         #activitiesTable td {
+            font-size: 13px;
             padding: 12px;
             border-bottom: 1px solid #eee;
         }
@@ -1926,7 +2302,7 @@ function sendBookingEmail(booking, status, type = "room") {
         </div>
     </header>
 
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
     <!-- Sidebar content -->
         <div class="sidebar-item active" data-section="dashboard">Dashboard</div>
         <div class="sidebar-item" data-section="reservations">
@@ -1985,6 +2361,24 @@ function sendBookingEmail(booking, status, type = "room") {
 
             <!-- Filters and Search Bar -->
             <div class="reservations-filters">
+                <div class="filter-group">
+                    <label for="monthFilter">Filter by Month:</label>
+                    <select id="monthFilter" onchange="filterByMonth()">
+                        <option value="all">All Months</option>
+                        <option value="1">January</option>
+                        <option value="2">February</option>
+                        <option value="3">March</option>
+                        <option value="4">April</option>
+                        <option value="5">May</option>
+                        <option value="6">June</option>
+                        <option value="7">July</option>
+                        <option value="8">August</option>
+                        <option value="9">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+                </div>
                 <div class="filter-group">
                     <label for="statusFilter">Filter by Status:</label>
                     <select id="statusFilter">
@@ -2163,6 +2557,24 @@ function sendBookingEmail(booking, status, type = "room") {
             <!-- Filters and Search Bar -->
             <div class="activities-filters">
                 <div class="filter-group">
+                    <label for="activityMonthFilter">Filter by Month:</label>
+                    <select id="activityMonthFilter" onchange="filterActivitiesByMonth()">
+                        <option value="all">All Months</option>
+                        <option value="1">January</option>
+                        <option value="2">February</option>
+                        <option value="3">March</option>
+                        <option value="4">April</option>
+                        <option value="5">May</option>
+                        <option value="6">June</option>
+                        <option value="7">July</option>
+                        <option value="8">August</option>
+                        <option value="9">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+                </div>
+                <div class="filter-group">
                     <label for="activityFilter">Filter by Activity:</label>
                     <select id="activityFilter">
                         <option value="all">All Activities</option>
@@ -2194,7 +2606,7 @@ function sendBookingEmail(booking, status, type = "room") {
                     <th>Date</th>
                     <th>Details</th>
                     <th>Total Amount</th>
-                    <th>Down Payment</th>
+                    <th>Down Payment<br><span style="font-weight:normal;font-size:12px;">Paid?</span></th>
                     <th>Balance</th>
                     <th>Status</th>
                     <th>Actions</th>
@@ -2205,6 +2617,94 @@ function sendBookingEmail(booking, status, type = "room") {
     </div>
 
     <script type="module">
+    // Enhance Down Payment column: add checkbox for admin to mark as paid
+    function enhanceDownPaymentCheckbox() {
+        const table = document.getElementById('bookingsTable');
+        if (!table) return;
+        // For each row except header
+        Array.from(table.rows).slice(1).forEach(row => {
+            // Down Payment is the 11th cell (index 10)
+            const dpCell = row.cells[10];
+            if (dpCell && !dpCell.querySelector('.dp-paid-checkbox')) {
+                const value = dpCell.textContent;
+                dpCell.textContent = '';
+                const span = document.createElement('span');
+                span.textContent = value + ' ';
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'dp-paid-checkbox';
+                checkbox.title = 'Mark as paid';
+                dpCell.appendChild(span);
+                dpCell.appendChild(checkbox);
+            }
+        });
+    }
+    // Run after DOM and table are loaded
+    document.addEventListener('DOMContentLoaded', enhanceDownPaymentCheckbox);
+    // Also run after any table update (if you have dynamic updates, call this again)
+    // Filter activities table by activity date month
+    window.filterActivitiesByMonth = function() {
+        const month = document.getElementById('activityMonthFilter').value;
+        const table = document.getElementById('activitiesTable');
+        if (!table) return;
+        const rows = Array.from(table.rows).slice(1); // skip header
+        rows.forEach(row => {
+            const dateCell = row.cells[4]; // 5th column: Date
+            if (!dateCell) return row.style.display = '';
+            if (month === 'all') {
+                row.style.display = '';
+            } else {
+                // Try to parse month from date string
+                const dateStr = dateCell.textContent.trim();
+                const date = new Date(dateStr);
+                if (!isNaN(date.getTime()) && (date.getMonth() + 1).toString() === month) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        });
+    }
+    // Filter reservation table by check-in month
+    window.filterByMonth = function() {
+        const month = document.getElementById('monthFilter').value;
+        const table = document.getElementById('bookingsTable');
+        if (!table) return;
+        const rows = Array.from(table.rows).slice(1); // skip header
+        rows.forEach(row => {
+            const checkInCell = row.cells[6]; // 7th column: Check-in
+            if (!checkInCell) return row.style.display = '';
+            if (month === 'all') {
+                row.style.display = '';
+            } else {
+                // Try to parse month from date string
+                const dateStr = checkInCell.textContent.trim();
+                const date = new Date(dateStr);
+                if (!isNaN(date.getTime()) && (date.getMonth() + 1).toString() === month) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        });
+    }
+    // Sidebar toggle logic
+    document.addEventListener('DOMContentLoaded', function() {
+        var sidebar = document.getElementById('sidebar');
+        var toggleBtn = document.getElementById('sidebarToggleBtn');
+        var mainContent = document.querySelector('.main-content');
+        if (sidebar && toggleBtn && mainContent) {
+            toggleBtn.addEventListener('click', function() {
+                if (sidebar.style.display === 'none') {
+                    sidebar.style.display = '';
+                    mainContent.classList.remove('centered');
+                } else {
+                    sidebar.style.display = 'none';
+                    mainContent.classList.add('centered');
+                }
+            });
+        }
+    });
         // Sidebar toggle logic (mobile overlay)
         (function(){
             var btn = document.getElementById('sidebarToggleBtn');
@@ -2301,7 +2801,7 @@ function sendBookingEmail(booking, status, type = "room") {
                         });
 
                         // For Casa De Amon, check if the requested number of rooms is available
-                        if (selectedRoom === "Casa De Amon") {
+                        if (selectedRoom === "Casa De Amor") {
                             roomBookingsPerDate.forEach((bookedRooms, date) => {
                                 if (bookedRooms + numberOfRooms > 3) {
                                     unavailableDates.push(date);
@@ -2810,6 +3310,7 @@ function sendBookingEmail(booking, status, type = "room") {
 
                     if (matchesStatus && matchesSearch) {
                         filteredCount++;
+                        const dpPaid = data.dpPaid === true;
                         table.innerHTML += `
                             <tr>
                                 <td>${data.fullName}</td>
@@ -2822,7 +3323,10 @@ function sendBookingEmail(booking, status, type = "room") {
                                 <td>${data.checkOutDate}</td>
                                 <td>${data.numberOfNights}</td>
                                 <td>${data.totalAmount}</td>
-                                <td style="color: #e74c3c;">${data.totalAmount ? '₱' + (parseFloat(data.totalAmount.replace(/[^0-9.-]+/g, '')) * 0.3).toLocaleString() : '₱0'}</td>
+                                <td style="color: #e74c3c; white-space:nowrap;">
+                                    ${data.totalAmount ? '₱' + (parseFloat(data.totalAmount.replace(/[^0-9.-]+/g, '')) * 0.3).toLocaleString() : '₱0'}
+                                    <input type="checkbox" class="dp-paid-checkbox" title="Mark as paid" style="margin-left:8px;vertical-align:middle;" data-id="${data.id}" ${dpPaid ? 'checked' : ''}>
+                                </td>
                                 <td style="color: #27ae60;">${data.totalAmount ? '₱' + (parseFloat(data.totalAmount.replace(/[^0-9.-]+/g, '')) * 0.7).toLocaleString() : '₱0'}</td>
                                 <td id="status-${data.id}" style="font-weight:bold; color:${status === "approved" ? "green" : status === "rejected" ? "red" : "#FFC107"};">
                                     ${status}
@@ -2844,6 +3348,16 @@ function sendBookingEmail(booking, status, type = "room") {
                                     `}
                                 </td>
                             </tr>`;
+                // Attach event listeners for dp-paid-checkboxes (Firebase save)
+                setTimeout(() => {
+                    document.querySelectorAll('.dp-paid-checkbox[data-id]').forEach(checkbox => {
+                        checkbox.addEventListener('change', function() {
+                            const id = this.getAttribute('data-id');
+                            const checked = this.checked;
+                            update(ref(db, `bookings/${id}`), { dpPaid: checked });
+                        });
+                    });
+                }, 0);
                     }
                 });
 
@@ -3636,6 +4150,15 @@ document.addEventListener('DOMContentLoaded', () => {
                                        (emailDisplay || '').toLowerCase().includes(searchQuery);
 
                     if (matchesActivity && matchesStatus && matchesSearch) {
+                        const dpPaid = data.dpPaid === true;
+                        let statusColor = '#FFC107';
+                        if (status === 'approved') statusColor = 'green';
+                        if (status === 'rejected') statusColor = 'red';
+                        let statusText = status.charAt(0).toUpperCase() + status.slice(1);
+                        // Add peso sign for swimming pool only
+                        const pesoTotal = data.activityType === 'swimming' ? `₱${totalText.replace(/[^\d.]/g, '')}` : totalText || '₱0';
+                        const pesoDown = data.activityType === 'swimming' ? `₱${downText.replace(/[^\d.]/g, '')}` : downText || '₱0';
+                        const pesoBalance = data.activityType === 'swimming' ? `₱${balanceText.replace(/[^\d.]/g, '')}` : balanceText || '₱0';
                         table.innerHTML += `
                             <tr>
                                 <td>${nameDisplay}</td>
@@ -3644,26 +4167,34 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <td>${data.activityType === 'swimming' ? 'Swimming Pool' : 'Tent Camping'}</td>
                                 <td>${dateDisplay}</td>
                                 <td>${details}</td>
-                                <td>${totalText || '₱0'}</td>
-                                <td style="color: #e74c3c; font-weight: bold;">${downText || '₱0'}</td>
-                                <td style="color: #27ae60; font-weight: bold;">${balanceText || '₱0'}</td>
-                                <td style="font-weight:bold; color:${
-                                    status === "approved" ? "green" : 
-                                    status === "rejected" ? "red" : "#FFC107"
-                                }">${status}</td>
+                                <td>${pesoTotal}</td>
+                                <td style="color: #e74c3c; font-weight: bold; white-space:nowrap;">
+                                    ${pesoDown}
+                                    <input type="checkbox" class="dp-paid-checkbox" title="Mark as paid" style="margin-left:8px;vertical-align:middle;" data-id="${data.id}" ${dpPaid ? 'checked' : ''}>
+                                </td>
+                                <td style="color: #27ae60; font-weight: bold;">${pesoBalance}</td>
+                                <td style="font-weight:bold; color:${statusColor};">${statusText}</td>
                                 <td>
                                     ${status === "pending" ? `
                                         <button class="confirm-btn" onclick="confirmActivity('${data.id}')">✔</button>
                                         <button class="reject-btn" onclick="rejectActivity('${data.id}')">✖</button>
                                     ` : `
-                                        <button class="disabled-btn" disabled>${
-                                            status === "approved" ? "✔ Confirmed" : "✖ Rejected"
-                                        }</button>
+                                        <button class="disabled-btn" disabled>${status === "approved" ? "✔ Confirmed" : "✖ Rejected"}</button>
                                         ${status === 'rejected' || canDeleteActivityAfter24h ? `<span class=\"delete-icon\" onclick=\"deleteActivity('${data.id}')\">🗑</span>` : ''}
                                     `}
                                 </td>
                             </tr>`;
                     }
+                // Attach event listeners for dp-paid-checkboxes in activities (Firebase save)
+                setTimeout(() => {
+                    document.querySelectorAll('.dp-paid-checkbox[data-id]').forEach(checkbox => {
+                        checkbox.addEventListener('change', function() {
+                            const id = this.getAttribute('data-id');
+                            const checked = this.checked;
+                            update(ref(db, `activities/${id}`), { dpPaid: checked });
+                        });
+                    });
+                }, 0);
                 });
 
                 // Update notification count
