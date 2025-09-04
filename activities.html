@@ -1940,7 +1940,7 @@ input:valid, select:valid, textarea:valid {
                             await push(ref(db, 'activities'), formData);
                             console.log('Reservation submitted:', formData);
                             showNotification(
-                                'Reservation submitted successfully!<br><br>Please note that a <span class="notif-highlight">' + document.getElementById('downPayment').textContent + ' down payment</span> is required to confirm your reservation.',
+                                'Reservation submitted successfully!<br><br>Please wait for a <strong>confirmation email</strong> from the resort to finalize your booking. Please note that a <span class="notif-highlight">' + document.getElementById('downPayment').textContent + ' down payment</span> is required to confirm your reservation.',
                                 'info',
                                 15000
                             );
@@ -2219,7 +2219,7 @@ input:valid, select:valid, textarea:valid {
                             // Save to Firebase
                             await push(ref(db, 'activities'), formData);
                             showNotification(
-                                'Reservation submitted successfully!<br><br>Please note that a <span class="notif-highlight">' + downPayment + ' PHP down payment</span> is required to confirm your reservation.',
+                                'Reservation submitted successfully!<br><br>Please wait for a <strong>confirmation email</strong> from the resort to finalize your booking. Please note that a <span class="notif-highlight">' + downPayment + ' PHP down payment</span> is required to confirm your reservation.',
                                 'info',
                                 15000
                             );
