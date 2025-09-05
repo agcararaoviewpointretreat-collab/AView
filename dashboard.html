@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="lowo.png"> 
     <title>AVR Dashboard</title>
     
     <!-- EmailJS SDK -->
@@ -2401,7 +2402,7 @@ function sendBookingEmail(booking, status, type = "room") {
         <div class="header-content">
             <img src="loho.png" alt="Resort Logo" class="resort-logo">
             <div>
-                <h1 class="resort-name">Agcararao Viewpoint Retreat</h1>
+                <h1 class="resort-name">Agcararao Mountain View Resort</h1>
                 <p class="resort-subtitle">Admin Dashboard</p>
             </div>
         </div>
@@ -4176,47 +4177,128 @@ document.addEventListener('DOMContentLoaded', () => {
                 let pendingCount = 0;
                 let activitiesArray = [];
 
-                snapshot.forEach((child) => {
-                    const data = child.val();
-                    data.id = child.key;
-                    // Always use Firebase push key timestamp (first 8 chars, base-36 ms) as primary sort
-                    let sortTimestamp = 0;
-                    if (/^[\-A-Za-z0-9]{20}$/.test(data.id)) {
-                        try {
-                            sortTimestamp = parseInt(data.id.substring(0, 8), 36);
-                        } catch (e) {
-                            sortTimestamp = 0;
-                        }
-                    }
-                    // If push key timestamp is 0 (shouldn't happen), fallback to createdAt or date fields
-                    if (!sortTimestamp) {
-                        if (data.createdAt) {
-                            sortTimestamp = new Date(data.createdAt).getTime();
-                        } else {
-                            let dateField = data.date || data.swimmingDate || data.checkOut || data.checkOutDate || data.checkIn || data.checkInDate || data.dateCreated;
-                            sortTimestamp = dateField ? new Date(dateField).getTime() : 0;
-                        }
-                    }
-                    data._sortTimestamp = sortTimestamp;
-                    // For tiebreaker, store createdAt/date fallback
-                    let tiebreaker = 0;
-                    if (data.createdAt) {
-                        tiebreaker = new Date(data.createdAt).getTime();
-                    } else {
-                        let dateField = data.date || data.swimmingDate || data.checkOut || data.checkOutDate || data.checkIn || data.checkInDate || data.dateCreated;
-                        tiebreaker = dateField ? new Date(dateField).getTime() : 0;
-                    }
-                    data._tiebreaker = tiebreaker;
-                    activitiesArray.push(data);
-                });
+               snapshot.forEach((child) => {
+    const data = child.val();
+    data.id = child.key;
+    
+    let finalTimestamp = 0;
+    
+    // PRIORITY 1: Firebase push key timestamp (FIXED DECODING)
+    if (/^[\-A-Za-z0-9_]{20}$/.test(data.id)) {
+        try {
+            // Firebase push keys: first 8 chars encode timestamp in milliseconds
+            const pushKeyTime = data.id.substring(0, 8);
+            
+            // Firebase uses a custom base64-like encoding for push keys
+            const PUSH_CHARS = '-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz';
+            
+            let keyTimestamp = 0;
+            for (let i = 0; i < pushKeyTime.length; i++) {
+                const char = pushKeyTime.charAt(i);
+                const charIndex = PUSH_CHARS.indexOf(char);
+                
+                if (charIndex >= 0) {
+                    keyTimestamp = keyTimestamp * 64 + charIndex;
+                } else {
+                    // Invalid character, fallback
+                    keyTimestamp = 0;
+                    break;
+                }
+            }
+            
+            if (keyTimestamp > 0) {
+                finalTimestamp = keyTimestamp;
+                console.log(`${data.id}: Using Firebase key timestamp - ${new Date(finalTimestamp).toLocaleString()}`);
+            }
+        } catch (e) {
+            console.log(`${data.id}: Firebase key parsing failed - ${e.message}`);
+        }
+    }
+    
+    // PRIORITY 2: Explicit creation timestamps (if Firebase key failed)
+    if (finalTimestamp === 0) {
+        if (data.createdAt && data.createdAt !== "" && data.createdAt !== null) {
+            const createdTime = new Date(data.createdAt).getTime();
+            if (!isNaN(createdTime) && createdTime > 0) {
+                finalTimestamp = createdTime;
+                console.log(`${data.id}: Using createdAt - ${new Date(createdTime).toLocaleString()}`);
+            }
+        } else if (data.dateCreated && data.dateCreated !== "" && data.dateCreated !== null) {
+            const dateCreatedTime = new Date(data.dateCreated).getTime();
+            if (!isNaN(dateCreatedTime) && dateCreatedTime > 0) {
+                finalTimestamp = dateCreatedTime;
+                console.log(`${data.id}: Using dateCreated - ${new Date(dateCreatedTime).toLocaleString()}`);
+            }
+        } else if (data.timestamp && data.timestamp !== "" && data.timestamp !== null) {
+            const ts = typeof data.timestamp === 'number' ? data.timestamp : new Date(data.timestamp).getTime();
+            if (!isNaN(ts) && ts > 0) {
+                finalTimestamp = ts;
+                console.log(`${data.id}: Using timestamp - ${new Date(finalTimestamp).toLocaleString()}`);
+            }
+        }
+    }
+    
+    // PRIORITY 3: Use current timestamp as fallback (ensures newest booking gets highest timestamp)
+    if (finalTimestamp === 0) {
+        // Use current time + a small random offset to ensure uniqueness
+        // This ensures new bookings without proper timestamps always sort to top
+        finalTimestamp = Date.now() + Math.random();
+        console.log(`${data.id}: Using current timestamp fallback - ${new Date(finalTimestamp).toLocaleString()}`);
+    }
+    
+    data._sortTimestamp = finalTimestamp;
+    data._originalKey = data.id; // Store original key for secondary sorting
+    activitiesArray.push(data);
+});
 
-                // Sort activities by _sortTimestamp descending (newest first), tiebreaker by _tiebreaker
-                activitiesArray.sort((a, b) => {
-                    if (b._sortTimestamp !== a._sortTimestamp) {
-                        return b._sortTimestamp - a._sortTimestamp;
-                    }
-                    return b._tiebreaker - a._tiebreaker;
-                });
+// STABLE SORT: Primary by timestamp (desc), Secondary by Firebase key (desc for newer keys)
+activitiesArray.sort((a, b) => {
+    // Primary sort: timestamp descending (newest first)
+    const timeDiff = b._sortTimestamp - a._sortTimestamp;
+    
+    if (Math.abs(timeDiff) < 1) { // If timestamps are essentially equal (within 1ms)
+        // Secondary sort: Firebase key comparison (newer Firebase keys are lexicographically larger)
+        return b._originalKey.localeCompare(a._originalKey);
+    }
+    
+    return timeDiff;
+});
+
+// Enhanced debug output with more details
+console.log('=== SORTING RESULTS (Newest First) ===');
+activitiesArray.slice(0, 10).forEach((item, index) => {
+    const activityType = item.activityName || item.activityType || item.type || 'Unknown';
+    const timeStr = new Date(item._sortTimestamp).toLocaleString();
+    const isRecent = (Date.now() - item._sortTimestamp) < 60000; // Last minute
+    console.log(`${index + 1}. ${item.id} - ${timeStr} - ${activityType} ${isRecent ? '🔥 NEW' : ''}`);
+});
+
+// Verify sorting stability
+console.log('\n=== SORT VERIFICATION ===');
+let sortingErrors = 0;
+for (let i = 1; i < Math.min(activitiesArray.length, 10); i++) {
+    const prev = activitiesArray[i-1];
+    const curr = activitiesArray[i];
+    const isCorrectOrder = prev._sortTimestamp >= curr._sortTimestamp;
+    
+    if (!isCorrectOrder) {
+        sortingErrors++;
+        console.log(`❌ SORT ERROR: ${prev.id} (${prev._sortTimestamp}) should be >= ${curr.id} (${curr._sortTimestamp})`);
+    } else {
+        console.log(`✅ ${prev.id} (${new Date(prev._sortTimestamp).toLocaleTimeString()}) >= ${curr.id} (${new Date(curr._sortTimestamp).toLocaleTimeString()})`);
+    }
+}
+
+console.log(`\n=== SUMMARY ===`);
+console.log(`Total items: ${activitiesArray.length}`);
+console.log(`Sort errors: ${sortingErrors}`);
+console.log(`Sorting is ${sortingErrors === 0 ? 'STABLE ✅' : 'UNSTABLE ❌'}`);
+
+// Optional: Add a booking order index for extra stability
+activitiesArray.forEach((item, index) => {
+    item._displayOrder = index;
+});
+                
                 activitiesArray.forEach((data) => {
                     let status = data.status || "pending";
                     count++;
