@@ -18,13 +18,26 @@
     font-family: Arial, sans-serif;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 body {
-    background: url('grt.jpg') no-repeat top center fixed; /* Image at the top */
-            background-size: cover; /* Ensures it covers the entire page */
-            line-height: 1.6;
-          
-            
-        }
+    background: url('grt.jpg') no-repeat top center fixed;
+    background-size: cover;
+    line-height: 1.6;
+    overflow-x: hidden;
+    animation: pageLoad 0.8s ease;
+}
+
+@keyframes pageLoad {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
 
         /* Overlay to improve readability */
         body::before {
@@ -48,11 +61,11 @@ body {
     position: fixed;
     top: 0;
     width: 100%;
-    background: rgba(255, 255, 255, 0.02);    /* extremely transparent */
-    backdrop-filter: blur(2px);             /* more intense blur */
-    -webkit-backdrop-filter: blur(2px);     /* Safari support */
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* soft deep shadow */
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* faint border */
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
     z-index: 1000;
 }
 
@@ -104,40 +117,55 @@ body {
         .nav-links {
             display: flex;
             align-items: center;
-            gap: 2.5rem;
+            gap: 1.5rem;
             margin: 0;
             padding: 0;
             list-style: none;
         }
 
         .nav-links a {
-            color: #0e0d0d;
+            color: #173210;
             text-decoration: none;
-            font-size: 0.95rem;
-            font-weight: 500;
-            padding: 0.5rem 0;
+            font-size: 1.05rem;
+            font-weight: 600;
+            padding: 0.7rem 1.3rem;
             position: relative;
-            transition: color 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(44, 85, 48, 0.08), rgba(44, 85, 48, 0.15));
+            box-shadow: 0 3px 10px rgba(44, 85, 48, 0.15);
+            border: 2px solid rgba(0, 0, 0, 0.6);
+            letter-spacing: 0.3px;
         }
 
-        /* Underline effect for nav links */
-        .nav-links a::after {
+        /* Enhanced hover effect for nav links */
+        .nav-links a::before {
             content: '';
             position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: 0;
+            top: 0;
             left: 0;
-            background-color: #2c5530;
-            transition: width 0.3s ease;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #2c5530, #4a7c59);
+            border-radius: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
         }
 
         .nav-links a:hover {
-            color: #2c5530;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(44, 85, 48, 0.4);
+            border-color: #2c5530;
         }
 
-        .nav-links a:hover::after {
-            width: 100%;
+        .nav-links a:hover::before {
+            opacity: 1;
+        }
+
+        .nav-links a:active {
+            transform: translateY(0);
         }
 
         /* Dropdown Styles */
@@ -145,9 +173,13 @@ body {
             position: relative;
         }
 
+        .dropdown > a {
+            position: relative;
+        }
+
         .dropdown > a .fa-chevron-down {
-            font-size: 0.8rem;
-            margin-left: 0.3rem;
+            font-size: 0.75rem;
+            margin-left: 0.4rem;
             transition: transform 0.3s ease;
         }
 
@@ -158,34 +190,62 @@ body {
         .dropdown-content {
             position: absolute;
             top: 100%;
-            left: -1rem;
-            background: #ffffff;
-            min-width: 180px;
-            border-radius: 4px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            left: 0;
+            background: white;
+            min-width: 200px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(44, 85, 48, 0.2);
             opacity: 0;
             visibility: hidden;
             transform: translateY(10px);
-            transition: all 0.3s ease;
-            padding: 0.5rem 0;
-            margin-top: 0.5rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0.8rem 0;
+            margin-top: 0.8rem;
+            border: 2px solid rgba(44, 85, 48, 0.1);
+            z-index: 1000;
         }
 
         .dropdown:hover .dropdown-content {
             opacity: 1;
             visibility: visible;
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
+        }
+
+        .dropdown-content::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 20px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid rgba(44, 85, 48, 0.1);
         }
 
         .dropdown-content a {
-            padding: 0.7rem 1.2rem;
+            padding: 0.8rem 1.5rem;
             display: block;
-            color: #333;
-            font-size: 0.9rem;
+            color: #2c5530;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin: 0.3rem 0.8rem;
+            background: transparent;
+            box-shadow: none;
+            border: none;
+        }
+
+        .dropdown-content a::before {
+            display: none;
         }
 
         .dropdown-content a:hover {
-            background: #f8f9fa;
+            background: linear-gradient(135deg, #2c5530, #4a7c59);
+            color: white;
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(44, 85, 48, 0.2);
         }
 
         /* Responsive Design */
@@ -233,31 +293,120 @@ body {
             .logo {
                 margin-bottom: 0.5rem;
             }
+
+            .navbar {
+    padding: 14px 0 !important;
+}
         }
 
-        /* Scroll Effect */
-        .navbar.scrolled {
-            background: rgba(255, 255, 255, 0.98);
+        /* Team section title animation */
+        .team-section h2 {
+            animation: fadeInSection 0.8s ease forwards, pulse 2s ease-in-out 1s infinite;
         }
 
-        /* Add smooth transition for scroll effect */
-        .navbar {
-            transition: background-color 0.3s ease;
+        @keyframes pulse {
+            0%, 100% {
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                transform: translateY(-3px) scale(1.02);
+            }
         }
         .about-hero {
-            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('nh.jpg');
+            background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4)), url('nh.jpg');
             background-size: cover;
             background-position: center;
-            background-attachment: fixed;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            text-align: center;
             color: white;
-            margin-top: 80px;
+            margin-top: 85px;
             position: relative;
             overflow: hidden;
+            padding: 4rem 2rem;
+             border-radius: 20px;
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+
+        .hero-content-wrapper {
+            max-width: 1400px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            z-index: 2;
+            position: relative;
+        }
+
+        .hero-left {
+            text-align: center;
+            padding-right: 2rem;
+        }
+
+        .hero-right {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        /* Hide about content initially to prevent flash of old content */
+        .about-content {
+            display: none;
+        }
+
+        /* Hide hero content initially to prevent flash of old content */
+        .hero-left h1,
+        .hero-left p {
+            opacity: 0;
+            animation: fadeInUp 1.2s ease forwards;
+        }
+
+        .hero-left h1 {
+            animation-delay: 0.3s;
+        }
+
+        .hero-left p {
+            animation-delay: 0.6s;
+        }
+
+        .hero-right {
+            opacity: 0;
+            animation: fadeInUp 1.2s ease 0.8s forwards;
+        }
+
+        .quick-link-btn:nth-child(1) {
+            animation: fadeInUp 1s ease 1s forwards;
+            opacity: 0;
+        }
+
+        .quick-link-btn:nth-child(2) {
+            animation: fadeInUp 1s ease 1.2s forwards;
+            opacity: 0;
+        }
+
+        .quick-link-btn:nth-child(3) {
+            animation: fadeInUp 1s ease 1.4s forwards;
+            opacity: 0;
+        }
+
+        .quick-link-btn:nth-child(4) {
+            animation: fadeInUp 1s ease 1.6s forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .about-hero::before {
@@ -267,24 +416,83 @@ body {
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(45deg, rgba(44, 85, 48, 0.3), rgba(0, 0, 0, 0.5));
+            background: linear-gradient(135deg, rgba(44, 85, 48, 0.2), rgba(0, 0, 0, 0.3));
         }
 
-        .about-hero h1 {
-            font-size: 4rem;
+        .about-hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.15));
+            pointer-events: none;
+        }
+
+        .hero-left h1 {
+            font-size: 3.5rem;
             margin-bottom: 1.5rem;
             font-family: Georgia, 'Times New Roman', Times, serif;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-            position: relative;
-            z-index: 1;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+            letter-spacing: 1px;
+            font-weight: bold;
+            line-height: 1.2;
         }
 
-        .about-hero p {
-            font-size: 1.5rem;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-            position: relative;
-            z-index: 1;
+        .hero-left p {
+            font-size: 1.2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            line-height: 1.8;
+            max-width: 600px;
         }
+
+        .quick-links-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .quick-link-btn {
+            background: #66bb6a;
+            color: white;
+            padding: 2.5rem 2rem;
+            border-radius: 20px;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            transition: all 0.5s ease;
+            box-shadow: 0 8px 20px rgba(102, 187, 106, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .quick-link-btn i {
+            font-size: 3rem;
+            transition: transform 0.5s ease;
+        }
+
+        .quick-link-btn span {
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .quick-link-btn:hover {
+            background: #43a047;
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 12px 30px rgba(67, 160, 71, 0.4);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .quick-link-btn:hover i {
+            transform: scale(1.2) rotateY(360deg);
+        }
+
 
         .about-content {
             max-width: 1200px;
@@ -320,6 +528,18 @@ body {
             font-family: Georgia, 'Times New Roman', Times, serif;
             position: relative;
             padding-bottom: 1rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInSection 0.8s ease forwards;
+        }
+
+        @keyframes fadeInSection {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .about-section h2::after {
@@ -327,10 +547,17 @@ body {
             position: absolute;
             bottom: 0;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translateX(-50%) scaleX(0);
             width: 80px;
             height: 3px;
-            background: #2c5530;
+            background: linear-gradient(90deg, #2c5530, #4a7c59, #2c5530);
+            animation: expandLine 0.8s ease 0.3s forwards;
+        }
+
+        @keyframes expandLine {
+            to {
+                transform: translateX(-50%) scaleX(1);
+            }
         }
 
         .about-section p {
@@ -351,15 +578,50 @@ body {
             margin-top: 3rem;
         }
 
+        .values-grid .value-card:nth-child(1) {
+            animation-delay: 0.2s;
+        }
+
+        .values-grid .value-card:nth-child(2) {
+            animation-delay: 0.4s;
+        }
+
+        .values-grid .value-card:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
         .value-card {
-            background: #fff;
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
             padding: 2.5rem;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
             text-align: center;
-            transition: all 0.3s ease;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
+            border: 1px solid rgba(44, 85, 48, 0.1);
+            transform: translateY(0);
+        }
+
+        .value-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(44, 85, 48, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .value-card:hover::before {
+            left: 100%;
+        }
+
+        .value-card:hover {
+            transform: translateY(-15px) scale(1.03);
+            box-shadow: 0 20px 60px rgba(44, 85, 48, 0.2);
+            border-color: rgba(44, 85, 48, 0.3);
         }
 
         .value-card {
@@ -377,6 +639,7 @@ body {
             letter-spacing: 0.2px !important;
             text-align: center !important;
             margin-top: 0.2rem !important;
+            transition: color 0.3s ease;
         }
         .value-card p {
             font-size: 0.8rem !important;
@@ -386,6 +649,7 @@ body {
             word-break: break-word !important;
             letter-spacing: 0.01em !important;
             text-align: center !important;
+            transition: color 0.3s ease;
         }
         .value-card i {
             font-size: 1.1rem !important;
@@ -393,10 +657,17 @@ body {
             margin-top: 0.2rem !important;
             display: block !important;
             text-align: center !important;
+            color: #2c5530;
+            transition: all 0.4s ease;
         }
 
         .value-card:hover i {
-            transform: scale(1.1);
+            transform: scale(1.2) rotateY(360deg);
+            color: #4a7c59;
+        }
+
+        .value-card:hover h3 {
+            color: #4a7c59;
         }
 
         .value-card h3 {
@@ -430,19 +701,23 @@ body {
 }
 
 .team-member img {
-    width: 450px;  /* Increased from 250px */
-    height: 450px; /* Increased from 250px */
-    border-radius: 2%;
+    width: 450px;
+    height: 450px;
+    border-radius: 15px;
     object-fit: cover;
     margin-bottom: 1.5rem;
-    border: 6px solid #2c5530; /* Thicker border */
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Stronger shadow */
+    border: 6px solid #2c5530;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 15px 40px rgba(44, 85, 48, 0.3);
+    position: relative;
+    filter: grayscale(0%);
 }
 
 .team-member:hover img {
-    transform: scale(1.1); /* Enlarges slightly on hover */
-    border-color: #3a6b3e;
+    transform: scale(1.08) translateY(-10px) rotate(2deg);
+    border-color: #4a7c59;
+    box-shadow: 0 25px 60px rgba(44, 85, 48, 0.5);
+    filter: brightness(1.1);
 }
 
 
@@ -452,22 +727,83 @@ body {
             font-size: 1.5rem;
             margin-bottom: 0.5rem;
             font-family: Georgia, 'Times New Roman', Times, serif;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .team-member:hover h3 {
+            color: #4a7c59;
+            transform: translateY(-5px);
         }
 
         .team-member p {
             color: #474444;
             font-size: 1.3rem;
             margin: 0;
-            
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .team-member:hover p {
+            color: #2c5530;
+            transform: translateY(-3px);
+        }
+
+        @media (max-width: 968px) {
+            .hero-content-wrapper {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+                padding: 2rem 1rem;
+            }
+
+            .hero-left {
+                text-align: center;
+                padding-right: 0;
+            }
+
+            .hero-left h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-left p {
+                font-size: 1.1rem;
+                max-width: 100%;
+            }
+
+            .quick-links-grid {
+                gap: 1rem;
+            }
+
+            .quick-link-btn {
+                padding: 2rem 1.5rem;
+            }
+
+            .quick-link-btn i {
+                font-size: 2.5rem;
+            }
+
+            .quick-link-btn span {
+                font-size: 1.1rem;
+            }
         }
 
         @media (max-width: 768px) {
-            .about-hero h1 {
-                font-size: 2.8rem;
+            .hero-left h1 {
+                font-size: 2rem;
             }
             
-            .about-hero p {
-                font-size: 1.2rem;
+            .hero-left p {
+                font-size: 1rem;
+            }
+
+            .quick-links-grid {
+                grid-template-columns: 1fr;
+                max-width: 350px;
+            }
+
+            .quick-link-btn {
+                padding: 1.5rem 1rem;
             }
             
             .about-section h2 {
@@ -505,16 +841,13 @@ body {
 
 /* Certificate Container */
 .certificate {
-    padding: 2rem;
-    border-radius: 10px;
-    background: none;
     text-align: center;
-    transition: transform 0.3s ease; /* Smooth scaling effect */
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Zoom effect on hover */
 .certificate:hover {
-    transform: scale(1.1); /* Enlarges the entire certificate container */
+    transform: translateY(-10px);
 }
 
 /* Certificate Image */
@@ -522,17 +855,19 @@ body {
     width: 100%;
     max-width: 600px;
     height: auto;
-    border-radius: 5px;
-    margin-bottom: 1rem;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 3px solid transparent;
 }
 
 /* Zoom effect on hover */
 .certificate:hover img {
-    transform: scale(1.1); /* Enlarges the image */
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transform: scale(1.05);
+    box-shadow: 0 15px 40px rgba(44, 85, 48, 0.3);
+    border-color: rgba(44, 85, 48, 0.2);
 }
 
 /* Certificate Description */
@@ -540,14 +875,13 @@ body {
     color: #535151;
     font-size: 1.2rem;
     font-weight: bold;
-    transition: transform 0.3s ease, color 0.3s ease;
+    transition: all 0.3s ease;
     text-align: center;
 }
 
 /* Zoom effect on description */
 .certificate:hover p {
-    transform: scale(1.1); /* Enlarges the text */
-    color: #0c0d0c; /* Changes color slightly for better effect */
+    color: #2c5530;
 }
 
 
@@ -574,8 +908,10 @@ body {
 .mobile-nav.open { transform: translateX(0); }
 .close-drawer { background: none; border: none; font-size: 26px; line-height: 1; color: #2c5530; cursor: pointer; position: absolute; top: 10px; right: 12px; }
 .mobile-nav-links { list-style: none; margin: 48px 0 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
-.mobile-nav-links a { color: #2c5530; text-decoration: none; font-size: 1rem; padding: 10px 8px; border-radius: 6px; }
+.mobile-nav-links a { color: #2c5530; text-decoration: none; font-size: 1rem; padding: 10px 8px; border-radius: 6px; transition: all 0.3s ease; }
 .mobile-nav-links a:hover { background: #f3f5f4; }
+.mobile-nav-links a.active { background: linear-gradient(135deg, #2c5530, #4a7c59); color: white; font-weight: 700; box-shadow: 0 4px 12px rgba(44, 85, 48, 0.3); border-left: 4px solid #1a3d1f; }
+.mobile-nav-links a.active::before { content: '●'; margin-right: 8px; font-size: 0.8rem; }
 .nav-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.35); z-index: 1500; display: none; }
 .nav-overlay.show { display: block; }
 @media (max-width: 768px) {
@@ -682,20 +1018,42 @@ body {
 <div id="navOverlay" class="nav-overlay" aria-hidden="true"></div>
     <!-- Hero Section -->
     <section class="about-hero">
-        <div class="hero-content">
-            <h1 id="our-journey-title">Our Journey</h1>
-            <p>Uncover the passion and vision that make our resort a true paradise.</p>
+        <div class="hero-content-wrapper">
+            <div class="hero-left">
+                <h1 id="our-journey-title">Our Journey and Passion</h1>
+                <p>Explore our rich history, unwavering values, talented team, and prestigious certificates that define who we are and what we stand for. Join us in discovering the story behind our success.</p>
+            </div>
+            <div class="hero-right">
+                <div class="quick-links-grid">
+                    <a href="#history" class="quick-link-btn">
+                        <i class="fas fa-history"></i>
+                        <span>History</span>
+                    </a>
+                    <a href="#values" class="quick-link-btn">
+                        <i class="fas fa-balance-scale"></i>
+                        <span>Values</span>
+                    </a>
+                    <a href="#team" class="quick-link-btn">
+                        <i class="fas fa-users"></i>
+                        <span>Team</span>
+                    </a>
+                    <a href="#certificates" class="quick-link-btn">
+                        <i class="fas fa-certificate"></i>
+                        <span>Certificates</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </section>
 
     <!-- About Content -->
     <div class="about-content">
-        <section class="about-section" data-aos="fade-up">
+        <section id="history" class="about-section" data-aos="fade-up">
             <h2>Our History</h2>
             <p>Agcararao Mountain View is a tourist destination nestled in the highlands of Brgy. Magdungao, Sitio Agcararao, Passi City. It is owned by former Binibining Pintados Jo-nah Belle Capuy-Arcenal's family. The farm site is attractive and is seen to be a place where clouds freely dance so the family has decided to convert their property into a flower and vegetable farm where groups and families of Passi City and its neighboring towns can pay a visit to enjoy the mesmerizing view from the top over-looking the nature and sea of clouds. The family is motivated to propagate the land to make it more a wonderful place where guests can go trekking, have fun, relax, and contemplate how wonderful life can be. The resort officially opened to the public on February 18, 2020, offering visitors opportunities for trekking, relaxation, and photography amidst scenic landscapes. </p>
         </section>
 
-        <section class="about-section" data-aos="fade-up">
+        <section id="values" class="about-section" data-aos="fade-up">
             <h2>Our Values</h2>
             <div class="values-grid">
                 <div class="value-card">
@@ -716,8 +1074,8 @@ body {
             </div>
         </section>
 
-        <section class="about-section team-section" data-aos="fade-up">
-            <h2>Our Team</h2>
+        <section id="team" class="about-section team-section" data-aos="fade-up">
+            <h2>Meet Our Team</h2>
             <div class="team-grid">
                 <div class="team-member">
                     <img src="agcararao logo.jpg" alt="Owner">
@@ -733,7 +1091,7 @@ body {
         </section>
     </div>
 
-    <section class="about-section certificates-section" data-aos="fade-up">
+    <section id="certificates" class="about-section certificates-section" data-aos="fade-up">
         <h2>Our Certificates & Accreditations</h2>
         <div class="certificates-grid">
             <div class="certificate">
@@ -755,9 +1113,237 @@ body {
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        AOS.init();
+        AOS.init({
+            duration: 1000,
+            once: false,
+            offset: 100,
+            easing: 'ease-in-out'
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
     </script>
-    <script src="script.js"></script>
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+    
+        // Firebase configuration (same as admin.html)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBAE0ieuAJRp_rF4I90qXP8zPr4TQW_rIg",
+            authDomain: "agcararaoret.firebaseapp.com",
+            databaseURL: "https://agcararaoret-default-rtdb.firebaseio.com",
+            projectId: "agcararaoret",
+            storageBucket: "agcararaoret.appspot.com",
+            messagingSenderId: "369964400118",
+            appId: "1:369964400118:web:bd0e0f15ef0e235392dbd7"
+        };
+    
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Function to load about content from Firebase
+        function loadAboutContent() {
+            const aboutRef = ref(db, 'siteContent/about');
+            onValue(aboutRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    const aboutData = snapshot.val();
+                    updateAboutContent(aboutData);
+                } else {
+                    // Show default content if no Firebase data
+                    showDefaultContent();
+                }
+                
+                // Remove loading placeholder and show content
+                removeLoadingPlaceholder();
+            }, (err) => {
+                console.error('Failed to load about content:', err);
+                // Show default content on error
+                showDefaultContent();
+                removeLoadingPlaceholder();
+            });
+        }
+
+        // Function to show default content
+        function showDefaultContent() {
+            const heroTitle = document.querySelector('#our-journey-title');
+            const heroSubtitle = document.querySelector('.about-hero p');
+            if (heroTitle) heroTitle.style.opacity = '1';
+            if (heroSubtitle) heroSubtitle.style.opacity = '1';
+        }
+
+        // Function to remove loading placeholder
+        function removeLoadingPlaceholder() {
+            const loadingPlaceholder = document.getElementById('loading-placeholder');
+            if (loadingPlaceholder) {
+                loadingPlaceholder.remove();
+            }
+            
+            const aboutContent = document.querySelector('.about-content');
+            if (aboutContent) {
+                aboutContent.style.display = 'block';
+            }
+        }
+
+        // Function to update page content with Firebase data
+        function updateAboutContent(data) {
+            // Update hero section
+            const heroTitle = document.querySelector('#our-journey-title');
+            const heroSubtitle = document.querySelector('.about-hero p');
+            
+            if (heroTitle && data.title) {
+                heroTitle.textContent = data.title;
+                heroTitle.style.opacity = '1';
+            }
+            if (heroSubtitle && data.subtitle) {
+                heroSubtitle.textContent = data.subtitle;
+                heroSubtitle.style.opacity = '1';
+            }
+
+            // Update hero background image if provided
+            if (data.heroImage) {
+                const heroSection = document.querySelector('.about-hero');
+                if (heroSection) {
+                    heroSection.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('${data.heroImage}')`;
+                }
+            }
+
+            // Update history section
+            if (data.history) {
+                const historyTitle = document.querySelector('.about-section h2');
+                const historyText = document.querySelector('.about-section p');
+                
+                if (historyTitle && data.history.title) {
+                    historyTitle.textContent = data.history.title;
+                }
+                if (historyText && data.history.text) {
+                    historyText.textContent = data.history.text;
+                }
+            }
+
+            // Update values section
+            if (data.values && Array.isArray(data.values)) {
+                updateValuesSection(data.values);
+            }
+
+            // Update team section
+            if (data.team && Array.isArray(data.team)) {
+                updateTeamSection(data.team);
+            }
+
+            // Update certificates section
+            if (data.certificates && Array.isArray(data.certificates)) {
+                updateCertificatesSection(data.certificates);
+            }
+        }
+
+        // Function to update values section
+        function updateValuesSection(values) {
+            const valuesGrid = document.querySelector('.values-grid');
+            if (!valuesGrid) return;
+
+            // Clear existing values
+            valuesGrid.innerHTML = '';
+
+            // Add new values from Firebase
+            values.forEach(value => {
+                const valueCard = document.createElement('div');
+                valueCard.className = 'value-card';
+                valueCard.innerHTML = `
+                    <i class="fas ${value.icon || 'fa-star'}"></i>
+                    <h3>${value.title || ''}</h3>
+                    <p>${value.text || ''}</p>
+                `;
+                valuesGrid.appendChild(valueCard);
+            });
+        }
+
+        // Function to update team section
+        function updateTeamSection(team) {
+            const teamGrid = document.querySelector('.team-grid');
+            if (!teamGrid) return;
+
+            // Clear existing team members
+            teamGrid.innerHTML = '';
+
+            // Add new team members from Firebase
+            team.forEach(member => {
+                const teamMember = document.createElement('div');
+                teamMember.className = 'team-member';
+                teamMember.innerHTML = `
+                    <img src="${member.img || 'agcararao logo.jpg'}" alt="${member.name || 'Team Member'}">
+                    <h3>${member.name || ''}</h3>
+                    <p>${member.role || ''}</p>
+                `;
+                teamGrid.appendChild(teamMember);
+            });
+        }
+
+        // Function to update certificates section
+        function updateCertificatesSection(certificates) {
+            const certificatesGrid = document.querySelector('.certificates-grid');
+            if (!certificatesGrid) return;
+
+            // Clear existing certificates
+            certificatesGrid.innerHTML = '';
+
+            // Add new certificates from Firebase
+            certificates.forEach(cert => {
+                const certificate = document.createElement('div');
+                certificate.className = 'certificate';
+                certificate.innerHTML = `
+                    <img src="${cert.img || 'cer.jpg'}" alt="${cert.title || 'Certificate'}">
+                    <h3>${cert.title || ''}</h3>
+                    <p>${cert.text || ''}</p>
+                `;
+                certificatesGrid.appendChild(certificate);
+            });
+        }
+
+        // Load content when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // Clear hero content and show loading placeholder
+            const heroTitle = document.querySelector('#our-journey-title');
+            const heroSubtitle = document.querySelector('.about-hero p');
+            if (heroTitle) heroTitle.textContent = '';
+            if (heroSubtitle) heroSubtitle.textContent = '';
+            
+            // Show loading placeholder
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'loading-placeholder';
+            loadingDiv.style.cssText = 'text-align:center;padding:60px 24px;color:#ffffff;font-size:1.2rem;text-shadow:2px 2px 4px rgba(0,0,0,0.5);margin:40px 20px;';
+            loadingDiv.innerHTML = 'Loading about content...';
+            
+            // Insert loading placeholder after hero section
+            const heroSection = document.querySelector('.about-hero');
+            if (heroSection && heroSection.parentNode) {
+                heroSection.parentNode.insertBefore(loadingDiv, heroSection.nextSibling);
+            }
+            
+            // Add loading indicator
+            console.log('Loading about content from Firebase...');
+            loadAboutContent();
+        });
+
+        // Error handling for Firebase connection
+        window.addEventListener('error', (e) => {
+            if (e.message.includes('Firebase')) {
+                console.warn('Firebase connection issue, using default content');
+            }
+        });
+    </script>
     <script>
 (function ensureHamburger(){
   try{
@@ -783,6 +1369,22 @@ body {
   closeBtn&&closeBtn.addEventListener('click',closeDrawer);
   overlay&&overlay.addEventListener('click',closeDrawer);
   document.querySelectorAll('#mobileNav a').forEach(function(a){ a.addEventListener('click',closeDrawer); });
+})();
+
+// Automatically highlight the current page in mobile nav
+(function highlightCurrentPage(){
+  try{
+    var currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    if(currentPage === '' || currentPage === '/') currentPage = 'index.html';
+    
+    var mobileLinks = document.querySelectorAll('#mobileNav .mobile-nav-links a');
+    mobileLinks.forEach(function(link){
+      var linkHref = link.getAttribute('href');
+      if(linkHref === currentPage){
+        link.classList.add('active');
+      }
+    });
+  }catch(e){}
 })();
     </script>
 </body>
