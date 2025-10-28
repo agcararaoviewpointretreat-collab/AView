@@ -45,12 +45,13 @@
     position: fixed;
     top: 0;
     width: 100%;
-    background: rgba(255, 255, 255, 0.02);    /* extremely transparent */
-    backdrop-filter: blur(2px);             /* more intense blur */
-    -webkit-backdrop-filter: blur(2px);     /* Safari support */
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* soft deep shadow */
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* faint border */
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
     z-index: 1000;
+    transition: all 0.3s ease;
 }
 
 .nav-container {
@@ -101,40 +102,55 @@
         .nav-links {
             display: flex;
             align-items: center;
-            gap: 2.5rem;
+            gap: 1.5rem;
             margin: 0;
             padding: 0;
             list-style: none;
         }
 
         .nav-links a {
-            color: #0e0d0d;
+            color: #173210;
             text-decoration: none;
-            font-size: 0.95rem;
-            font-weight: 500;
-            padding: 0.5rem 0;
+            font-size: 1.05rem;
+            font-weight: 600;
+            padding: 0.7rem 1.3rem;
             position: relative;
-            transition: color 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(44, 85, 48, 0.08), rgba(44, 85, 48, 0.15));
+            box-shadow: 0 3px 10px rgba(44, 85, 48, 0.15);
+            border: 2px solid rgba(0, 0, 0, 0.6);
+            letter-spacing: 0.3px;
         }
 
-        /* Underline effect for nav links */
-        .nav-links a::after {
+        /* Enhanced hover effect for nav links */
+        .nav-links a::before {
             content: '';
             position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: 0;
+            top: 0;
             left: 0;
-            background-color: #2c5530;
-            transition: width 0.3s ease;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #2c5530, #4a7c59);
+            border-radius: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
         }
 
         .nav-links a:hover {
-            color: #2c5530;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(44, 85, 48, 0.4);
+            border-color: #2c5530;
         }
 
-        .nav-links a:hover::after {
-            width: 100%;
+        .nav-links a:hover::before {
+            opacity: 1;
+        }
+
+        .nav-links a:active {
+            transform: translateY(0);
         }
 
         /* Dropdown Styles */
@@ -142,9 +158,13 @@
             position: relative;
         }
 
+        .dropdown > a {
+            position: relative;
+        }
+
         .dropdown > a .fa-chevron-down {
-            font-size: 0.8rem;
-            margin-left: 0.3rem;
+            font-size: 0.75rem;
+            margin-left: 0.4rem;
             transition: transform 0.3s ease;
         }
 
@@ -155,34 +175,62 @@
         .dropdown-content {
             position: absolute;
             top: 100%;
-            left: -1rem;
-            background: #ffffff;
-            min-width: 180px;
-            border-radius: 4px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            left: 0;
+            background: white;
+            min-width: 200px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(44, 85, 48, 0.2);
             opacity: 0;
             visibility: hidden;
             transform: translateY(10px);
-            transition: all 0.3s ease;
-            padding: 0.5rem 0;
-            margin-top: 0.5rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0.8rem 0;
+            margin-top: 0.8rem;
+            border: 2px solid rgba(44, 85, 48, 0.1);
+            z-index: 1000;
         }
 
         .dropdown:hover .dropdown-content {
             opacity: 1;
             visibility: visible;
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
+        }
+
+        .dropdown-content::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 20px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid rgba(44, 85, 48, 0.1);
         }
 
         .dropdown-content a {
-            padding: 0.7rem 1.2rem;
+            padding: 0.8rem 1.5rem;
             display: block;
-            color: #333;
-            font-size: 0.9rem;
+            color: #2c5530;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin: 0.3rem 0.8rem;
+            background: transparent;
+            box-shadow: none;
+            border: none;
+        }
+
+        .dropdown-content a::before {
+            display: none;
         }
 
         .dropdown-content a:hover {
-            background: #f8f9fa;
+            background: linear-gradient(135deg, #2c5530, #4a7c59);
+            color: white;
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(44, 85, 48, 0.2);
         }
 
         /* Responsive Design */
@@ -239,6 +287,7 @@
         /* Scroll Effect */
         .navbar.scrolled {
             background: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 12px 40px rgba(44, 85, 48, 0.2);
         }
 
         /* Add smooth transition for scroll effect */
@@ -247,107 +296,266 @@
         }
         /* Hero Section */
         .hero {
-           background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('lo.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            height: 100vh;
+            min-height: 90vh;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            color: white;
-            margin-top: 80px;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-top: 85px;
+            padding: 120px 20px 60px 80px;
             position: relative;
             overflow: hidden;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('lo.jpg');
+            background-size: cover;
+            background-position: center;
+            border-radius: 20px;
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+        
+        .hero .container {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 60px;
+            max-width: 1600px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        .hero-content {
+            flex: 1;
+            max-width: 500px;
+            text-align: left;
+            z-index: 2;
+        }
+        
+        .hero-bg-grid {
+            flex: 0.8;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(4, 140px);
+            gap: 12px;
+            max-width: 750px;
+            z-index: 1;
+            grid-auto-flow: dense;
+            margin-top: -70px;
+        }
+        
+        .hero-bg-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            opacity: 0;
+            transition: opacity 1s ease-in-out, transform 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hero-bg-item.loaded {
+            opacity: 1;
+        }
+        
+        .hero-bg-item:nth-child(1) { grid-column: 1 / 2; grid-row: 1 / 2; }
+        .hero-bg-item:nth-child(2) { grid-column: 2 / 4; grid-row: 1 / 3; }
+        .hero-bg-item:nth-child(3) { grid-column: 1 / 2; grid-row: 2 / 3; }
+        .hero-bg-item:nth-child(4) { grid-column: 1 / 2; grid-row: 3 / 4; }
+        .hero-bg-item:nth-child(5) { grid-column: 2 / 3; grid-row: 3 / 4; }
+        .hero-bg-item:nth-child(6) { grid-column: 3 / 4; grid-row: 3 / 5; }
+        .hero-bg-item:nth-child(7) { grid-column: 1 / 2; grid-row: 4 / 5; }
+        .hero-bg-item:nth-child(8) { grid-column: 2 / 3; grid-row: 4 / 5; }
+        
+        .hero-bg-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .hero-bg-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .hero-bg-item:hover img {
+            transform: scale(1.1);
+        }
+
+        @keyframes heroFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .hero h1 {
-            font-size: 3.2rem;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-            font-family: Georgia, 'Times New Roman', Times, serif;
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            font-family: 'Playfair Display', Georgia, serif;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #ffffff;
+            line-height: 1.3;
+            animation: heroFadeIn 1.5s ease-out;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
         }
 
         .hero p {
-            font-size: 1.4rem;
-            max-width: 800px;
-            margin: 0 auto;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #ffffff;
+            margin-bottom: 0;
+            animation: subtitleSlide 1.5s ease-out 0.3s both;
+            text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.7);
+        }
+
+        @keyframes subtitleSlide {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
       /* Gallery Section */
 .gallery-section {
-    padding: 80px 0;
-    margin: 40px auto;
-    min-height: calc(100vh - 400px); /* Ensure minimum height for content */
+    padding: 100px 0;
+    margin: 0 auto;
+    min-height: calc(100vh - 400px);
+    background: transparent;
 }
 
 .section-title {
     text-align: center;
-    margin-bottom: 60px;
-    color: #0b0b0b;
+    margin-bottom: 70px;
+    color: #000000;
+    animation: fadeInUp 1s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .section-title h2 {
-    font-size: 42px;
-    color: #080808;
+    font-size: 3.5rem;
+    color: #000000;
     position: relative;
     display: inline-block;
-    padding-bottom: 20px;
-    margin-bottom: 20px;
+    padding-bottom: 25px;
+    margin-bottom: 25px;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 700;
+    letter-spacing: 1px;
     animation: fadeInScale 0.8s ease-out;
+    text-shadow: 2px 2px 8px rgba(255, 255, 255, 0.8);
 }
 
 .section-title h2::before {
-    content: '';
+    content: '✦';
     position: absolute;
-    left: -20px;
-    right: -20px;
-    top: -10px;
-    bottom: -10px;
-    border: 2px solid transparent;
-    border-radius: 10px;
-    animation: borderGlow 3s infinite;
-    pointer-events: none;
+    left: -60px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 2rem;
+    color: #000000;
+    animation: sparkle 2s ease-in-out infinite;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
 }
 
 .section-title h2::after {
-    content: '';
+    content: '✦';
     position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 0;
-    width: 100px;
-    height: 4px;
-    background: linear-gradient(90deg, #2c5530, #4CAF50, #2c5530);
-    border-radius: 2px;
-    transition: background-position 0.7s, width 0.4s;
-    background-size: 400% 100%;
-    background-position: 0% 50%;
+    right: -60px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 2rem;
+    color: #000000;
+    animation: sparkle 2s ease-in-out infinite 1s;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
 }
 
-.section-title h2:hover::after {
-    background-position: 100% 50%;
-    width: 260px; /* Slightly wider on hover for effect */
+@keyframes sparkle {
+    0%, 100% {
+        opacity: 1;
+        transform: translateY(-50%) scale(1);
+    }
+    50% {
+        opacity: 0.5;
+        transform: translateY(-50%) scale(1.2);
+    }
 }
 
-@keyframes lineGrow {
-    from { width: 0; }
-    to { width: 80px; }
+.section-title h2::before,
+.section-title h2::after {
+    content: '';
+}
+
+.section-title h2 {
+    border-bottom: 4px solid;
+    border-image: linear-gradient(90deg, transparent, #000000, #333333, #000000, transparent) 1;
+    padding-bottom: 20px;
 }
 
 .section-title p {
-    font-size: 20px;
-    color: #0e0808;
-    max-width: 600px;
+    font-size: 1.3rem;
+    color: #000000;
+    max-width: 700px;
     margin: 0 auto;
+    line-height: 1.8;
     animation: slideInFromBottom 0.8s ease-out 0.2s both;
+    text-shadow: 1px 1px 6px rgba(255, 255, 255, 0.8);
+}
+
+@keyframes slideInFromBottom {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Month Header */
+.month-header {
+    grid-column: 1 / -1;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 3px solid #000000;
+}
+
+.month-header h3 {
+    font-size: 2rem;
+    color: #000000;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.month-header:first-child {
+    margin-top: 0;
 }
 
 /* Gallery Grid */
 .gallery-grid {
     display: grid;
-    grid-template-rows: repeat(5, 1fr); /* Force 5 rows */
+    grid-template-rows: auto;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 30px;
     padding: 20px;
@@ -359,21 +567,33 @@
 
 .gallery-item {
     background: white;
-    border-radius: 15px;
+    border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
-    height: 200px;
-    border: 3px solid transparent;
-    animation: fadeInScale 0.6s ease-out;
+    height: 280px;
+    border: 2px solid rgba(44, 85, 48, 0.1);
+    animation: fadeInScale 0.8s ease-out;
+    cursor: pointer;
 }
 
 .gallery-item:hover {
-    transform: translateY(-12px) scale(1.02);
-    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.2);
-    border-color: rgba(44, 85, 48, 0.5);
-    animation: glowPulse 2s infinite;
+    transform: translateY(-15px) scale(1.03) rotate(1deg);
+    box-shadow: 0 25px 50px rgba(44, 85, 48, 0.25);
+    border-color: rgba(44, 85, 48, 0.6);
+    z-index: 10;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 .gallery-item::before {
@@ -398,13 +618,13 @@
     height: 100%;
     object-fit: cover;
     display: block;
-    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    filter: brightness(0.95);
+    transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: brightness(0.95) saturate(1);
 }
 
 .gallery-item:hover img {
-    transform: scale(1.08) rotate(1deg);
-    filter: brightness(1.1);
+    transform: scale(1.15);
+    filter: brightness(1.05) saturate(1.2);
 }
 
 .gallery-item::after {
@@ -425,6 +645,28 @@
 .gallery-item:hover::after {
     opacity: 1;
     transform: translateY(0);
+}
+
+.gallery-item .month-label {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: rgba(44, 85, 48, 0.95);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    z-index: 3;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.gallery-item:hover .month-label {
+    background: rgba(44, 85, 48, 1);
+    transform: scale(1.05);
 }
 
 .gallery-item .image-info {
@@ -459,6 +701,15 @@
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
+.gallery-item .image-date {
+    font-size: 0.85em;
+    color: rgba(255, 255, 255, 0.85);
+    margin-top: 8px;
+    font-weight: 600;
+    font-style: italic;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
 .lightbox-info {
     position: absolute;
     bottom: 0;
@@ -486,24 +737,52 @@
     margin-bottom: 20px;
 }
 
+.lightbox-date {
+    font-size: 0.9em;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 600;
+    font-style: italic;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
 /* Loading Spinner */
 .loading {
-    padding: 80px 0;
+    padding: 100px 0;
+    text-align: center;
     animation: fadeInScale 0.5s ease-out;
 }
 
 .spinner {
-    border: 5px solid rgba(44, 85, 48, 0.1);
-    border-left-color: #2c5530;
-    width: 60px;
-    height: 60px;
-    animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    border: 6px solid rgba(44, 85, 48, 0.1);
+    border-top: 6px solid #2c5530;
+    border-right: 6px solid #4CAF50;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 .loading p {
-    color: #666;
-    font-size: 18px;
-    margin-top: 20px;
+    color: #2c5530;
+    font-size: 1.2rem;
+    margin-top: 25px;
+    font-weight: 600;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
 }
 
 /* Lightbox */
@@ -628,9 +907,44 @@
         }
 
         /* Responsive Design */
+        @media (max-width: 1024px) {
+            .hero {
+                padding: 100px 40px 40px 40px;
+            }
+            
+            .hero .container {
+                flex-direction: column;
+                gap: 40px;
+            }
+            
+            .hero-content {
+                max-width: 100%;
+                text-align: center;
+            }
+            
+            .hero h1 {
+                font-size: 3rem;
+            }
+            
+            .hero-bg-grid {
+                max-width: 100%;
+                grid-template-columns: repeat(3, 1fr);
+                grid-template-rows: repeat(4, 120px);
+                margin-top: 0;
+            }
+        }
+        
         @media (max-width: 768px) {
+            .hero {
+                padding: 80px 20px 30px 20px;
+            }
+            
             .hero h1 {
                 font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
             }
 
             .month-filter-dropdown {
@@ -644,43 +958,101 @@
             .gallery-grid {
                 grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             }
+            
+            .hero-bg-grid {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(5, 100px);
+                gap: 8px;
+                margin-top: 0;
+            }
+            
+            .hero-bg-item:nth-child(1) { grid-column: 1 / 2; grid-row: 1 / 2; }
+            .hero-bg-item:nth-child(2) { grid-column: 2 / 3; grid-row: 1 / 3; }
+            .hero-bg-item:nth-child(3) { grid-column: 1 / 2; grid-row: 2 / 3; }
+            .hero-bg-item:nth-child(4) { grid-column: 1 / 2; grid-row: 3 / 4; }
+            .hero-bg-item:nth-child(5) { grid-column: 2 / 3; grid-row: 3 / 4; }
+            .hero-bg-item:nth-child(6) { grid-column: 1 / 2; grid-row: 4 / 5; }
+            .hero-bg-item:nth-child(7) { grid-column: 2 / 3; grid-row: 4 / 5; }
+            .hero-bg-item:nth-child(8) { grid-column: 1 / 3; grid-row: 5 / 6; }
         }
       
 /* Footer Bottom */
 .footer-bottom {
-            text-align: center;
-    padding: 0.5rem;
-    color: #070707;
-    font-size: 0.9rem;
-    margin-top: 1rem;
+    text-align: center;
+    padding: 2rem;
+    background: transparent;
+    color: #060606;
+    font-size: 0.95rem;
+    margin-top: 3rem;
+    box-shadow: none;
+}
 
+.footer-bottom p {
+    margin: 0;
+    letter-spacing: 0.5px;
 }
 
 .month-filter-dropdown {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    margin-bottom: 30px;
-    gap: 10px;
+    margin-bottom: 50px;
+    gap: 15px;
+    padding: 0 20px;
+    animation: slideIn 1s ease-out 0.5s both;
 }
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
 .month-filter-dropdown label {
-    font-size: 1rem;
-    color: #060b06;
-    font-weight: 500;
+    font-size: 1.1rem;
+    color: #000000;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 4px rgba(255, 255, 255, 0.8);
 }
+
 .month-select {
-    padding: 8px 16px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
+    padding: 12px 24px;
+    border-radius: 50px;
+    border: 2px solid #000000;
     font-size: 1rem;
-    background: #ffffff;
-    color: #0d0d0d;
-    box-shadow: 0 2px 6px rgba(44,85,48,0.04);
-    transition: border-color 0.2s;
+    background: linear-gradient(135deg, #ffffff, #f8f9fa);
+    color: #000000;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
 }
+
+.month-select:hover {
+    background: linear-gradient(135deg, #000000, #333333);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
 .month-select:focus {
-    border-color: #000a01;
+    border-color: #000000;
     outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2);
+}
+
+.month-select option {
+    font-weight: bold;
+    font-size: 1.05rem;
+    padding: 8px;
+    color: #000000;
 }
     </style>
 </head>
@@ -728,8 +1100,11 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="container">
-           <h1>A Glimpse of Paradise</h1>
-            <p>A Collection of Breathtaking Views and Unforgettable Moments.</p>
+            <div class="hero-content">
+                <h1 id="galleryHeroTitle">A Photo Gallery of The Nature</h1>
+                <p id="galleryHeroSubtitle">The Nature is Beautiful find your favorite picture around the world.</p>
+            </div>
+            <div class="hero-bg-grid" id="heroBgGrid"></div>
         </div>
     </section>
 
@@ -737,15 +1112,20 @@
     <section class="gallery-section">
         <div class="container">
             <div class="section-title">
-                <h2>Photo Showcase</h2>
-                <p>Wander through a handpicked gallery of unforgettable views and serene moments.</p>
+                <h2 id="gallerySectionTitle">Photo Showcase</h2>
+                <p id="gallerySectionDesc">Wander through a handpicked gallery of unforgettable views and serene moments.</p>
             </div>
 
-            <!-- Month Filter Dropdown -->
+            <!-- Month and Year Filter Dropdown -->
             <div class="month-filter-dropdown">
-                <label for="monthSelect">Filter by Month:</label>
+                <label for="yearSelect">Filter by Year:</label>
+                <select id="yearSelect" class="month-select">
+                    <option value="all">All Years</option>
+                </select>
+                
+                <label id="galleryFilterLabel" for="monthSelect">Month:</label>
                 <select id="monthSelect" class="month-select">
-                    <option value="all">All Photos</option>
+                    <option id="galleryAllPhotosOption" value="all">All Months</option>
                     <option value="1">January</option>
                     <option value="2">February</option>
                     <option value="3">March</option>
@@ -765,7 +1145,7 @@
             <div id="galleryGrid" class="gallery-grid">
                 <div class="loading">
                     <div class="spinner"></div>
-                    <p>Loading photos...</p>
+                    <p id="galleryLoadingText">Loading photos...</p>
                 </div>
             </div>
         </div>
@@ -783,6 +1163,7 @@
     <div class="lightbox-info">
       <div id="lightbox-title" class="lightbox-title"></div>
       <div id="lightbox-description" class="lightbox-description"></div>
+      <div id="lightbox-date" class="lightbox-date"></div>
     </div>
     <div id="lightbox-counter" class="lightbox-counter"></div>
   </div>
@@ -805,54 +1186,190 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 const imagesRef = ref(db, 'gallery/images');
+const siteContentRef = ref(db, 'siteContent/gallery');
 let galleryImages = [];
+let availableYears = new Set();
+let heroImages = [];
+let currentHeroIndex = 0;
+
+// Load Hero Background Images
+function loadHeroBackground() {
+    onValue(imagesRef, (snapshot) => {
+        if (snapshot.exists()) {
+            const images = snapshot.val();
+            heroImages = Object.values(images);
+            heroImages.sort((a, b) => b.uploadedAt - a.uploadedAt);
+            
+            // Display initial 8 random images
+            displayHeroImages();
+            
+            // Auto-rotate images every 5 seconds
+            setInterval(() => {
+                rotateHeroImages();
+            }, 5000);
+        }
+    });
+}
+
+function displayHeroImages() {
+    const heroBgGrid = document.getElementById('heroBgGrid');
+    heroBgGrid.innerHTML = '';
+    
+    // Get exactly 8 images for masonry grid
+    const displayImages = getRandomImages(8);
+    
+    displayImages.forEach((image, index) => {
+        const heroItem = document.createElement('div');
+        heroItem.className = 'hero-bg-item';
+        heroItem.innerHTML = `<img src="${image.url}" alt="Gallery background">`;
+        heroBgGrid.appendChild(heroItem);
+        
+        // Fade in effect with stagger
+        setTimeout(() => {
+            heroItem.classList.add('loaded');
+        }, index * 100);
+    });
+}
+
+function getRandomImages(count) {
+    if (heroImages.length === 0) return [];
+    
+    const shuffled = [...heroImages].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, Math.min(count, heroImages.length));
+}
+
+function rotateHeroImages() {
+    const heroItems = document.querySelectorAll('.hero-bg-item');
+    if (heroItems.length === 0 || heroImages.length === 0) return;
+    
+    // Rotate one image at a time
+    const itemToRotate = heroItems[currentHeroIndex % heroItems.length];
+    const newImage = heroImages[Math.floor(Math.random() * heroImages.length)];
+    
+    // Fade out
+    itemToRotate.classList.remove('loaded');
+    
+    // Change image and fade in
+    setTimeout(() => {
+        itemToRotate.querySelector('img').src = newImage.url;
+        itemToRotate.classList.add('loaded');
+    }, 1000);
+    
+    currentHeroIndex++;
+}
 
 function loadGalleryImages() {
     onValue(imagesRef, (snapshot) => {
         const galleryGrid = document.getElementById('galleryGrid');
         galleryGrid.innerHTML = '';
         galleryImages = [];
+        availableYears.clear();
         
         if (snapshot.exists()) {
             const images = snapshot.val();
             galleryImages = Object.values(images);
             galleryImages.sort((a, b) => b.uploadedAt - a.uploadedAt);
 
-            galleryImages.forEach((image, index) => {
-                const galleryItem = document.createElement('div');
-                galleryItem.className = 'gallery-item';
+            // Group images by month and year
+            const imagesByMonth = {};
+            galleryImages.forEach((image) => {
                 const uploadDate = new Date(image.uploadedAt);
                 const month = uploadDate.getMonth() + 1;
-                galleryItem.setAttribute('data-month', month.toString());
-                galleryItem.innerHTML = `
-                    <img src="${image.url}" alt="Gallery image">
-                    <div class="image-info">
-                        ${image.name ? `<div class="image-title">${image.name}</div>` : ''}
-                        ${image.description ? `<div class="image-description">${image.description}</div>` : ''}
-                    </div>
-                `;
-                galleryGrid.appendChild(galleryItem);
+                const year = uploadDate.getFullYear();
+                const monthYear = `${year}-${month.toString().padStart(2, '0')}`;
+                
+                availableYears.add(year);
+                
+                if (!imagesByMonth[monthYear]) {
+                    imagesByMonth[monthYear] = {
+                        monthName: uploadDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+                        month: month,
+                        year: year,
+                        images: []
+                    };
+                }
+                imagesByMonth[monthYear].images.push(image);
             });
+            
+            // Sort month groups by date (oldest first - January to December)
+            const sortedMonths = Object.keys(imagesByMonth).sort((a, b) => a.localeCompare(b));
+            
+            // Render images grouped by month
+            sortedMonths.forEach(monthYear => {
+                const monthData = imagesByMonth[monthYear];
+                
+                // Create month header
+                const monthHeader = document.createElement('div');
+                monthHeader.className = 'month-header';
+                monthHeader.innerHTML = `<h3>${monthData.monthName}</h3>`;
+                galleryGrid.appendChild(monthHeader);
+                
+                // Render images for this month
+                monthData.images.forEach((image) => {
+                    const galleryItem = document.createElement('div');
+                    galleryItem.className = 'gallery-item';
+                    const uploadDate = new Date(image.uploadedAt);
+                    const formattedDate = uploadDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                    
+                    galleryItem.setAttribute('data-month', monthData.month.toString());
+                    galleryItem.setAttribute('data-year', monthData.year.toString());
+                    galleryItem.innerHTML = `
+                        <img src="${image.url}" alt="Gallery image">
+                        <div class="image-info">
+                            ${image.name ? `<div class="image-title">${image.name}</div>` : ''}
+                            ${image.description ? `<div class="image-description">${image.description}</div>` : ''}
+                            <div class="image-date">${formattedDate}</div>
+                        </div>
+                    `;
+                    galleryGrid.appendChild(galleryItem);
+                });
+            });
+            
+            populateYearFilter();
 
-            filterByMonth('all');
+            filterByMonthAndYear();
             setupGalleryLightbox(); // <-- Call this after rendering
         } else {
+            const emptyTitle = (window.__galleryContent && window.__galleryContent.emptyTitle) || 'No Images Available';
+            const emptyDesc = (window.__galleryContent && window.__galleryContent.emptyDescription) || 'Check back soon for our new collection of amazing photographs.';
             galleryGrid.innerHTML = `
                 <div class="empty-gallery">
                     <i class="far fa-images"></i>
-                    <h2>No Images Available</h2>
-                    <p>Check back soon for our new collection of amazing photographs.</p>
+                    <h2>${emptyTitle}</h2>
+                    <p>${emptyDesc}</p>
                 </div>
             `;
         }
     });
 }
 
-function filterByMonth(selectedMonth) {
+function populateYearFilter() {
+    const yearSelect = document.getElementById('yearSelect');
+    const sortedYears = Array.from(availableYears).sort((a, b) => b - a);
+    
+    // Keep only "All Years" option and add new years
+    yearSelect.innerHTML = '<option value="all">All Years</option>';
+    sortedYears.forEach(year => {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        yearSelect.appendChild(option);
+    });
+}
+
+function filterByMonthAndYear() {
+    const selectedMonth = document.getElementById('monthSelect').value;
+    const selectedYear = document.getElementById('yearSelect').value;
     const galleryItems = document.querySelectorAll('.gallery-item');
+    
     galleryItems.forEach(item => {
         const itemMonth = item.getAttribute('data-month');
-        if (selectedMonth === 'all' || itemMonth === selectedMonth) {
+        const itemYear = item.getAttribute('data-year');
+        
+        const monthMatch = selectedMonth === 'all' || itemMonth === selectedMonth;
+        const yearMatch = selectedYear === 'all' || itemYear === selectedYear;
+        
+        if (monthMatch && yearMatch) {
             item.style.display = 'block';
             setTimeout(() => {
                 item.style.opacity = '1';
@@ -869,11 +1386,20 @@ function filterByMonth(selectedMonth) {
 }
 
 const monthSelect = document.getElementById('monthSelect');
+const yearSelect = document.getElementById('yearSelect');
+
 monthSelect.addEventListener('change', function() {
-    filterByMonth(this.value);
+    filterByMonthAndYear();
 });
 
-window.addEventListener('load', loadGalleryImages);
+yearSelect.addEventListener('change', function() {
+    filterByMonthAndYear();
+});
+
+window.addEventListener('load', () => {
+    loadHeroBackground();
+    loadGalleryImages();
+});
 
 // Lightbox code (no duplicate galleryImages variable)
 let currentIndex = 0;
@@ -897,9 +1423,11 @@ function openLightbox(index) {
     const img = item.querySelector('img');
     const title = item.querySelector('.image-title') ? item.querySelector('.image-title').textContent : '';
     const desc = item.querySelector('.image-description') ? item.querySelector('.image-description').textContent : '';
+    const date = item.querySelector('.image-date') ? item.querySelector('.image-date').textContent : '';
     document.getElementById('lightbox-img').src = img.src;
     document.getElementById('lightbox-title').textContent = title;
     document.getElementById('lightbox-description').textContent = desc;
+    document.getElementById('lightbox-date').textContent = date;
     document.getElementById('lightbox').classList.add('active');
     document.getElementById('lightbox-counter').textContent = (index + 1) + ' / ' + galleryItems.length;
 }
@@ -1062,9 +1590,22 @@ window.closeLightbox = closeLightbox;
     font-size: 1rem;
     padding: 10px 8px;
     border-radius: 6px;
+    transition: all 0.3s ease;
   }
   .mobile-nav-links a:hover {
     background: #f3f5f4;
+  }
+  .mobile-nav-links a.active {
+    background: linear-gradient(135deg, #2c5530, #4a7c59);
+    color: white;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(44, 85, 48, 0.3);
+    border-left: 4px solid #1a3d1f;
+  }
+  .mobile-nav-links a.active::before {
+    content: '●';
+    margin-right: 8px;
+    font-size: 0.8rem;
   }
 
   /* Overlay */
@@ -1183,7 +1724,7 @@ window.closeLightbox = closeLightbox;
   /* Ensure hamburger & hide desktop links */
   .nav-links { display: none !important; }
   .mobile-menu-btn { display: inline-flex !important; align-items: center; justify-content: center; }
-  .navbar { padding: 16px 0 !important; }
+  .navbar { padding: 10px 0 !important; }
   .nav-container { padding: 0.2rem 0.4rem !important; justify-content: space-between !important; }
   /* Drawer width */
   .mobile-nav { width: 60% !important; max-width: 150px !important; padding: 12px !important; }
@@ -1228,6 +1769,77 @@ window.closeLightbox = closeLightbox;
     font-size: 0.8rem !important;
   }
 }
+/* Mobile font reduction and organization for Photo Showcase and below */
+@media (max-width: 768px) {
+  /* Section Title */
+  .section-title h2 {
+    font-size: 1.9rem !important;
+    padding-bottom: 12px !important;
+  }
+  .section-title p {
+    font-size: 0.9rem !important;
+    line-height: 1.5 !important;
+    padding: 0 10px !important;
+  }
+  
+  /* Month Headers */
+  .month-header h3 {
+    font-size: 1.2rem !important;
+    letter-spacing: 1px !important;
+    padding: 8px 0 !important;
+  }
+  
+  /* Gallery Items */
+  .gallery-item .image-title {
+    font-size: 0.85rem !important;
+    line-height: 1.2 !important;
+    padding: 0 8px !important;
+  }
+  .gallery-item .image-description {
+    font-size: 0.75rem !important;
+    line-height: 1.3 !important;
+    padding: 0 8px !important;
+  }
+  .gallery-item .image-date {
+    font-size: 0.7rem !important;
+    margin-top: 4px !important;
+  }
+  
+  /* Lightbox Info */
+  .lightbox-title {
+    font-size: 1.1rem !important;
+  }
+  .lightbox-description {
+    font-size: 0.85rem !important;
+    line-height: 1.4 !important;
+  }
+  .lightbox-date {
+    font-size: 0.75rem !important;
+  }
+  
+  /* Footer */
+  .footer-bottom {
+    font-size: 0.8rem !important;
+    padding: 1.5rem !important;
+  }
+  
+  /* Loading Spinner */
+  .loading p {
+    font-size: 0.95rem !important;
+  }
+  
+  /* Month Filter Dropdown */
+  .month-select {
+    font-size: 0.75rem !important;
+    padding: 4px 6px !important;
+  }
+  .month-filter-dropdown label {
+    font-size: 0.75rem !important;
+  }
+  .month-filter-dropdown {
+    margin-bottom: 15px !important;
+  }
+}
 </style>
 
     
@@ -1258,6 +1870,55 @@ window.closeLightbox = closeLightbox;
   overlay&&overlay.addEventListener('click',closeDrawer);
   document.querySelectorAll('#mobileNav a').forEach(function(a){ a.addEventListener('click',closeDrawer); });
 })();
+
+// Automatically highlight the current page in mobile nav
+(function highlightCurrentPage(){
+  try{
+    var currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    if(currentPage === '' || currentPage === '/') currentPage = 'index.html';
+    
+    var mobileLinks = document.querySelectorAll('#mobileNav .mobile-nav-links a');
+    mobileLinks.forEach(function(link){
+      var linkHref = link.getAttribute('href');
+      if(linkHref === currentPage){
+        link.classList.add('active');
+      }
+    });
+  }catch(e){}
+})();
+
+// Load site content for gallery page
+onValue(siteContentRef, (snapshot)=>{
+    const data = snapshot.exists() ? snapshot.val() : {};
+    window.__galleryContent = data;
+    
+    const hero = document.querySelector('.hero');
+    if (hero && data.heroBg) {
+        hero.style.background = `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('${data.heroBg}')`;
+        hero.style.backgroundSize = 'cover';
+        hero.style.backgroundPosition = 'center';
+        hero.style.backgroundAttachment = 'fixed';
+    }
+    
+    const t = document.getElementById('galleryHeroTitle');
+    const s = document.getElementById('galleryHeroSubtitle');
+    if (t && data.pageTitle) t.textContent = data.pageTitle;
+    if (s && data.pageSubtitle) s.textContent = data.pageSubtitle;
+    
+    const st = document.getElementById('gallerySectionTitle');
+    const sd = document.getElementById('gallerySectionDesc');
+    if (st && data.sectionTitle) st.textContent = data.sectionTitle;
+    if (sd && data.sectionDescription) sd.textContent = data.sectionDescription;
+    
+    const fl = document.getElementById('galleryFilterLabel');
+    if (fl && data.filterLabel) fl.textContent = data.filterLabel;
+    
+    const ap = document.getElementById('galleryAllPhotosOption');
+    if (ap && data.allPhotosLabel) ap.textContent = data.allPhotosLabel;
+    
+    const lt = document.getElementById('galleryLoadingText');
+    if (lt && data.loadingText) lt.textContent = data.loadingText;
+});
 </script>
 <footer>
     <div class="footer-bottom">
