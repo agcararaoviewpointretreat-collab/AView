@@ -1,10 +1,12 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <link rel="icon" type="image/png" href="lowo.png"> 
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="icon" type="image/png" href="lowo.png"> 
 
 
     <title>AMVR Menu</title>
@@ -19,12 +21,16 @@
 }
 
 body {
-    background: url('ytttt.jpg') no-repeat top center fixed; /* Image at the top */
+     background: url('ytttt.jpg') no-repeat top center fixed; /* Image at the top */
             background-size: cover; /* Ensures it covers the entire page */
             color: white;
             line-height: 1.6;
-          
-            
+            opacity: 0;
+            transition: opacity 0.3s ease-in;
+        }
+        
+        body.loaded {
+            opacity: 1;
         }
 
         /* Overlay to improve readability */
@@ -45,25 +51,37 @@ body {
       padding: 20px;
     }
 
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
       .navbar {
     position: fixed;
     top: 0;
     width: 100%;
-    background: rgba(255, 255, 255, 0.02);    /* extremely transparent */
-    backdrop-filter: blur(2px);             /* more intense blur */
-    -webkit-backdrop-filter: blur(2px);     /* Safari support */
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* soft deep shadow */
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* faint border */
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
     z-index: 1000;
+    transition: all 0.3s ease;
+}
+    
+.navbar.scrolled {
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 12px 40px rgba(44, 85, 48, 0.2);
 }
 
 .nav-container {
-    max-width: 1500px;
+    max-width: 1650px;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 2rem;
+    padding: 0 2.0rem;
 }
 
 
@@ -72,6 +90,7 @@ body {
             align-items: center;
             text-decoration: none;
             gap: 0;
+            margin-left: 10px;
         }
 
         .logo img {
@@ -105,40 +124,65 @@ body {
         .nav-links {
             display: flex;
             align-items: center;
-            gap: 2.5rem;
+            gap: 1.5rem;
             margin: 0;
             padding: 0;
             list-style: none;
         }
 
         .nav-links a {
-            color: #0e0d0d;
+            color: #173210;
             text-decoration: none;
-            font-size: 0.95rem;
-            font-weight: 500;
-            padding: 0.5rem 0;
+            font-size: 1.05rem;
+            font-weight: 600;
+            padding: 0.7rem 1.3rem;
             position: relative;
-            transition: color 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(44, 85, 48, 0.08), rgba(44, 85, 48, 0.15));
+            box-shadow: 0 3px 10px rgba(44, 85, 48, 0.15);
+            border: 2px solid rgba(0, 0, 0, 0.6);
+            letter-spacing: 0.3px;
         }
 
-        /* Underline effect for nav links */
-        .nav-links a::after {
+        /* Enhanced hover effect for nav links */
+        .nav-links a::before {
             content: '';
             position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: 0;
+            top: 0;
             left: 0;
-            background-color: #2c5530;
-            transition: width 0.3s ease;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #2c5530, #4a7c59);
+            border-radius: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
         }
 
         .nav-links a:hover {
-            color: #2c5530;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(44, 85, 48, 0.4);
+            border-color: #2c5530;
+        }
+        
+        /* Add subtle glow effect */
+        @keyframes navGlow {
+            0%, 100% {
+                box-shadow: 0 3px 10px rgba(44, 85, 48, 0.15);
+            }
+            50% {
+                box-shadow: 0 3px 15px rgba(44, 85, 48, 0.25);
+            }
         }
 
-        .nav-links a:hover::after {
-            width: 100%;
+        .nav-links a:hover::before {
+            opacity: 1;
+        }
+
+        .nav-links a:active {
+            transform: translateY(0);
         }
 
         /* Dropdown Styles */
@@ -146,49 +190,79 @@ body {
             position: relative;
         }
 
-        .dropdown > a .fa-chevron-down {
-            color: #2c5530;
-            font-size: 0.8rem;
-            margin-left: 0.3rem;
-            vertical-align: middle;
-            transition: transform 0.3s, color 0.3s;
+        .dropdown > a {
+            position: relative;
         }
+
+        .dropdown > a .fa-chevron-down {
+            font-size: 0.75rem;
+            margin-left: 0.4rem;
+            transition: transform 0.3s ease;
+        }
+
         .dropdown:hover > a .fa-chevron-down {
             transform: rotate(180deg);
-           
         }
 
         .dropdown-content {
             position: absolute;
             top: 100%;
-            left: -1rem;
-            background: #ffffff;
-            min-width: 180px;
-            border-radius: 4px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            left: 0;
+            background: rgba(255, 255, 255, 0.95);
+            min-width: 200px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(44, 85, 48, 0.2);
             opacity: 0;
             visibility: hidden;
             transform: translateY(10px);
-            transition: all 0.3s ease;
-            padding: 0.5rem 0;
-            margin-top: 0.5rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0.8rem 0;
+            margin-top: 0.8rem;
+            border: 2px solid rgba(44, 85, 48, 0.1);
+            z-index: 1000;
         }
 
         .dropdown:hover .dropdown-content {
             opacity: 1;
             visibility: visible;
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
+        }
+
+        .dropdown-content::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 20px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid rgba(44, 85, 48, 0.1);
         }
 
         .dropdown-content a {
-            padding: 0.7rem 1.2rem;
+            padding: 0.8rem 1.5rem;
             display: block;
-            color: #333;
-            font-size: 0.9rem;
+            color: #2c5530;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin: 0.3rem 0.8rem;
+            background: transparent;
+            box-shadow: none;
+            border: none;
+        }
+
+        .dropdown-content a::before {
+            display: none;
         }
 
         .dropdown-content a:hover {
-            background: #f8f9fa;
+            background: linear-gradient(135deg, #2c5530, #4a7c59);
+            color: white;
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(44, 85, 48, 0.2);
         }
 
         /* Responsive Design */
@@ -238,36 +312,34 @@ body {
             }
         }
 
-        /* Scroll Effect */
-        .navbar.scrolled {
-            background: rgba(255, 255, 255, 0.98);
-        }
-
-        /* Add smooth transition for scroll effect */
-        .navbar {
-            transition: background-color 0.3s ease;
-        }
 
         
        
         
         header {
             text-align: center;
-            padding: 30px 0;
-           
-            color: #02093b;
-            margin-bottom: 30px;
-            margin-top: 80px;
+            padding: 60px 20px 40px;
+            margin: 100px 20px 40px;
+            position: relative;
         }
         
         header h1 {
-            font-size: 48px;
-            margin-bottom: 10px;
+            font-size: 52px;
+            margin-bottom: 15px;
+            color: #0d47a1;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
         }
         
         header p {
-            font-size: 18px;
-            color: #151544;
+            font-size: 20px;
+            color: #555;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
         }
         
         .tab-container {
@@ -277,23 +349,73 @@ body {
         }
         
         .tab-button {
-            padding: 15px 30px;
-            background-color: #34495e;
+            padding: 18px 40px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
             color: white;
             border: none;
             cursor: pointer;
             font-size: 18px;
-            transition: background-color 0.3s;
-            border-radius: 5px;
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 50px;
             margin: 0 10px;
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tab-button[data-tab="food"] {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+        }
+        
+        .tab-button[data-tab="drinks"] {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+        }
+        
+        .tab-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .tab-button:hover::before {
+            width: 300px;
+            height: 300px;
         }
         
         .tab-button:hover {
-            background-color: #2c3e50;
+            transform: translateY(-3px);
+        }
+        
+        .tab-button[data-tab="food"]:hover {
+            box-shadow: 0 12px 30px rgba(255, 107, 107, 0.5);
+        }
+        
+        .tab-button[data-tab="drinks"]:hover {
+            box-shadow: 0 12px 30px rgba(52, 152, 219, 0.5);
         }
         
         .tab-button.active {
-            background-color: #e74c3c;
+            transform: scale(1.05);
+        }
+        
+        .tab-button[data-tab="food"].active {
+            background: linear-gradient(135deg, #ff5252, #f44336);
+            box-shadow: 0 12px 30px rgba(255, 82, 82, 0.6);
+        }
+        
+        .tab-button[data-tab="drinks"].active {
+            background: linear-gradient(135deg, #2196f3, #1976d2);
+            box-shadow: 0 12px 30px rgba(33, 150, 243, 0.6);
         }
         
         .menu-section {
@@ -325,71 +447,147 @@ body {
         }
         
         .menu-item {
-            background-color: white;
-            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9));
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            position: relative;
+        }
+        
+        .menu-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(129, 199, 132, 0.1));
+            opacity: 0;
+            transition: opacity 0.4s;
+            z-index: 0;
+        }
+        
+        .menu-item:hover::before {
+            opacity: 1;
         }
         
         .menu-item:hover {
-            transform: translateY(-10px);
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(76, 175, 80, 0.3);
+            border-color: rgba(76, 175, 80, 0.5);
         }
         
         .menu-item-image {
-            height: 200px;
-            background-color: #ddd;
+            height: 250px;
+            background: linear-gradient(135deg, #4caf50, #66bb6a);
             position: relative;
             overflow: hidden;
+        }
+        
+        .menu-item-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
+            z-index: 1;
         }
         
         .menu-item-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .menu-item:hover .menu-item-image img {
+            transform: scale(1.15) rotate(2deg);
         }
         
         .menu-item-content {
-            padding: 20px;
+            padding: 25px;
+            position: relative;
+            z-index: 1;
         }
         
         .menu-item-title {
-            font-size: 20px;
-            color: #02093b;
-            margin-bottom: 10px;
+            font-size: 22px;
+            color: #2c3e50;
+            margin-bottom: 12px;
             display: flex;
             justify-content: space-between;
-            font-weight: bold;
+            align-items: flex-start;
+            font-weight: 700;
+            gap: 10px;
         }
         
         .menu-item-price {
             color: #e74c3c;
-            font-weight: bold;
+            font-weight: 800;
+            font-size: 18px;
+            text-align: right;
         }
         
         .menu-item-description {
-            color: #3d3d3d;
+            color: #555;
             margin-bottom: 15px;
-            font-weight: bold;
+            font-weight: 500;
+            line-height: 1.6;
+            font-size: 15px;
         }
         
         .category-title {
-            font-size: 28px;
-            margin: 30px 0 20px;
-            color: #02093b;
+            font-size: 36px;
+            margin: 50px 0 30px;
+            color: #0d47a1;
             text-align: center;
             position: relative;
+            font-weight: 800;
+            letter-spacing: 1px;
+            animation: fadeInUp 0.8s ease;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .category-title::after {
             content: '';
             position: absolute;
-            bottom: -10px;
+            bottom: -15px;
             left: 50%;
             transform: translateX(-50%);
-            width: 80px;
-            height: 3px;
-            background-color: #e74c3c;
+            width: 100px;
+            height: 4px;
+            background: #e74c3c;
+            border-radius: 2px;
+        }
+        
+        .category-title::before {
+            content: '✨';
+            position: absolute;
+            left: 50%;
+            top: -30px;
+            transform: translateX(-50%);
+            font-size: 24px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
         }
         
         @media (max-width: 992px) {
@@ -417,12 +615,39 @@ body {
             grid-column: span 1;
         }
 
-        .footer-bottom {
-    text-align: center;
-    padding: 0.5rem;
-    margin-top: 1rem;
-    color: black;
+.navbar { padding: 14px 0 !important; }
 
+        /* Loading placeholder */
+.loading-placeholder {
+    text-align: center;
+    padding: 60px 20px;
+    color: #2c5530;
+    font-size: 18px;
+    font-weight: 600;
+   
+    border-radius: 20px;
+    margin: 20px auto;
+    max-width: 400px;
+    backdrop-filter: blur(10px);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.02); }
+}
+
+.footer-bottom {
+    text-align: center;
+    padding: 40px 20px;
+    margin-top: 60px;
+}
+
+.footer-bottom p {
+    color: #050505;
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0;
 }
 
 /* Mobile drawer styles */
@@ -431,8 +656,10 @@ body {
 .mobile-nav.open { transform: translateX(0); }
 .close-drawer { background: none; border: none; font-size: 26px; line-height: 1; color: #2c5530; cursor: pointer; position: absolute; top: 10px; right: 12px; }
 .mobile-nav-links { list-style: none; margin: 48px 0 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
-.mobile-nav-links a { color: #2c5530; text-decoration: none; font-size: 1rem; padding: 10px 8px; border-radius: 6px; }
+.mobile-nav-links a { color: #2c5530; text-decoration: none; font-size: 1rem; padding: 10px 8px; border-radius: 6px; transition: all 0.3s ease; }
 .mobile-nav-links a:hover { background: #f3f5f4; }
+.mobile-nav-links a.active { background: linear-gradient(135deg, #2c5530, #4a7c59); color: white; font-weight: 700; box-shadow: 0 4px 12px rgba(44, 85, 48, 0.3); border-left: 4px solid #1a3d1f; }
+.mobile-nav-links a.active::before { content: '●'; margin-right: 8px; font-size: 0.8rem; }
 .nav-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.35); z-index: 1500; display: none; }
 .nav-overlay.show { display: block; }
 @media (max-width: 768px) {
@@ -563,8 +790,8 @@ body {
                         <div class="menu-item-title">
                             <span>Pacit Canton</span>
                             <span class="menu-item-price">
-                              ₱40.00 <span style="font-size:13px;color:#888;">(Small)</span><br>
-                              ₱50.00 <span style="font-size:13px;color:#888;">(Big)</span>
+                              ₱40.00 <span style="font-size:13px;color:#555!important;">(Small)</span><br>
+                              ₱50.00 <span style="font-size:13px;color:#555!important;">(Big)</span>
                             </span>
                         </div>
                         <p class="menu-item-description"> A classic Filipino stir-fried noodle dish made with savory sauce.</p>
@@ -758,10 +985,10 @@ body {
                     <div class="menu-item-content">
                         <div class="menu-item-title">
                             <span>Lemonaden Juice</span>
-                            <span class="menu-item-price">
-                                ₱135.00 <span style="font-size:13px;color:#888;">(Lemonade Pitch)</span><br>
-                                ₱75.00 <span style="font-size:13px;color:#888;">(Lemonade Half Pitcher)</span>
-                              </span>
+                            <span class="menu-item-price" style="font-size:14px;line-height:1.4;">
+                              ₱75.00 <span style="font-size:11px;color:#555!important;">(Half Pitcher)</span><br>
+                              ₱135.00 <span style="font-size:11px;color:#555!important;">(Pitcher)</span>
+                            </span>
                         </div>
                         <p class="menu-item-description">It's a tangy, citrusy drink often served chilled, perfect for hot weather or as a revitalizing treat.</p>
                     </div>
@@ -773,6 +1000,159 @@ body {
         </div>
     </div>
     
+    <!-- Dynamic Foods loader (Firebase) -->
+    <script type="module">
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+      import { getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyBAE0ieuAJRp_rF4I90qXP8zPr4TQW_rIg",
+        authDomain: "agcararaoret.firebaseapp.com",
+        databaseURL: "https://agcararaoret-default-rtdb.firebaseio.com",
+        projectId: "agcararaoret",
+        storageBucket: "agcararaoret.appspot.com",
+        messagingSenderId: "369964400118",
+        appId: "1:369964400118:web:bd0e0f15ef0e235392dbd7"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getDatabase(app);
+
+      function createFoodItemHTML(item){
+        const img = (item && item.img) || '';
+        const title = (item && item.title) || '';
+        const price = (item && item.price) || '';
+        const desc = (item && item.desc) || '';
+        return `
+          <div class="menu-item">
+            <div class="menu-item-image">
+              <img src="${img}" alt="${title}" onerror="this.src='';">
+            </div>
+            <div class="menu-item-content">
+              <div class="menu-item-title">
+                <span>${title}</span>
+                <span class="menu-item-price">${price}</span>
+              </div>
+              <p class="menu-item-description">${desc}</p>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderFoods(foods, sectionTitles){
+        const foodSection = document.getElementById('food');
+        if (!foodSection) return;
+        const items = Array.isArray(foods) ? foods : [];
+        // Normalize categories to expected buckets
+        const byCat = { snacks: [], silog: [], meals: [] };
+        items.forEach((f)=>{
+          const c = String(f.category||'').toLowerCase();
+          if (c.includes('snack')) byCat.snacks.push(f);
+          else if (c.includes('silog')) byCat.silog.push(f);
+          else if (c.includes('meal')) byCat.meals.push(f);
+          else byCat.snacks.push(f); // default bucket
+        });
+        const totalItems = items.length;
+        // If no items provided from DB, keep existing static content (do not wipe)
+        if (totalItems === 0) {
+          const loading = foodSection.querySelector('.loading-placeholder');
+          if (loading) loading.remove();
+          return;
+        }
+        let html = '';
+        if (byCat.snacks.length){
+          html += `<h2 class="category-title">${(sectionTitles&&sectionTitles.snacks)||'Snacks'}</h2>`;
+          html += '<div class="menu-grid">' + byCat.snacks.map(createFoodItemHTML).join('') + '</div>';
+        }
+        if (byCat.silog.length){
+          html += `<h2 class="category-title">${(sectionTitles&&sectionTitles.silog)||'Silog Series'}</h2>`;
+          html += '<div class="menu-grid">' + byCat.silog.map(createFoodItemHTML).join('') + '</div>';
+        }
+        if (byCat.meals.length){
+          html += `<h2 class="category-title">${(sectionTitles&&sectionTitles.meals)||'Agcararao Meal Offers'}</h2>`;
+          html += '<div class="menu-grid dessert-grid">' + byCat.meals.map(createFoodItemHTML).join('') + '</div>';
+        }
+        foodSection.innerHTML = html;
+      }
+
+      function renderDrinks(drinks, sectionTitle){
+        const drinksSection = document.getElementById('drinks');
+        if (!drinksSection) return;
+        const list = Array.isArray(drinks) ? drinks : [];
+        // If no drinks provided from DB, keep existing static content (do not wipe)
+        if (list.length === 0) {
+          const loading = drinksSection.querySelector('.loading-placeholder');
+          if (loading) loading.remove();
+          return;
+        }
+        let html = `<h2 class="category-title">${sectionTitle||'Mountain Sips'}</h2>`;
+        html += '<div class="menu-grid">' + list.map(createFoodItemHTML).join('') + '</div>';
+        drinksSection.innerHTML = html;
+      }
+
+      function updateFoodsPage(data){
+        // Header title/subtitle
+        const headerTitle = document.querySelector('header h1');
+        const headerSub = document.querySelector('header p');
+        if (headerTitle) headerTitle.textContent = (data && data.pageTitle) || 'Agcararao Bites & Beverages';
+        if (headerSub) headerSub.textContent = (data && data.pageSubtitle) || 'Savor Every Sip and Bite – Fresh, Flavorful, and Unforgettable';
+        // Background
+        if (data && data.heroBg){ document.body.style.backgroundImage = `url('${data.heroBg}')`; }
+        // Sections
+        const sectionTitles = (data && data.sectionTitles) || {};
+        renderFoods((data && data.foods) || [], sectionTitles);
+        renderDrinks((data && data.drinks) || [], sectionTitles.drinks || 'Mountain Sips');
+      }
+
+      function loadFallbackContent(){
+        const fallback = {
+          pageTitle: 'Agcararao Bites & Beverages',
+          pageSubtitle: 'Savor Every Sip and Bite – Fresh, Flavorful, and Unforgettable',
+          heroBg: 'ytttt.jpg',
+          sectionTitles: { snacks:'Snacks', silog:'Silog Series', meals:'Agcararao Meal Offers', drinks:'Mountain Sips' },
+          foods: [],
+          drinks: []
+        };
+        updateFoodsPage(fallback);
+      }
+
+      function loadFoodsContent(){
+        onValue(ref(db, 'siteContent/foods'), (snapshot)=>{
+          const data = snapshot.exists() ? snapshot.val() : null;
+          if (data) updateFoodsPage(data); else loadFallbackContent();
+        }, (err)=>{
+          console.error('[foods] onValue error:', err);
+          // Still apply any partial cached/static content to avoid blank UI
+          try{ const cached = JSON.parse(localStorage.getItem('siteContent_foods_cache')||'null'); if (cached) updateFoodsPage(cached); }catch(_e){}
+          loadFallbackContent();
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', function(){
+        // Show lightweight placeholders but keep static content as fallback
+        try{
+          const foodSection = document.getElementById('food');
+          const drinksSection = document.getElementById('drinks');
+          if (foodSection && !foodSection.querySelector('.loading-placeholder')) {
+            const div = document.createElement('div');
+            div.className = 'loading-placeholder';
+            div.style.cssText = 'text-align:center;padding:40px;color:#666;';
+            div.textContent = 'Loading menu…';
+            foodSection.prepend(div);
+          }
+          if (drinksSection && !drinksSection.querySelector('.loading-placeholder')) {
+            const div2 = document.createElement('div');
+            div2.className = 'loading-placeholder';
+            div2.style.cssText = 'text-align:center;padding:40px;color:#666;';
+            div2.textContent = 'Loading drinks…';
+            drinksSection.prepend(div2);
+          }
+        }catch(e){}
+
+        loadFoodsContent();
+      });
+    </script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const tabButtons = document.querySelectorAll('.tab-button');
@@ -819,7 +1199,26 @@ body {
   closeBtn&&closeBtn.addEventListener('click',closeDrawer);
   overlay&&overlay.addEventListener('click',closeDrawer);
   document.querySelectorAll('#mobileNav a').forEach(function(a){ a.addEventListener('click',closeDrawer); });
+  
+  // Highlight active page in mobile nav
+  var currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('#mobileNav a').forEach(function(link){
+    var linkPage = link.getAttribute('href');
+    if(linkPage === currentPage || (currentPage === '' && linkPage === 'index.html')){
+      link.classList.add('active');
+    }
+  });
 })();
+</script>
+<script>
+// Show body only when page is fully loaded
+window.addEventListener('load', function() {
+    document.body.classList.add('loaded');
+});
+// Fallback in case load event already fired
+if (document.readyState === 'complete') {
+    document.body.classList.add('loaded');
+}
 </script>
 <div class="footer-bottom">
     <p>&copy; 2025 Agcararao Mountain View Resort. All rights reserved.</p>
