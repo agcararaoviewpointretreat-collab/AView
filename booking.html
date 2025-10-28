@@ -311,7 +311,7 @@
     <script type="module">
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getDatabase, ref, push, get } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+        import { getDatabase, ref, push, get, onValue } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
         // Firebase configuration
         const firebaseConfig = {
@@ -328,6 +328,26 @@
         const db = getDatabase(app);
 
         let unavailableDates = [];
+        let bookContent = null;
+
+        // Load dynamic Book content (prices, limits, display names)
+        async function loadBookContent(){
+            try{
+                const snap = await get(ref(db, 'siteContent/book'));
+                if (snap.exists()) {
+                    bookContent = snap.val();
+                    // Do not override option labels with display names (per request to remove name display)
+                    // Reflect dynamic down payment percent in UI label
+                    const paymentTypeSel = document.getElementById('paymentType');
+                    if (paymentTypeSel && paymentTypeSel.options && paymentTypeSel.options.length) {
+                        const dp = (bookContent.downPaymentPercent != null ? parseInt(bookContent.downPaymentPercent)||30 : 30);
+                        paymentTypeSel.options[0].textContent = `${dp}% Down Payment (Gcash)`;
+                    }
+                    // Recalculate with the latest down payment percent
+                    try { updateTotal(); updatePaymentAmount(); } catch(_e) {}
+                }
+            }catch(_e){ /* ignore */ }
+        }
 
         async function fetchBookedDates() {
             try {
@@ -436,7 +456,53 @@
             fetchBookedDates();
         });
 
-        fetchBookedDates();
+        // Populate room options from Rooms content (keeps internal values as room keys)
+        async function buildRoomOptions(){
+            try{
+                const [roomsSnap, bookSnap] = await Promise.all([
+                    get(ref(db,'siteContent/rooms')),
+                    get(ref(db,'siteContent/book'))
+                ]);
+                const rooms = roomsSnap.exists() ? (roomsSnap.val()?.items||[]) : [];
+                // Do not use displayMap for labels to avoid showing old/custom names
+                const sel = document.getElementById('selectedRoom');
+                if (!sel) return;
+                const currentVal = sel.value;
+                if (rooms.length){
+                    sel.innerHTML = '';
+                    rooms.forEach(r=>{
+                        const key = r.name || '';
+                        if (!key) return;
+                        const opt = document.createElement('option');
+                        opt.value = key;
+                        opt.textContent = key;
+                        sel.appendChild(opt);
+                    });
+                    if (currentVal) sel.value = currentVal;
+                }
+            }catch(_e){ /* ignore */ }
+        }
+
+        // Initial load: fetch book content, build options, then dates
+        Promise.resolve()
+            .then(loadBookContent)
+            .then(buildRoomOptions)
+            .then(fetchBookedDates);
+
+        // Live update down payment percent and recalculations if admin changes it
+        try {
+            onValue(ref(db, 'siteContent/book'), (snap)=>{
+                if (!snap.exists()) return;
+                bookContent = snap.val() || {};
+                const paymentTypeSel = document.getElementById('paymentType');
+                if (paymentTypeSel && paymentTypeSel.options && paymentTypeSel.options.length) {
+                    const dp = (bookContent.downPaymentPercent != null ? parseInt(bookContent.downPaymentPercent)||30 : 30);
+                    paymentTypeSel.options[0].textContent = `${dp}% Down Payment (Gcash)`;
+                }
+                // Recalc totals with new settings
+                try { updateTotal(); updatePaymentAmount(); } catch(_e) {}
+            });
+        } catch(_e) {}
 
         // --- Notification Utility ---
 window.showNotification = function(message, type = 'info', duration = 25000) {
@@ -579,58 +645,55 @@ window.hideNotification = function() {
             const selectedRoom = document.getElementById("selectedRoom").value;
             const roomInput = document.getElementById("numberOfRooms");
 
-            if (selectedRoom === "Casa De Amor") {
-                roomInput.max = 3;
-                } else {
-                roomInput.max = 1;
-                roomInput.value = 1;
-            }
+            // Prefer dynamic maxRooms from Book content; no hardcoded fallbacks
+            const dynMax = (bookContent && bookContent.maxRooms && bookContent.maxRooms[selectedRoom] != null)
+                ? (parseInt(bookContent.maxRooms[selectedRoom]) || 1)
+                : (parseInt(roomInput.max||'1') || 1);
+            roomInput.max = dynMax;
+            if (parseInt(roomInput.value||'0') > dynMax) roomInput.value = dynMax;
         };
 
         window.updateTotal = function() {
             const nights = calculateNights();
             document.getElementById("numberOfNights").value = nights;
 
-            const roomPrice = {
-                "Casa De Amor": 1500,
-                "Casa De Bella": 3000,
-                "Casa De Arced": 3500,
-                "Casa Y Agua": 4999
-            };
-
-            const maxExtraPax = {
-                "Casa De Amor": 4,
-                "Casa De Bella": 10,
-                "Casa De Arced": 10,
-                "Casa Y Agua": 20
-            };
-
             const selectedRoom = document.getElementById("selectedRoom").value;
-            const price = roomPrice[selectedRoom] || 0;
+            // Use dynamic pricing and limits only; no hardcoded legacy defaults
+            const extraPriceDefault = 300;
+
+            const price = (bookContent && bookContent.roomPrice && bookContent.roomPrice[selectedRoom] != null)
+                ? (parseInt(bookContent.roomPrice[selectedRoom]) || 0)
+                : 0;
             let rooms = parseInt(document.getElementById("numberOfRooms").value);
             let extraPax = parseInt(document.getElementById("extraPax").value) || 0;
 
-            // Limit extra pax based on the selected room type
-            const maxAllowedPax = maxExtraPax[selectedRoom] || 0;
+            // Limit extra pax based on the selected room type (dynamic if available)
+            const maxAllowedPax = (bookContent && bookContent.maxExtraPax && bookContent.maxExtraPax[selectedRoom] != null)
+                ? (parseInt(bookContent.maxExtraPax[selectedRoom]) || 0)
+                : 0;
             if (extraPax > maxAllowedPax) {
                 extraPax = maxAllowedPax;
                 document.getElementById("extraPax").value = maxAllowedPax;
             }
 
-            if (selectedRoom === "Casa De Amor" && rooms > 3) {
-                rooms = 3;
-                document.getElementById("numberOfRooms").value = 3;
-            } else if (selectedRoom !== "Casa De Amor") {
-                rooms = 1;
-                document.getElementById("numberOfRooms").value = 1;
+            // Enforce max rooms per type from Book content if available; otherwise keep current input constraints
+            const dynMaxRooms = (bookContent && bookContent.maxRooms && bookContent.maxRooms[selectedRoom] != null)
+                ? (parseInt(bookContent.maxRooms[selectedRoom]) || 1)
+                : (parseInt(document.getElementById("numberOfRooms").max||'1')||1);
+            if (rooms > dynMaxRooms) {
+                rooms = dynMaxRooms;
+                document.getElementById("numberOfRooms").value = dynMaxRooms;
             }
 
             // Calculate total cost
             const roomTotal = price * rooms * nights;
-            const extraPaxTotal = extraPax * 300 * nights;
+            const extraPricePerHead = (bookContent && bookContent.extraPaxPrice && bookContent.extraPaxPrice[selectedRoom] != null)
+                ? parseInt(bookContent.extraPaxPrice[selectedRoom]) || extraPriceDefault
+                : extraPriceDefault;
+            const extraPaxTotal = extraPax * extraPricePerHead * nights;
             const totalPrice = roomTotal + extraPaxTotal;
 
-            const totalAmount = `₱${totalPrice.toLocaleString()}`;
+            const totalAmount = `₱${Math.round(totalPrice).toLocaleString()}`;
             document.getElementById("totalAmount").value = totalAmount;
             
             // Update payment amount
@@ -661,8 +724,11 @@ window.hideNotification = function() {
             if (totalAmount) {
                 const numericAmount = parseFloat(totalAmount.replace(/[^0-9.-]+/g, ""));
                 if (paymentType === "partial") {
-                    const partialAmount = numericAmount * 0.3;
-                    paymentAmount.value = `₱${partialAmount.toLocaleString()}`;
+                    const dpPercent = (typeof bookContent !== 'undefined' && bookContent && bookContent.downPaymentPercent != null)
+                        ? (parseInt(bookContent.downPaymentPercent) || 30)
+                        : 30;
+                    const partialAmount = numericAmount * (dpPercent / 100);
+                    paymentAmount.value = `₱${Math.round(partialAmount).toLocaleString()}`;
                 }
             }
         };
@@ -735,7 +801,7 @@ window.hideNotification = function() {
             <div>
                 <label for="paymentType">Payment Type:</label>
                 <select id="paymentType" onchange="updatePaymentAmount()">
-                    <option value="partial">30% Down Payment (Gcash)</option>
+                    <option value="partial">Down Payment (Gcash)</option>
                 </select>
             </div>
             <div>
@@ -801,7 +867,10 @@ window.hideNotification = function() {
             if (totalAmount) {
                 const numericAmount = parseFloat(totalAmount.replace(/[^0-9.-]+/g, ""));
                 if (paymentType === "partial") {
-                    const partialAmount = numericAmount * 0.3;
+                    const dpPercent = (bookContent && bookContent.downPaymentPercent != null)
+                        ? (parseInt(bookContent.downPaymentPercent) || 30)
+                        : 30;
+                    const partialAmount = numericAmount * (dpPercent / 100);
                     paymentAmount.value = `₱${partialAmount.toLocaleString()}`;
                 }
             }
