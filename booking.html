@@ -696,6 +696,9 @@ window.hideNotification = function() {
             const totalAmount = `₱${Math.round(totalPrice).toLocaleString()}`;
             document.getElementById("totalAmount").value = totalAmount;
             
+            // Store room total for payment calculation
+            document.getElementById("totalAmount").dataset.roomTotal = Math.round(roomTotal);
+            
             // Update payment amount
             updatePaymentAmount();
         };
@@ -717,17 +720,18 @@ window.hideNotification = function() {
         };
 
         window.updatePaymentAmount = function() {
-            const totalAmount = document.getElementById("totalAmount").value;
+            const totalAmountField = document.getElementById("totalAmount");
             const paymentType = document.getElementById("paymentType").value;
             const paymentAmount = document.getElementById("paymentAmount");
             
-            if (totalAmount) {
-                const numericAmount = parseFloat(totalAmount.replace(/[^0-9.-]+/g, ""));
+            if (totalAmountField && totalAmountField.dataset.roomTotal) {
+                // Calculate 30% only from room cost (excluding extra pax)
+                const roomTotal = parseFloat(totalAmountField.dataset.roomTotal);
                 if (paymentType === "partial") {
                     const dpPercent = (typeof bookContent !== 'undefined' && bookContent && bookContent.downPaymentPercent != null)
                         ? (parseInt(bookContent.downPaymentPercent) || 30)
                         : 30;
-                    const partialAmount = numericAmount * (dpPercent / 100);
+                    const partialAmount = roomTotal * (dpPercent / 100);
                     paymentAmount.value = `₱${Math.round(partialAmount).toLocaleString()}`;
                 }
             }
@@ -860,18 +864,19 @@ window.hideNotification = function() {
         }
 
         function updatePaymentAmount() {
-            const totalAmount = document.getElementById("totalAmount").value;
+            const totalAmountField = document.getElementById("totalAmount");
             const paymentType = document.getElementById("paymentType").value;
             const paymentAmount = document.getElementById("paymentAmount");
             
-            if (totalAmount) {
-                const numericAmount = parseFloat(totalAmount.replace(/[^0-9.-]+/g, ""));
+            if (totalAmountField && totalAmountField.dataset.roomTotal) {
+                // Calculate 30% only from room cost (excluding extra pax)
+                const roomTotal = parseFloat(totalAmountField.dataset.roomTotal);
                 if (paymentType === "partial") {
-                    const dpPercent = (bookContent && bookContent.downPaymentPercent != null)
+                    const dpPercent = (typeof bookContent !== 'undefined' && bookContent && bookContent.downPaymentPercent != null)
                         ? (parseInt(bookContent.downPaymentPercent) || 30)
                         : 30;
-                    const partialAmount = numericAmount * (dpPercent / 100);
-                    paymentAmount.value = `₱${partialAmount.toLocaleString()}`;
+                    const partialAmount = roomTotal * (dpPercent / 100);
+                    paymentAmount.value = `₱${Math.round(partialAmount).toLocaleString()}`;
                 }
             }
         }
@@ -921,6 +926,9 @@ window.hideNotification = function() {
 
     const totalAmount = `₱${totalPrice.toLocaleString()}`;
     document.getElementById("totalAmount").value = totalAmount;
+    
+    // Store room total for payment calculation
+    document.getElementById("totalAmount").dataset.roomTotal = roomTotal;
     
     // Update payment amount
     updatePaymentAmount();
