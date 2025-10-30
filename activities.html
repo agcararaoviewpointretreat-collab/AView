@@ -2857,17 +2857,22 @@ input:valid, select:valid, textarea:valid {
                     function calculateTotal() {
                         const persons = parseInt(guestsInput.value) || 0;
                         const additionalPersons = parseInt(additionalGuestsInput.value) || 0;
-                        let total = 0;
+                        let baseCost = 0;
+                        let additionalGuestCost = additionalPersons * 300;
                         
                         if (hasTentSelect.value === 'yes') {
-                            // For own tent: main guests are ₱400 per head, additional guests are ₱300 per head
-                            total = (persons * 400) + (additionalPersons * 300);
+                            // For own tent: main guests are ₱400 per head
+                            baseCost = persons * 400;
                         } else {
-                            // For rented tent: ₱999 base + ₱300 per additional guest
-                            total = 999 + (additionalPersons * 300);
+                            // For rented tent: ₱999 base
+                            baseCost = 999;
                         }
                         
-                        const downPayment = Math.ceil(total * 0.3);
+                        // Total includes base cost + additional guests
+                        const total = baseCost + additionalGuestCost;
+                        
+                        // 30% down payment calculated only from base cost (persons + tent), excluding additional guests
+                        const downPayment = Math.ceil(baseCost * 0.3);
                         const balance = total - downPayment;
                         
                         totalAmountElement.textContent = `₱${total}`;
