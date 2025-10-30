@@ -100,12 +100,15 @@ function sendBookingEmail(booking, status, type = "room") {
   };
   
   let totalAmount = 0;
-  let cottageDisplayName = "N/A"; // Track cottage name for email display
+  let baseCost = 0; // Track base cost for down payment calculation
+  let cottageDisplayName = "";
   
-  // Calculate total amount based on booking type
+  console.log("🔍 CALCULATING TOTAL AMOUNT FOR BOOKING:");
+  console.log("   Type:", type);
+  console.log("   Booking object:", booking);
+  
   if (type === "room") {
-    // ✅ CALCULATE ROOM PRICING
-    console.log("🏨 ROOM PRICING CALCULATION:");
+    // Determine room rate based on room type.log("🏨 ROOM PRICING CALCULATION:");
     console.log("   Raw booking object for room:");
     console.log("   - booking.roomType:", booking.roomType);
     console.log("   - booking.selectedRoom:", booking.selectedRoom);
@@ -173,8 +176,9 @@ function sendBookingEmail(booking, status, type = "room") {
         console.log(`   ⚠️  Requested ${numberOfRooms} rooms but only ${maxRoomsForType} available for ${roomType}`);
       }
       
-      // Calculate base room cost
+      // Calculate base room cost (for down payment)
       const roomCost = roomRate * actualRooms * numberOfNights;
+      baseCost = roomCost; // Store base cost for down payment calculation
       
       // Calculate extra pax cost (₱300 per head)
       const extraPaxCost = extraPax * 300;
@@ -186,11 +190,13 @@ function sendBookingEmail(booking, status, type = "room") {
       if (extraPax > 0) {
         console.log(`   Extra pax: ${extraPax} × ₱300 = ₱${extraPaxCost}`);
       }
+      console.log(`   Base cost (for down payment): ₱${baseCost}`);
       console.log(`   Total amount: ₱${roomCost} + ₱${extraPaxCost} = ₱${totalAmount}`);
       
       // If calculation still results in 0, use fallback
       if (totalAmount === 0) {
         totalAmount = 1500; // Minimum Casa de Amor rate
+        baseCost = 1500;
         console.log("   Using fallback minimum rate:", totalAmount);
       }
     }
@@ -214,6 +220,9 @@ function sendBookingEmail(booking, status, type = "room") {
       console.log("   - booking.choosenCottage:", booking.choosenCottage);
       console.log("   Final cottage type (lowercase):", cottageType);
       
+      // For swimming, cottage cost is the base cost
+      baseCost = 0;
+      
       // Get all possible cottage field values to check
       const allCottageFields = [
         booking.cottage,
@@ -234,35 +243,41 @@ function sendBookingEmail(booking, status, type = "room") {
           cottageType === "big cottage" ||
           cottageType === "bigcottage4") {
         totalAmount = 500;
+        baseCost = 500;
         cottageDisplayName = "Big Cottage 4";
         console.log("   Big Cottage 4 selected: ₱500");
       } else if (cottageType.includes("cottage 1") || 
                  cottageType === "cottage1" ||
                  cottageType === "1") {
         totalAmount = 300;
+        baseCost = 300;
         cottageDisplayName = "Cottage 1";
         console.log(`   Cottage 1 selected: ₱300`);
       } else if (cottageType.includes("cottage 2") ||
                  cottageType === "cottage2" ||
                  cottageType === "2") {
         totalAmount = 300;
+        baseCost = 300;
         cottageDisplayName = "Cottage 2";
         console.log(`   Cottage 2 selected: ₱300`);
       } else if (cottageType.includes("cottage 3") ||
                  cottageType === "cottage3" ||
                  cottageType === "3") {
         totalAmount = 300;
+        baseCost = 300;
         cottageDisplayName = "Cottage 3";
         console.log(`   Cottage 3 selected: ₱300`);
       } else if (cottageType.includes("cottage 4") ||
                  cottageType === "cottage4" ||
                  cottageType === "4") {
         totalAmount = 300;
+        baseCost = 300;
         cottageDisplayName = "Cottage 4";
         console.log(`   Cottage 4 selected: ₱300`);
       } else if (cottageType.includes("cottage") && cottageType !== "") {
         // Default to regular cottage price if cottage is mentioned but not specifically identified
         totalAmount = 300;
+        baseCost = 300;
         // Try to extract cottage name from the original value for display
         const originalValue = booking.cottage || booking.selectedCottage || booking.cottageType || booking.cottageSelection || booking.choosenCottage || "";
         cottageDisplayName = originalValue || "Cottage";
@@ -282,6 +297,7 @@ function sendBookingEmail(booking, status, type = "room") {
         if (existingAmount === 300) {
           // If amount is ₱300, it's likely a regular cottage
           totalAmount = 300;
+          baseCost = 300;
           // Try to find any non-empty cottage field value
           const foundCottageValue = allCottageFields.find(field => 
             field !== null && field !== undefined && field !== "" && field !== "N/A"
@@ -304,11 +320,13 @@ function sendBookingEmail(booking, status, type = "room") {
         } else if (existingAmount === 500) {
           // If amount is ₱500, it's big cottage 4
           totalAmount = 500;
+          baseCost = 500;
           cottageDisplayName = "Big Cottage 4";
           console.log("   Inferred Big Cottage 4 from ₱500 amount");
         } else {
           // Unknown case
           totalAmount = existingAmount;
+          baseCost = existingAmount;
           const foundCottageValue = allCottageFields.find(field => 
             field !== null && field !== undefined && field !== "" && field !== "N/A"
           );
@@ -328,13 +346,19 @@ function sendBookingEmail(booking, status, type = "room") {
       console.log("   Has own tent:", hasOwnTent);
       
       if (hasOwnTent) {
-        // Own tent: ₱400 per person + ₱300 per additional guest
-        totalAmount = (mainGuests * 400) + (additionalGuests * 300);
+        // Own tent: ₱400 per person (base) + ₱300 per additional guest
+        baseCost = mainGuests * 400; // Base cost for down payment
+        const additionalGuestCost = additionalGuests * 300;
+        totalAmount = baseCost + additionalGuestCost;
         console.log(`   Own tent calculation: (${mainGuests} × ₱400) + (${additionalGuests} × ₱300) = ₱${totalAmount}`);
+        console.log(`   Base cost (for down payment): ₱${baseCost}`);
       } else {
         // Rented tent: ₱999 base + ₱300 per additional guest
-        totalAmount = 999 + (additionalGuests * 300);
+        baseCost = 999; // Base cost for down payment
+        const additionalGuestCost = additionalGuests * 300;
+        totalAmount = baseCost + additionalGuestCost;
         console.log(`   Rented tent calculation: ₱999 + (${additionalGuests} × ₱300) = ₱${totalAmount}`);
+        console.log(`   Base cost (for down payment): ₱${baseCost}`);
       }
     }
     
@@ -350,18 +374,21 @@ function sendBookingEmail(booking, status, type = "room") {
       );
       if (fallbackAmount > 0) {
         totalAmount = fallbackAmount;
+        baseCost = fallbackAmount; // Use fallback as base cost too
         console.log("   Using fallback amount from booking:", totalAmount);
       }
     }
   }
   
-  const downPaymentRaw = totalAmount > 0 ? totalAmount * 0.3 : 0;
-  const balanceRaw = totalAmount > 0 ? totalAmount * 0.7 : 0;
+  // Calculate down payment from base cost only (excluding extra pax/additional guests)
+  const downPaymentRaw = baseCost > 0 ? baseCost * 0.3 : 0;
+  const balanceRaw = totalAmount > 0 ? totalAmount - downPaymentRaw : 0;
   
   console.log("💰 FINAL PAYMENT CALCULATIONS:");
+  console.log("   Base Cost (for down payment):", baseCost);
   console.log("   Total Amount:", totalAmount);
-  console.log("   Down Payment (30%):", downPaymentRaw);
-  console.log("   Balance (70%):", balanceRaw);
+  console.log("   Down Payment (30% of base cost):", downPaymentRaw);
+  console.log("   Balance (Total - Down Payment):", balanceRaw);
   
   // Set status color based on status
   const statusColor = status === "confirmed" ? "#28a745" : 
@@ -384,6 +411,7 @@ function sendBookingEmail(booking, status, type = "room") {
     balance: formatCurrency(balanceRaw),
     room_section_style: isRoomType ? "display: block;" : "display: none;",
     activity_section_style: isRoomType ? "display: none;" : "display: block;",
+
   };
   
   if (type === "room") {
@@ -5368,13 +5396,18 @@ function sendBookingEmail(booking, status, type = "room") {
                                 <td>${data.numberOfNights}</td>
                                 <td>${data.totalAmount}</td>
                                 <td style="color: #e74c3c; white-space:nowrap;">
-                                    ${data.totalAmount ? '₱' + (parseFloat(data.totalAmount.replace(/[^0-9.-]+/g, '')) * 0.3).toLocaleString() : '₱0'}
+                                    ${data.paymentAmount || (data.totalAmount ? '₱' + (parseFloat(data.totalAmount.replace(/[^0-9.-]+/g, '')) * 0.3).toLocaleString() : '₱0')}
                                 </td>
                                 <td style="text-align:center;">
                                     ${data.receiptUrl ? `<button onclick="viewReceipt('${data.receiptUrl}')" style="background:#2196F3;color:white;border:none;padding:5px 10px;border-radius:4px;cursor:pointer;font-size:12px;">📷 View</button>` : '<span style="color:#999;font-size:12px;">No receipt</span>'}
                                 </td>
                                 <td style="color: #27ae60; white-space:nowrap;">
-                                    ${data.totalAmount ? '₱' + (parseFloat(data.totalAmount.replace(/[^0-9.-]+/g, '')) * 0.7).toLocaleString() : '₱0'}
+                                    ${(() => {
+                                        const totalAmt = data.totalAmount ? parseFloat(data.totalAmount.replace(/[^0-9.-]+/g, '')) : 0;
+                                        const downPmt = data.paymentAmount ? parseFloat(data.paymentAmount.replace(/[^0-9.-]+/g, '')) : (totalAmt * 0.3);
+                                        const balance = totalAmt - downPmt;
+                                        return balance > 0 ? '₱' + Math.round(balance).toLocaleString() : '₱0';
+                                    })()}
                                     ${status === 'approved' ? `<input type="checkbox" class="dp-paid-checkbox" title="Mark balance as paid" style="margin-left:8px;vertical-align:middle;" data-id="${data.id}" ${dpPaid ? 'checked' : ''}>` : ''}
                                 </td>
                                 <td id="status-${data.id}" style="font-weight:bold; color:${status === "approved" ? "green" : status === "rejected" ? "red" : "#FFC107"};">
@@ -9370,7 +9403,7 @@ showDashboard();
 }
     loginForm.onsubmit = function(e) {
         e.preventDefault();
-        if (loginUser.value === 'nameknotfound' && loginPass.value === 'friedchicken11') {
+        if (loginUser.value === 'agcararaoresort' && loginPass.value === 'agcararao098') {
             sessionStorage.setItem('isLoggedIn', 'true');
             showDashboard();
         } else {
