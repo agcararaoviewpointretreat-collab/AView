@@ -4851,9 +4851,9 @@ function sendBookingEmail(booking, status, type = "room") {
                     await sendBookingEmail(bookingData, "rejected", "room");
                 } catch (emailError) {
                     console.error("Email failed but booking was declined:", emailError);
-                    showToast("Booking Declined", "Booking declined successfully!", "success");
                 }
                 
+                showToast("Booking Declined", "Booking declined successfully!", "success");
                 loadBookings();
             } catch (error) {
                 console.error("Error declining booking:", error);
@@ -5514,10 +5514,6 @@ function sendBookingEmail(booking, status, type = "room") {
         function updateBookingStatus(id, status) { 
             update(ref(db, `bookings/${id}`), { status }).then(loadBookings); 
         }
-        
-        window.deleteBooking = (id) => { 
-            if (confirm("Delete booking?")) remove(ref(db, `bookings/${id}`)).then(loadBookings); 
-        };
 
        // Function to load announcements
 function loadAnnouncements() {
