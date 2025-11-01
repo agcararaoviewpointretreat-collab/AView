@@ -21,6 +21,18 @@
             opacity: 0 !important;
             visibility: hidden !important;
         }
+        /* Hide carousel until Firebase loads new images */
+        #heroSlides,
+        .hero-slides {
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        #heroSlides.loaded,
+        .hero-slides.loaded {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
         #heroTitle,
         #heroSubtitle,
         #heroDescription,
@@ -889,41 +901,48 @@ body::-webkit-scrollbar-thumb:hover {
 
             /* Activities mobile */
             .activities {
-                padding: 3rem 1.5rem;
-                margin: 20px 10px;
+                padding: 2rem 1rem;
+                margin: 15px 5px;
             }
 
             .activities h2 {
-                font-size: 2rem !important;
+                font-size: 1.5rem !important;
+                margin-bottom: 1rem !important;
+            }
+            
+            .activities p {
+                font-size: 0.9rem !important;
                 margin-bottom: 1.5rem !important;
             }
 
             .activities-container {
                 grid-template-columns: 1fr;
-                gap: 2rem;
+                gap: 1.2rem;
+                padding: 0 0.5rem;
             }
 
             .activity-item {
-                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-                border-radius: 12px;
+                box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+                border-radius: 10px;
                 overflow: hidden;
             }
 
             .activity-item img {
                 width: 100%;
-                height: 220px;
+                height: 180px;
                 object-fit: cover;
             }
             
             .activity-item h3 {
-                font-size: 1.4rem !important;
-                margin: 15px 0 10px 0;
-                padding: 0 15px;
+                font-size: 1.1rem !important;
+                margin: 12px 0 8px 0;
+                padding: 0 12px;
             }
             
             .activity-item p {
-                padding: 0 15px 15px 15px;
-                line-height: 1.6;
+                font-size: 0.85rem !important;
+                padding: 0 12px 12px 12px;
+                line-height: 1.5;
             }
 
             /* History/Story section mobile */
@@ -6248,41 +6267,7 @@ window.addEventListener('DOMContentLoaded', function() {
             <!-- Hero Photo Slider -->
             <div class="hero-slider">
                     <div id="heroSlides" class="hero-slides">
-                        <div class="hero-slide active">
-                            <img src="ky.jpg" alt="Mountain View Resort - Scenic Landscape">
-                            <div class="slide-overlay" style="display: none; opacity: 0; visibility: hidden;">
-                                <h3>Breathtaking Mountain Views</h3>
-                                <p>Wake up to stunning panoramic views</p>
-                            </div>
-                        </div>
-                        <div class="hero-slide">
-                            <img src="pol.jpg" alt="Resort Pool Area">
-                            <div class="slide-overlay" style="display: none; opacity: 0; visibility: hidden;">
-                                <h3>Luxurious Pool Area</h3>
-                                <p>Relax in our pristine swimming facilities</p>
-                            </div>
-                        </div>
-                        <div class="hero-slide">
-                            <img src="sdc.jpg" alt="Resort Accommodations">
-                            <div class="slide-overlay" style="display: none; opacity: 0; visibility: hidden;">
-                                <h3>Comfortable Accommodations</h3>
-                                <p>Modern rooms with all amenities</p>
-                            </div>
-                        </div>
-                        <div class="hero-slide">
-                            <img src="gh.jpg" alt="Resort Garden Area">
-                            <div class="slide-overlay" style="display: none; opacity: 0; visibility: hidden;">
-                                <h3>Beautiful Garden Spaces</h3>
-                                <p>Stroll through our manicured gardens</p>
-                            </div>
-                        </div>
-                        <div class="hero-slide">
-                            <img src="sw.jpg" alt="Resort Sunset View">
-                            <div class="slide-overlay" style="display: none; opacity: 0; visibility: hidden;">
-                                <h3>Spectacular Sunsets</h3>
-                                <p>End your day with amazing sunset views</p>
-                            </div>
-                        </div>
+                        <!-- Carousel images will be loaded dynamically from Firebase -->
                     </div>
                     
                     <!-- Slider Navigation -->
@@ -7840,9 +7825,15 @@ document.addEventListener("DOMContentLoaded", () => {
         // Load Hero Carousel Images
         function loadHeroCarousel() {
             onValue(ref(db, 'heroCarousel'), (snapshot) => {
-                if (!snapshot.exists()) return;
-                
                 const heroSlides = document.getElementById('heroSlides');
+                
+                if (!snapshot.exists()) {
+                    // If no Firebase data, show the default slides
+                    heroSlides.classList.add('loaded');
+                    return;
+                }
+                
+                // Clear old content
                 heroSlides.innerHTML = '';
                 
                 const images = [];
@@ -7862,6 +7853,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     `;
                     heroSlides.appendChild(slideDiv);
                 });
+                
+                // Show carousel after new images are loaded
+                setTimeout(() => {
+                    heroSlides.classList.add('loaded');
+                }, 100);
             });
         }
         
