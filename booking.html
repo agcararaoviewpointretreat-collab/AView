@@ -363,7 +363,13 @@
                     
                     snapshot.forEach((childSnapshot) => {
                         const booking = childSnapshot.val();
-                        if (booking.selectedRoom === selectedRoom) {
+                        const bookingStatus = booking.status || "pending";
+                        
+                        // Only count bookings that are pending, confirmed, or approved
+                        // Exclude rejected/declined bookings to make those dates available again
+                        const validStatuses = ["pending", "confirmed", "approved"];
+                        
+                        if (booking.selectedRoom === selectedRoom && validStatuses.includes(bookingStatus)) {
                             let currentDate = new Date(booking.checkInDate);
                             const checkOutDate = new Date(booking.checkOutDate);
                             const roomsBooked = parseInt(booking.numberOfRooms) || 1;
