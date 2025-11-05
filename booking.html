@@ -536,6 +536,9 @@ window.hideNotification = function() {
             const fullName = document.getElementById("fullName").value;
             const email = document.getElementById("email").value;
             const phone = document.getElementById("phone").value;
+            const adults = document.getElementById("adults").value;
+            const children = document.getElementById("children").value;
+            const babies = document.getElementById("babies").value;
             const selectedRoom = document.getElementById("selectedRoom").value;
             const numberOfRooms = document.getElementById("numberOfRooms").value;
             const checkInDate = document.getElementById("checkInDate").value;
@@ -593,7 +596,7 @@ window.hideNotification = function() {
                 return;
             }
 
-            if (!fullName || !email || !phone || !checkInDate || !checkOutDate || !totalAmount) {
+            if (!fullName || !email || !phone || !adults || !checkInDate || !checkOutDate || !totalAmount) {
                 showNotification("Please fill in all required fields!", 'info', 15000);
                 if (submitBtn) {
                     submitBtn.disabled = false;
@@ -615,6 +618,9 @@ window.hideNotification = function() {
                     fullName,
                     email,
                     phone,
+                    adults,
+                    children,
+                    babies,
                     selectedRoom,
                     numberOfRooms,
                     checkInDate,
@@ -742,6 +748,38 @@ window.hideNotification = function() {
                 }
             }
         };
+
+        window.validatePersonCount = function() {
+            const selectedRoom = document.getElementById("selectedRoom").value;
+            const adults = parseInt(document.getElementById("adults").value) || 0;
+            const children = parseInt(document.getElementById("children").value) || 0;
+            const babies = parseInt(document.getElementById("babies").value) || 0;
+            const totalPersons = adults + children + babies;
+
+            // Get maxPersons from bookContent (dynamically loaded from admin settings)
+            const maxPersons = (bookContent && bookContent.maxPersons && bookContent.maxPersons[selectedRoom] != null)
+                ? parseInt(bookContent.maxPersons[selectedRoom])
+                : (selectedRoom === 'Casa De Amor' ? 2 : 5); // Default: Casa De Amor = 2, others = 5
+
+            // If total exceeds max, adjust the last changed field
+            if (totalPersons > maxPersons) {
+                const excess = totalPersons - maxPersons;
+                showNotification(
+                    `The maximum capacity for <span class="notif-highlight">${selectedRoom}</span> is <span class="notif-highlight">${maxPersons} persons</span>.<br><br>You have entered <span class="notif-highlight">${totalPersons} persons</span> (${adults} adults + ${children} children + ${babies} babies).<br><br>Please use the <strong>Extra Pax</strong> field for additional guests beyond the base capacity, which will incur additional charges.`,
+                    'info',
+                    8000
+                );
+                
+                // Auto-adjust: reduce babies first, then children, then keep adults at minimum 1
+                if (babies > 0) {
+                    document.getElementById("babies").value = Math.max(0, babies - excess);
+                } else if (children > 0) {
+                    document.getElementById("children").value = Math.max(0, children - excess);
+                } else if (adults > maxPersons) {
+                    document.getElementById("adults").value = maxPersons;
+                }
+            }
+        };
     </script>
 </head>
 <body>
@@ -765,9 +803,23 @@ window.hideNotification = function() {
 
     <input type="tel" id="phone" name="phone" maxlength="11" inputmode="numeric" placeholder="09XXXXXXXXX" required oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value.length>11)this.value=this.value.slice(0,11);">
 
+    <div class="form-group">
+        <div>
+            <label for="adults">Adults:</label>
+            <input type="number" id="adults" value="1" min="1" required onchange="validatePersonCount()">
+        </div>
+        <div>
+            <label for="children">Children:</label>
+            <input type="number" id="children" value="0" min="0" required onchange="validatePersonCount()">
+        </div>
+        <div>
+            <label for="babies">Babies:</label>
+            <input type="number" id="babies" value="0" min="0" required onchange="validatePersonCount()">
+        </div>
+    </div>
     
         <label for="selectedRoom">Selected Room:</label>
-        <select id="selectedRoom" onchange="adjustRoomOptions(); updateTotal();">
+        <select id="selectedRoom" onchange="adjustRoomOptions(); validatePersonCount(); updateTotal();">
             <option value="Casa De Amor">Casa De Amor</option>
             <option value="Casa De Arced">Casa De Arced</option>
             <option value="Casa De Bella">Casa De Bella</option>
