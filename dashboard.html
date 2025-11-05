@@ -3624,6 +3624,7 @@ function sendBookingEmail(booking, status, type = "room") {
                     <th>Room</th>
                     <th>No. of Rooms</th>
                     <th>Extra Pax</th>
+                    <th>No. of Person</th>
                     <th>Check-in</th>
                     <th>Check-out</th>
                     <th>No. of Nights</th>
@@ -4635,6 +4636,7 @@ function sendBookingEmail(booking, status, type = "room") {
                         const maxRoomsVal = (book && book.maxRooms && book.maxRooms[key] != null) ? book.maxRooms[key] : (parseInt(room.maxRooms||'')||'');
                         const maxExtra = (book && book.maxExtraPax && book.maxExtraPax[key] != null) ? book.maxExtraPax[key] : '';
                         const extraPrice = (book && book.extraPaxPrice && book.extraPaxPrice[key] != null) ? book.extraPaxPrice[key] : '';
+                        const maxPersons = (book && book.maxPersons && book.maxPersons[key] != null) ? book.maxPersons[key] : '';
                         const container = document.createElement('div');
                         container.className='item-editor';
                         container.style.cssText='border:1px solid #ddd;margin:10px 0;padding:12px;border-radius:8px;background:#fafafa;';
@@ -4650,6 +4652,9 @@ function sendBookingEmail(booking, status, type = "room") {
                                 <label>Max Rooms
                                     <input type="number" data-book-room="maxRooms" data-book-key="${key.replace(/"/g,'&quot;')}" value="${maxRoomsVal}">
                                 </label>
+                                <label>Max Persons (base capacity)
+                                    <input type="number" data-book-room="maxPersons" data-book-key="${key.replace(/"/g,'&quot;')}" value="${maxPersons}" min="1" placeholder="5">
+                                </label>
                                 <label>Max Extra Pax
                                     <input type="number" data-book-room="maxExtra" data-book-key="${key.replace(/"/g,'&quot;')}" value="${maxExtra}">
                                 </label>
@@ -4661,7 +4666,6 @@ function sendBookingEmail(booking, status, type = "room") {
                         bookRoomsSettingsWrap.appendChild(container);
                     });
                 }
-
                 // Fetch Rooms Content and render dynamic settings
                 get(ref(db,'siteContent/rooms')).then((snap)=>{
                     const roomsData = snap.exists() ? (snap.val()||{}) : {};
@@ -5312,6 +5316,7 @@ function sendBookingEmail(booking, status, type = "room") {
                         <th>Room</th>
                         <th>No. of Rooms</th>
                         <th>Extra Pax</th>
+                        <th>No. of Person</th>
                         <th>Check-in</th>
                         <th>Check-out</th>
                         <th>No. of Nights</th>
@@ -5324,7 +5329,7 @@ function sendBookingEmail(booking, status, type = "room") {
                     </tr>`;
 
                 if (!snapshot.exists()) {
-                    table.innerHTML += `<tr><td colspan="15" style="text-align:center;">No bookings</td></tr>`;
+                    table.innerHTML += `<tr><td colspan="16" style="text-align:center;">No bookings</td></tr>`;
                     return;
                 }
 
@@ -5391,6 +5396,7 @@ function sendBookingEmail(booking, status, type = "room") {
                                 <td>${data.selectedRoom}</td>
                                 <td>${data.numberOfRooms}</td>
                                 <td>${data.extraPax}</td>
+                                <td>${(parseInt(data.adults) || 0) + (parseInt(data.children) || 0) + (parseInt(data.babies) || 0)}</td>
                                 <td>${data.checkInDate}</td>
                                 <td>${data.checkOutDate}</td>
                                 <td>${data.numberOfNights}</td>
@@ -5445,7 +5451,7 @@ function sendBookingEmail(booking, status, type = "room") {
                 });
 
                 if (filteredCount === 0) {
-                    table.innerHTML += `<tr><td colspan="15" style="text-align:center;">No bookings match the current filters</td></tr>`;
+                    table.innerHTML += `<tr><td colspan="16" style="text-align:center;">No bookings match the current filters</td></tr>`;
                 }
 
                 document.getElementById('reservationsCount').textContent = count;
@@ -6417,6 +6423,7 @@ function initializeDefaultContent() {
                     'Casa De Arced': document.getElementById('bookRoomNameArced')?.value || 'Casa De Arced',
                     'Casa Y Agua': document.getElementById('bookRoomNameAgua')?.value || 'Casa Y Agua',
                 };
+                const maxPersons = {};
 
                 // Merge dynamic per-room overrides from the auto-generated settings
                 const dynInputs = document.querySelectorAll('#bookRoomsSettings [data-book-room]');
@@ -6431,6 +6438,8 @@ function initializeDefaultContent() {
                         const n = parseInt(valRaw||''); if (!isNaN(n)) roomPrice[key] = n;
                     } else if (field === 'maxRooms') {
                         const n = parseInt(valRaw||''); if (!isNaN(n)) maxRooms[key] = n;
+                    } else if (field === 'maxPersons') {
+                        const n = parseInt(valRaw||''); if (!isNaN(n)) maxPersons[key] = n;
                     } else if (field === 'maxExtra') {
                         const n = parseInt(valRaw||''); if (!isNaN(n)) maxExtraPax[key] = n;
                     } else if (field === 'extraPrice') {
@@ -6443,6 +6452,7 @@ function initializeDefaultContent() {
                     heroBg: heroBg,
                     roomPrice,
                     maxRooms,
+                    maxPersons,
                     maxExtraPax,
                     downPaymentPercent,
                     extraPaxPrice,
