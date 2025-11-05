@@ -5403,7 +5403,11 @@ function sendBookingEmail(booking, status, type = "room") {
                 bookingsArray.forEach((data) => {
                     let status = data.status || "pending";
                     let pastStay = data.checkOutDate < today;
-                    count++;
+                    
+                    // Only count bookings where checkout date hasn't passed
+                    if (!pastStay) {
+                        count++;
+                    }
 
                     // Count bookings that need approval (pending OR confirmed)
                     if (status === "pending" || status === "confirmed") {
@@ -8761,12 +8765,6 @@ activitiesArray.forEach((item, index) => {
 });
                 activitiesArray.forEach((data) => {
                     let status = data.status || "pending";
-                    count++;
-
-                    // Count activities that need approval (pending OR confirmed)
-                    if (status === "pending" || status === "confirmed") {
-                        pendingCount++;
-                    }
 
                     // Get activity date based on activity type
                     let activityDate;
@@ -8783,6 +8781,16 @@ activitiesArray.forEach((item, index) => {
                     if (activityDate && !isNaN(activityDate.getTime())) {
                         activityDate.setHours(0, 0, 0, 0);
                         isPastActivity = activityDate < today;
+                    }
+
+                    // Only count activities where date hasn't passed
+                    if (!isPastActivity) {
+                        count++;
+                    }
+
+                    // Count activities that need approval (pending OR confirmed)
+                    if (status === "pending" || status === "confirmed") {
+                        pendingCount++;
                     }
 
                     // 24-hour rule for approved activities
