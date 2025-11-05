@@ -4400,18 +4400,39 @@ function sendBookingEmail(booking, status, type = "room") {
         const rows = Array.from(table.rows).slice(1); // skip header
         rows.forEach(row => {
             const dateCell = row.cells[4]; // 5th column: Date
-            if (!dateCell) return row.style.display = '';
+            if (!dateCell) {
+                row.style.display = '';
+                return;
+            }
             if (month === 'all') {
                 row.style.display = '';
             } else {
-                // Try to parse month from date string
+                // Handle both single dates (swimming) and date ranges (tent camping: "YYYY-MM-DD to YYYY-MM-DD")
                 const dateStr = dateCell.textContent.trim();
-                const date = new Date(dateStr);
-                if (!isNaN(date.getTime()) && (date.getMonth() + 1).toString() === month) {
-                    row.style.display = '';
+                let matchesMonth = false;
+                
+                if (dateStr.includes(' to ')) {
+                    // Date range (tent camping)
+                    const dates = dateStr.split(' to ');
+                    const startDate = new Date(dates[0].trim());
+                    const endDate = new Date(dates[1].trim());
+                    
+                    // Show if the month matches either the start or end date
+                    if (!isNaN(startDate.getTime()) && (startDate.getMonth() + 1).toString() === month) {
+                        matchesMonth = true;
+                    }
+                    if (!isNaN(endDate.getTime()) && (endDate.getMonth() + 1).toString() === month) {
+                        matchesMonth = true;
+                    }
                 } else {
-                    row.style.display = 'none';
+                    // Single date (swimming)
+                    const date = new Date(dateStr);
+                    if (!isNaN(date.getTime()) && (date.getMonth() + 1).toString() === month) {
+                        matchesMonth = true;
+                    }
                 }
+                
+                row.style.display = matchesMonth ? '' : 'none';
             }
         });
     }
@@ -4422,12 +4443,15 @@ function sendBookingEmail(booking, status, type = "room") {
         if (!table) return;
         const rows = Array.from(table.rows).slice(1); // skip header
         rows.forEach(row => {
-            const checkInCell = row.cells[6]; // 7th column: Check-in
-            if (!checkInCell) return row.style.display = '';
+            const checkInCell = row.cells[7]; // 8th column: Check-in (0-indexed so it's 7)
+            if (!checkInCell) {
+                row.style.display = '';
+                return;
+            }
             if (month === 'all') {
                 row.style.display = '';
             } else {
-                // Try to parse month from date string
+                // Try to parse month from date string (format: YYYY-MM-DD)
                 const dateStr = checkInCell.textContent.trim();
                 const date = new Date(dateStr);
                 if (!isNaN(date.getTime()) && (date.getMonth() + 1).toString() === month) {
@@ -4676,15 +4700,31 @@ function sendBookingEmail(booking, status, type = "room") {
         })();
         const imagesRef = ref(db, 'gallery/images');
     
-        // Load initial data immediately
+        // Load initial data immediately - Reservations count (exclude past bookings)
         onValue(ref(db, 'bookings'), (snapshot) => {
             let totalBookings = 0;
-            snapshot.forEach(() => {
-                totalBookings++;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            snapshot.forEach((child) => {
+                const booking = child.val();
+                const checkOutDate = booking.checkOutDate || booking.checkoutDate;
+                
+                if (checkOutDate) {
+                    const bookingDate = new Date(checkOutDate);
+                    bookingDate.setHours(0, 0, 0, 0);
+                    
+                    if (bookingDate >= today) {
+                        totalBookings++;
+                    }
+                } else {
+                    totalBookings++;
+                }
             });
             document.getElementById('reservationsCount').textContent = totalBookings;
         });
 
+        // Load feedback average rating
         onValue(ref(db, 'feedback'), (snapshot) => {
             let totalRating = 0;
             let approvedCount = 0;
@@ -5365,8 +5405,8 @@ function sendBookingEmail(booking, status, type = "room") {
                     let pastStay = data.checkOutDate < today;
                     count++;
 
-                    // Count pending bookings
-                    if (status === "pending") {
+                    // Count bookings that need approval (pending OR confirmed)
+                    if (status === "pending" || status === "confirmed") {
                         pendingCount++;
                     }
 
@@ -5380,7 +5420,10 @@ function sendBookingEmail(booking, status, type = "room") {
                     }
 
                     // Apply filters
-                    const matchesStatus = statusFilter === 'all' || status === statusFilter;
+                    // When filtering by "pending", show both pending AND confirmed (both need approval)
+                    const matchesStatus = statusFilter === 'all' || 
+                                         status === statusFilter ||
+                                         (statusFilter === 'pending' && status === 'confirmed');
                     const matchesSearch = data.fullName.toLowerCase().includes(searchQuery) || 
                                        data.email.toLowerCase().includes(searchQuery) ||
                                        data.selectedRoom.toLowerCase().includes(searchQuery);
@@ -5467,6 +5510,11 @@ function sendBookingEmail(booking, status, type = "room") {
                 } else {
                     reservationDot.style.display = 'none';
                     reservationCount.style.display = 'none';
+                }
+                
+                // Reapply month filter after table reload
+                if (typeof window.filterByMonth === 'function') {
+                    window.filterByMonth();
                 }
             });
         }
@@ -5640,7 +5688,7 @@ function updateDashboardNotifications() {
         snapshot.forEach((child) => {
             const booking = child.val();
             totalCount++;
-            if (booking.status === 'pending') {
+            if (booking.status === 'pending' || booking.status === 'confirmed') {
                 pendingCount++;
             }
         });
@@ -5691,9 +5739,9 @@ function initializeNotifications() {
         snapshot.forEach((child) => {
             const booking = child.val();
             totalCount++;
-            if (booking.status === 'pending') {
+            if (booking.status === 'pending' || booking.status === 'confirmed') {
                 pendingCount++;
-                console.log('Pending booking found:', booking.fullName, 'Status:', booking.status);
+                console.log('Booking needs approval:', booking.fullName, 'Status:', booking.status);
             }
         });
         
@@ -5750,7 +5798,8 @@ function initializeNotifications() {
         let pendingCount = 0;
         snapshot.forEach((child) => {
             const activity = child.val();
-            if (activity.status === 'pending') {
+            // Count activities that need approval (pending OR confirmed)
+            if (activity.status === 'pending' || activity.status === 'confirmed') {
                 pendingCount++;
             }
         });
@@ -8714,7 +8763,8 @@ activitiesArray.forEach((item, index) => {
                     let status = data.status || "pending";
                     count++;
 
-                    if (status === "pending") {
+                    // Count activities that need approval (pending OR confirmed)
+                    if (status === "pending" || status === "confirmed") {
                         pendingCount++;
                     }
 
@@ -8724,6 +8774,15 @@ activitiesArray.forEach((item, index) => {
                         activityDate = new Date(data.date || data.swimmingDate || '');
                     } else if (data.activityType === 'tent') {
                         activityDate = new Date(data.checkOut || data.checkOutDate);
+                    }
+
+                    // Check if activity date has passed
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    let isPastActivity = false;
+                    if (activityDate && !isNaN(activityDate.getTime())) {
+                        activityDate.setHours(0, 0, 0, 0);
+                        isPastActivity = activityDate < today;
                     }
 
                     // 24-hour rule for approved activities
@@ -8780,7 +8839,10 @@ activitiesArray.forEach((item, index) => {
 
                     // Apply filters
                     const matchesActivity = activityFilter === 'all' || data.activityType === activityFilter;
-                    const matchesStatus = statusFilter === 'all' || status === statusFilter;
+                    // When filtering by "pending", show both pending AND confirmed (both need approval)
+                    const matchesStatus = statusFilter === 'all' || 
+                                         status === statusFilter ||
+                                         (statusFilter === 'pending' && status === 'confirmed');
                     const matchesSearch = (nameDisplay || '').toLowerCase().includes(searchQuery) || 
                                        (emailDisplay || '').toLowerCase().includes(searchQuery);
 
@@ -8815,7 +8877,9 @@ activitiesArray.forEach((item, index) => {
                                 </td>
                                 <td style="font-weight:bold; color:${statusColor};">${statusText}</td>
                                 <td>
-                                    ${status === "pending" ? `
+                                    ${isPastActivity ? `
+                                        <span class="delete-icon" onclick="deleteActivity('${data.id}')">🗑</span>
+                                    ` : status === "pending" ? `
                                         <button class="confirm-btn" onclick="confirmActivity('${data.id}')">✔ Confirm</button>
                                         <button class="decline-btn" onclick="declineActivity('${data.id}')">✖ Decline</button>
                                     ` : status === "confirmed" ? `
@@ -8852,6 +8916,11 @@ activitiesArray.forEach((item, index) => {
                 // If no results after filtering, show message
                 if (table.rows.length === 1) { // Only header row exists
                     table.innerHTML += `<tr><td colspan="12" style="text-align:center;">No activities match the current filters</td></tr>`;
+                }
+                
+                // Reapply month filter after table reload
+                if (typeof window.filterActivitiesByMonth === 'function') {
+                    window.filterActivitiesByMonth();
                 }
             });
         }
@@ -8896,19 +8965,19 @@ activitiesArray.forEach((item, index) => {
                     showToast("Activity Confirmed", "Activity confirmed successfully! Awaiting payment approval.", "success");
                 }
                 
-                // Check if there are any remaining pending activities
+                // Check if there are any remaining activities that need approval (pending OR confirmed)
                 const activitiesRef = ref(db, 'activities');
                 const activitiesSnapshot = await get(activitiesRef);
-                let hasPending = false;
+                let needsApproval = false;
                 activitiesSnapshot.forEach((child) => {
                     const activity = child.val();
-                    if (activity.status === 'pending') {
-                        hasPending = true;
+                    if (activity.status === 'pending' || activity.status === 'confirmed') {
+                        needsApproval = true;
                     }
                 });
                 
-                // Only hide notification if no pending activities remain
-                if (!hasPending) {
+                // Only hide notification if no activities need approval
+                if (!needsApproval) {
                     const activitiesDot = document.getElementById('activitiesDot');
                     const activitiesCount = document.getElementById('activitiesCount');
                     if (activitiesDot) activitiesDot.style.display = 'none';
@@ -9065,14 +9134,36 @@ activitiesArray.forEach((item, index) => {
             });
         });
 
-        // Update activities count in dashboard card
+        // Update activities count in dashboard card (exclude past activities)
         onValue(ref(db, 'activities'), (snapshot) => {
             let totalActivities = 0;
-            snapshot.forEach(() => {
-                totalActivities++;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            snapshot.forEach((child) => {
+                const activity = child.val();
+                // Only count activities where date hasn't passed yet
+                let activityDateStr;
+                if (activity.activityType === 'swimming') {
+                    activityDateStr = activity.date || activity.swimmingDate;
+                } else if (activity.activityType === 'tent') {
+                    activityDateStr = activity.checkOut || activity.checkOutDate;
+                }
+                
+                if (activityDateStr) {
+                    const activityDate = new Date(activityDateStr);
+                    activityDate.setHours(0, 0, 0, 0);
+                    
+                    if (activityDate >= today) {
+                        totalActivities++;
+                    }
+                } else {
+                    // If no date, count it (assume it's valid)
+                    totalActivities++;
+                }
             });
             document.getElementById('activitiesCardCount').textContent = totalActivities;
-});
+        });
 
         // Add function to check cottage availability
         window.checkCottageAvailability = async function(date, cottageNumber) {
