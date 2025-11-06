@@ -544,6 +544,7 @@ window.hideNotification = function() {
             const checkInDate = document.getElementById("checkInDate").value;
             const checkOutDate = document.getElementById("checkOutDate").value;
             const extraPax = document.getElementById("extraPax").value;
+            const extraChildren = document.getElementById("extraChildren").value;
             const numberOfNights = document.getElementById("numberOfNights").value;
             const totalAmount = document.getElementById("totalAmount").value;
             const paymentType = document.getElementById("paymentType").value;
@@ -626,6 +627,7 @@ window.hideNotification = function() {
                     checkInDate,
                     checkOutDate,
                     extraPax,
+                    extraChildren,
                     numberOfNights,
                     totalAmount,
                     paymentType,
@@ -672,20 +674,31 @@ window.hideNotification = function() {
             const selectedRoom = document.getElementById("selectedRoom").value;
             // Use dynamic pricing and limits only; no hardcoded legacy defaults
             const extraPriceDefault = 300;
+            const extraChildPriceDefault = 250; // Default: Extra children (4-10 years) cost 250 per head
 
             const price = (bookContent && bookContent.roomPrice && bookContent.roomPrice[selectedRoom] != null)
                 ? (parseInt(bookContent.roomPrice[selectedRoom]) || 0)
                 : 0;
             let rooms = parseInt(document.getElementById("numberOfRooms").value);
             let extraPax = parseInt(document.getElementById("extraPax").value) || 0;
+            let extraChildren = parseInt(document.getElementById("extraChildren").value) || 0;
 
-            // Limit extra pax based on the selected room type (dynamic if available)
+            // Limit combined extra pax (adults + children) based on room type
             const maxAllowedPax = (bookContent && bookContent.maxExtraPax && bookContent.maxExtraPax[selectedRoom] != null)
                 ? (parseInt(bookContent.maxExtraPax[selectedRoom]) || 0)
-                : 0;
-            if (extraPax > maxAllowedPax) {
-                extraPax = maxAllowedPax;
-                document.getElementById("extraPax").value = maxAllowedPax;
+                : (selectedRoom === 'Casa De Amor' ? 4 : selectedRoom === 'Casa Y Agua' ? 20 : 10);
+            
+            const totalExtraPax = extraPax + extraChildren;
+            if (totalExtraPax > maxAllowedPax) {
+                // Adjust to fit within the limit, prioritizing adults
+                const excess = totalExtraPax - maxAllowedPax;
+                if (extraChildren >= excess) {
+                    extraChildren = extraChildren - excess;
+                    document.getElementById("extraChildren").value = extraChildren;
+                } else {
+                    extraPax = maxAllowedPax - extraChildren;
+                    document.getElementById("extraPax").value = extraPax;
+                }
             }
 
             // Enforce max rooms per type from Book content if available; otherwise keep current input constraints
@@ -702,8 +715,12 @@ window.hideNotification = function() {
             const extraPricePerHead = (bookContent && bookContent.extraPaxPrice && bookContent.extraPaxPrice[selectedRoom] != null)
                 ? parseInt(bookContent.extraPaxPrice[selectedRoom]) || extraPriceDefault
                 : extraPriceDefault;
-            const extraPaxTotal = extraPax * extraPricePerHead * nights;
-            const totalPrice = roomTotal + extraPaxTotal;
+            const extraChildPrice = (bookContent && bookContent.extraChildrenPrice && bookContent.extraChildrenPrice[selectedRoom] != null)
+                ? parseInt(bookContent.extraChildrenPrice[selectedRoom]) || extraChildPriceDefault
+                : extraChildPriceDefault;
+            const extraPaxTotal = extraPax * extraPricePerHead * nights; // Extra adults at dynamic price
+            const extraChildrenTotal = extraChildren * extraChildPrice * nights; // Extra children at dynamic price
+            const totalPrice = roomTotal + extraPaxTotal + extraChildrenTotal;
 
             const totalAmount = `₱${Math.round(totalPrice).toLocaleString()}`;
             document.getElementById("totalAmount").value = totalAmount;
@@ -754,7 +771,7 @@ window.hideNotification = function() {
             const adults = parseInt(document.getElementById("adults").value) || 0;
             const children = parseInt(document.getElementById("children").value) || 0;
             const babies = parseInt(document.getElementById("babies").value) || 0;
-            const totalPersons = adults + children + babies;
+            const totalPersons = adults + children; // Babies don't count toward capacity
 
             // Get maxPersons from bookContent (dynamically loaded from admin settings)
             const maxPersons = (bookContent && bookContent.maxPersons && bookContent.maxPersons[selectedRoom] != null)
@@ -765,15 +782,13 @@ window.hideNotification = function() {
             if (totalPersons > maxPersons) {
                 const excess = totalPersons - maxPersons;
                 showNotification(
-                    `The maximum capacity for <span class="notif-highlight">${selectedRoom}</span> is <span class="notif-highlight">${maxPersons} persons</span>.<br><br>You have entered <span class="notif-highlight">${totalPersons} persons</span> (${adults} adults + ${children} children + ${babies} babies).<br><br>Please use the <strong>Extra Pax</strong> field for additional guests beyond the base capacity, which will incur additional charges.`,
+                    `The maximum capacity for <span class="notif-highlight">${selectedRoom}</span> is <span class="notif-highlight">${maxPersons} persons</span>.<br><br>You have entered <span class="notif-highlight">${totalPersons} persons</span> (${adults} adults + ${children} children). Babies are not counted.<br><br>Please use the <strong>Extra Pax</strong> field for additional guests beyond the base capacity, which will incur additional charges.`,
                     'info',
                     8000
                 );
                 
-                // Auto-adjust: reduce babies first, then children, then keep adults at minimum 1
-                if (babies > 0) {
-                    document.getElementById("babies").value = Math.max(0, babies - excess);
-                } else if (children > 0) {
+                // Auto-adjust: reduce children first, then keep adults at minimum 1
+                if (children > 0) {
                     document.getElementById("children").value = Math.max(0, children - excess);
                 } else if (adults > maxPersons) {
                     document.getElementById("adults").value = maxPersons;
@@ -809,33 +824,36 @@ window.hideNotification = function() {
             <input type="number" id="adults" value="1" min="1" required onchange="validatePersonCount()">
         </div>
         <div>
-            <label for="children">Children:</label>
+            <label for="children">Children (4-10 yrs):</label>
             <input type="number" id="children" value="0" min="0" required onchange="validatePersonCount()">
         </div>
         <div>
-            <label for="babies">Babies:</label>
+            <label for="babies">Babies (0-3 yrs):</label>
             <input type="number" id="babies" value="0" min="0" required onchange="validatePersonCount()">
         </div>
     </div>
     
-        <label for="selectedRoom">Selected Room:</label>
-        <select id="selectedRoom" onchange="adjustRoomOptions(); validatePersonCount(); updateTotal();">
-            <option value="Casa De Amor">Casa De Amor</option>
-            <option value="Casa De Arced">Casa De Arced</option>
-            <option value="Casa De Bella">Casa De Bella</option>
-            <option value="Casa Y Agua">Casa Y Agua</option>
-        </select>
-    
         <div class="form-group">
+            <div>
+                <label for="selectedRoom">Selected Room:</label>
+                <select id="selectedRoom" onchange="adjustRoomOptions(); validatePersonCount(); updateTotal();">
+                    <option value="Casa De Amor">Casa De Amor</option>
+                    <option value="Casa De Arced">Casa De Arced</option>
+                    <option value="Casa De Bella">Casa De Bella</option>
+                    <option value="Casa Y Agua">Casa Y Agua</option>
+                </select>
+            </div>
             <div>
                 <label for="numberOfRooms">Number of Rooms:</label>
                 <input type="number" id="numberOfRooms" value="1" min="1" onchange="updateTotal()">
             </div>
-            <div>
-                <label for="extraPax">Extra Pax (₱300 per head):</label>
-                <input type="number" id="extraPax" value="0" min="0" oninput="updateTotal()">
-            </div>
         </div>
+
+        <label for="extraChildren">Extra Children (₱250 per head):</label>
+        <input type="number" id="extraChildren" value="0" min="0" oninput="updateTotal()">
+        
+        <label for="extraPax">Extra Adults (₱300 per head):</label>
+        <input type="number" id="extraPax" value="0" min="0" oninput="updateTotal()">
     
         <div class="form-group">
             <div>
@@ -961,12 +979,21 @@ window.hideNotification = function() {
     const price = roomPrice[selectedRoom] || 0;
     let rooms = parseInt(document.getElementById("numberOfRooms").value);
     let extraPax = parseInt(document.getElementById("extraPax").value) || 0;
+    let extraChildren = parseInt(document.getElementById("extraChildren").value) || 0;
 
-    // Limit extra pax based on the selected room type
+    // Limit combined extra pax (adults + children) based on room type
     const maxAllowedPax = maxExtraPax[selectedRoom] || 0;
-    if (extraPax > maxAllowedPax) {
-        extraPax = maxAllowedPax;
-        document.getElementById("extraPax").value = maxAllowedPax;
+    const totalExtraPax = extraPax + extraChildren;
+    if (totalExtraPax > maxAllowedPax) {
+        // Adjust to fit within the limit, prioritizing adults
+        const excess = totalExtraPax - maxAllowedPax;
+        if (extraChildren >= excess) {
+            extraChildren = extraChildren - excess;
+            document.getElementById("extraChildren").value = extraChildren;
+        } else {
+            extraPax = maxAllowedPax - extraChildren;
+            document.getElementById("extraPax").value = extraPax;
+        }
     }
 
     if (selectedRoom === "Casa De Amor" && rooms > 3) {
@@ -979,8 +1006,9 @@ window.hideNotification = function() {
 
     // Calculate total cost
     const roomTotal = price * rooms * nights;
-    const extraPaxTotal = extraPax * 300 * nights;
-    const totalPrice = roomTotal + extraPaxTotal;
+    const extraPaxTotal = extraPax * 300 * nights; // Extra adults at 300/head
+    const extraChildrenTotal = extraChildren * 250 * nights; // Extra children at 250/head
+    const totalPrice = roomTotal + extraPaxTotal + extraChildrenTotal;
 
     const totalAmount = `₱${totalPrice.toLocaleString()}`;
     document.getElementById("totalAmount").value = totalAmount;
