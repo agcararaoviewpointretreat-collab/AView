@@ -415,12 +415,31 @@ function sendBookingEmail(booking, status, type = "room") {
   };
   
   if (type === "room") {
+    // Format extra pax details
+    const extraAdults = parseInt(booking.extraPax) || 0;
+    const extraKids = parseInt(booking.extraChildren) || 0;
+    const extraPaxParts = [];
+    if (extraAdults > 0) extraPaxParts.push(`Adults: ${extraAdults}`);
+    if (extraKids > 0) extraPaxParts.push(`Kids: ${extraKids}`);
+    const extraPaxDisplay = extraPaxParts.length > 0 ? extraPaxParts.join(', ') : '0';
+    
+    // Format number of persons
+    const adults = parseInt(booking.adults) || 0;
+    const kids = parseInt(booking.children) || 0;
+    const babies = parseInt(booking.babies) || 0;
+    const personsParts = [];
+    if (adults > 0) personsParts.push(`Adults: ${adults}`);
+    if (kids > 0) personsParts.push(`Kids: ${kids}`);
+    if (babies > 0) personsParts.push(`Babies: ${babies}`);
+    const personsDisplay = personsParts.length > 0 ? personsParts.join(', ') : '0';
+    
     Object.assign(templateParams, {
       roomType: booking.roomType || booking.selectedRoom || "N/A",
       checkIn: formatDate(booking.checkInDate || booking.checkIn),
       checkOut: formatDate(booking.checkOutDate || booking.checkOut),
       numberOfRooms: booking.numberOfRooms || "N/A",
-      extraPax: booking.extraPax || "",
+      extraPax: extraPaxDisplay,
+      numberOfPersons: personsDisplay,
       activityName: "", activityDate: "", cottage: "", details: "",
     });
   } else if (type === "activity") {
@@ -2314,7 +2333,7 @@ function sendBookingEmail(booking, status, type = "room") {
         }
         #bookingsTable {
             font-size: 13px;
-            width: 120%;
+            width: 100%;
             border-collapse: collapse;
             background: transparent !important;
             border-radius: 0 0 12px 12px;
@@ -2734,10 +2753,16 @@ function sendBookingEmail(booking, status, type = "room") {
         }
 
         #bookingsTable {
-            width: 120%;
+            width: 100%;
             border-collapse: collapse;
-          
-
+            table-layout: auto;
+        }
+        
+        /* Table wrapper for horizontal scroll on smaller screens */
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         #bookingsTable th {
@@ -3321,7 +3346,7 @@ function sendBookingEmail(booking, status, type = "room") {
                 padding: 6px 8px;
             }
         }
-         /* Bubbles animation for login background */
+         /* Enhanced Bubbles animation for login background */
         .bubbles-bg {
             position: absolute;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -3333,17 +3358,92 @@ function sendBookingEmail(booking, status, type = "room") {
             position: absolute;
             bottom: -120px;
             border-radius: 50%;
-            opacity: 0.45;
-            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
-            animation: bubbleUp 8s linear infinite;
-            filter: blur(1.5px);
+            opacity: 0.5;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            animation: bubbleUp 8s ease-in-out infinite;
+            filter: blur(2px);
+            box-shadow: 
+                inset 0 0 20px rgba(255,255,255,0.4),
+                0 0 30px rgba(168,237,234,0.3);
+        }
+        .bubble::before {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 40%;
+            height: 40%;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(3px);
         }
         @keyframes bubbleUp {
-            0% { transform: translateY(0) scale(1); opacity: 0.5; }
-            80% { opacity: 0.7; }
-            100% { transform: translateY(-110vh) scale(1.15); opacity: 0; }
+            0% { 
+                transform: translateY(0) translateX(0) scale(1) rotate(0deg); 
+                opacity: 0; 
+            }
+            5% { opacity: 0.6; }
+            50% { 
+                opacity: 0.8; 
+                transform: translateY(-55vh) translateX(30px) scale(1.1) rotate(180deg);
+            }
+            100% { 
+                transform: translateY(-110vh) translateX(-20px) scale(1.2) rotate(360deg); 
+                opacity: 0; 
+            }
         }
-        /* Enhanced Login Modal & Form Styles */
+        
+        /* Floating particles */
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(168,237,234,0.5) 100%);
+            animation: particleFloat 6s ease-in-out infinite;
+            filter: blur(1px);
+            box-shadow: 0 0 10px rgba(255,255,255,0.6);
+        }
+        @keyframes particleFloat {
+            0%, 100% { 
+                transform: translateY(0) translateX(0) scale(1); 
+                opacity: 0;
+            }
+            10% { opacity: 0.8; }
+            50% { 
+                transform: translateY(-50vh) translateX(20px) scale(1.5); 
+                opacity: 1;
+            }
+            90% { opacity: 0.6; }
+        }
+        
+        /* Shimmer effect */
+        .shimmer {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+            animation: shimmerMove 8s ease-in-out infinite;
+            filter: blur(20px);
+        }
+        @keyframes shimmerMove {
+            0%, 100% { 
+                transform: translate(10vw, 10vh) scale(1); 
+                opacity: 0.3; 
+            }
+            25% { 
+                transform: translate(80vw, 30vh) scale(1.5); 
+                opacity: 0.5; 
+            }
+            50% { 
+                transform: translate(60vw, 70vh) scale(1.2); 
+                opacity: 0.4; 
+            }
+            75% { 
+                transform: translate(20vw, 50vh) scale(1.8); 
+                opacity: 0.6; 
+            }
+        }
+         /* Enhanced Login Modal & Form Styles */
     #loginModal {
         animation: fadeInBg 1.2s, modalPop 0.8s cubic-bezier(.68,-0.55,.27,1.55);
         background: radial-gradient(circle at 60% 40%, #a8edea 0%, #fed6e3 100%);
@@ -4660,6 +4760,7 @@ function sendBookingEmail(booking, status, type = "room") {
                         const maxRoomsVal = (book && book.maxRooms && book.maxRooms[key] != null) ? book.maxRooms[key] : (parseInt(room.maxRooms||'')||'');
                         const maxExtra = (book && book.maxExtraPax && book.maxExtraPax[key] != null) ? book.maxExtraPax[key] : '';
                         const extraPrice = (book && book.extraPaxPrice && book.extraPaxPrice[key] != null) ? book.extraPaxPrice[key] : '';
+                        const extraChildPrice = (book && book.extraChildrenPrice && book.extraChildrenPrice[key] != null) ? book.extraChildrenPrice[key] : '';
                         const maxPersons = (book && book.maxPersons && book.maxPersons[key] != null) ? book.maxPersons[key] : '';
                         const container = document.createElement('div');
                         container.className='item-editor';
@@ -4682,8 +4783,11 @@ function sendBookingEmail(booking, status, type = "room") {
                                 <label>Max Extra Pax
                                     <input type="number" data-book-room="maxExtra" data-book-key="${key.replace(/"/g,'&quot;')}" value="${maxExtra}">
                                 </label>
-                                <label>Extra Pax Price
+                                <label>Extra Adults Price
                                     <input type="number" data-book-room="extraPrice" data-book-key="${key.replace(/"/g,'&quot;')}" value="${extraPrice}">
+                                </label>
+                                <label>Extra Children Price (4-10 yrs)
+                                    <input type="number" data-book-room="extraChildPrice" data-book-key="${key.replace(/"/g,'&quot;')}" value="${extraChildPrice}">
                                 </label>
                             </div>
                         `;
@@ -5442,8 +5546,24 @@ function sendBookingEmail(booking, status, type = "room") {
                                 <td>${data.phoneNumber || data.phone || ''}</td>
                                 <td>${data.selectedRoom}</td>
                                 <td>${data.numberOfRooms}</td>
-                                <td>${data.extraPax}</td>
-                                <td>${(parseInt(data.adults) || 0) + (parseInt(data.children) || 0) + (parseInt(data.babies) || 0)}</td>
+                                <td style="font-size: 11px;">${(() => {
+                                    const extraAdults = parseInt(data.extraPax) || 0;
+                                    const extraKids = parseInt(data.extraChildren) || 0;
+                                    const parts = [];
+                                    if (extraAdults > 0) parts.push(`Adults-${extraAdults}`);
+                                    if (extraKids > 0) parts.push(`Kids-${extraKids}`);
+                                    return parts.length > 0 ? parts.join(', ') : '0';
+                                })()}</td>
+                                <td style="font-size: 11px;">${(() => {
+                                    const adults = parseInt(data.adults) || 0;
+                                    const kids = parseInt(data.children) || 0;
+                                    const babies = parseInt(data.babies) || 0;
+                                    const parts = [];
+                                    if (adults > 0) parts.push(`Adults-${adults}`);
+                                    if (kids > 0) parts.push(`Kids-${kids}`);
+                                    if (babies > 0) parts.push(`Babies-${babies}`);
+                                    return parts.length > 0 ? parts.join('<br>') : '0';
+                                })()}</td>
                                 <td>${data.checkInDate}</td>
                                 <td>${data.checkOutDate}</td>
                                 <td>${data.numberOfNights}</td>
@@ -6470,6 +6590,12 @@ function initializeDefaultContent() {
                     'Casa De Arced': parseInt(document.getElementById('bookExtraPriceArced')?.value||'300')||300,
                     'Casa Y Agua': parseInt(document.getElementById('bookExtraPriceAgua')?.value||'300')||300,
                 };
+                const extraChildrenPrice = {
+                    'Casa De Amor': parseInt(document.getElementById('bookExtraChildPriceAmor')?.value||'200')||200,
+                    'Casa De Bella': parseInt(document.getElementById('bookExtraChildPriceBella')?.value||'200')||200,
+                    'Casa De Arced': parseInt(document.getElementById('bookExtraChildPriceArced')?.value||'200')||200,
+                    'Casa Y Agua': parseInt(document.getElementById('bookExtraChildPriceAgua')?.value||'200')||200,
+                };
                 const roomDisplayName = {
                     'Casa De Amor': document.getElementById('bookRoomNameAmor')?.value || 'Casa De Amor',
                     'Casa De Bella': document.getElementById('bookRoomNameBella')?.value || 'Casa De Bella',
@@ -6497,6 +6623,8 @@ function initializeDefaultContent() {
                         const n = parseInt(valRaw||''); if (!isNaN(n)) maxExtraPax[key] = n;
                     } else if (field === 'extraPrice') {
                         const n = parseInt(valRaw||''); if (!isNaN(n)) extraPaxPrice[key] = n;
+                    } else if (field === 'extraChildPrice') {
+                        const n = parseInt(valRaw||''); if (!isNaN(n)) extraChildrenPrice[key] = n;
                     }
                 });
                 set(ref(db, 'siteContent/book'), {
@@ -6509,6 +6637,7 @@ function initializeDefaultContent() {
                     maxExtraPax,
                     downPaymentPercent,
                     extraPaxPrice,
+                    extraChildrenPrice,
                     roomDisplayName
                 }).then(()=>{
                     console.log('Book content saved successfully');
@@ -9562,6 +9691,36 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+// Enhanced login animation - Add particles and shimmer effects
+document.addEventListener('DOMContentLoaded', function() {
+    var bubblesBg = document.querySelector('.bubbles-bg');
+    if (bubblesBg) {
+        // Create floating particles
+        for (let i = 0; i < 35; i++) {
+            let particle = document.createElement('div');
+            particle.className = 'particle';
+            let size = Math.random() * 8 + 4;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            particle.style.left = (Math.random() * 100) + 'vw';
+            particle.style.bottom = (Math.random() * 100) + 'vh';
+            particle.style.animationDuration = (4 + Math.random() * 4) + 's';
+            particle.style.animationDelay = (Math.random() * 6) + 's';
+            bubblesBg.appendChild(particle);
+        }
+        
+        // Create shimmer effects
+        for (let i = 0; i < 4; i++) {
+            let shimmer = document.createElement('div');
+            shimmer.className = 'shimmer';
+            shimmer.style.animationDelay = (i * 2) + 's';
+            shimmer.style.animationDuration = (8 + Math.random() * 3) + 's';
+            bubblesBg.appendChild(shimmer);
+        }
+    }
+});
+
 // Handle logout to show login modal again
 function handleLogout() {
     sessionStorage.removeItem('isLoggedIn');
