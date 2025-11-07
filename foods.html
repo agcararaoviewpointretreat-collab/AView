@@ -769,8 +769,8 @@ body {
   <div id="navOverlay" class="nav-overlay" aria-hidden="true"></div>
 
   <header>
-    <h1>Agcararao Bites & Beverages</h1>
-    <p>Savor Every Sip and Bite – Fresh, Flavorful, and Unforgettable</p>
+    <h1>Loading...</h1>
+    <p></p>
   </header>
     
     <div class="container">
@@ -1091,11 +1091,19 @@ body {
       }
 
       function updateFoodsPage(data){
+        console.log('📝 Updating foods page with data:', data);
+        
         // Header title/subtitle
         const headerTitle = document.querySelector('header h1');
         const headerSub = document.querySelector('header p');
-        if (headerTitle) headerTitle.textContent = (data && data.pageTitle) || 'Agcararao Bites & Beverages';
-        if (headerSub) headerSub.textContent = (data && data.pageSubtitle) || 'Savor Every Sip and Bite – Fresh, Flavorful, and Unforgettable';
+        if (headerTitle) {
+          headerTitle.textContent = (data && data.pageTitle) || 'Foods (Configure in Admin)';
+          console.log('✅ Updated title:', headerTitle.textContent);
+        }
+        if (headerSub) {
+          headerSub.textContent = (data && data.pageSubtitle) || '';
+          console.log('✅ Updated subtitle');
+        }
         // Background
         if (data && data.heroBg){ document.body.style.backgroundImage = `url('${data.heroBg}')`; }
         // Sections
@@ -1104,27 +1112,17 @@ body {
         renderDrinks((data && data.drinks) || [], sectionTitles.drinks || 'Mountain Sips');
       }
 
-      function loadFallbackContent(){
-        const fallback = {
-          pageTitle: 'Agcararao Bites & Beverages',
-          pageSubtitle: 'Savor Every Sip and Bite – Fresh, Flavorful, and Unforgettable',
-          heroBg: 'ytttt.jpg',
-          sectionTitles: { snacks:'Snacks', silog:'Silog Series', meals:'Agcararao Meal Offers', drinks:'Mountain Sips' },
-          foods: [],
-          drinks: []
-        };
-        updateFoodsPage(fallback);
-      }
-
       function loadFoodsContent(){
         onValue(ref(db, 'siteContent/foods'), (snapshot)=>{
-          const data = snapshot.exists() ? snapshot.val() : null;
-          if (data) updateFoodsPage(data); else loadFallbackContent();
+          console.log('📥 Foods content listener fired');
+          const data = snapshot.exists() ? snapshot.val() : {};
+          console.log('Foods data received:', data);
+          // Always update page (will use defaults if no data)
+          updateFoodsPage(data);
         }, (err)=>{
-          console.error('[foods] onValue error:', err);
-          // Still apply any partial cached/static content to avoid blank UI
-          try{ const cached = JSON.parse(localStorage.getItem('siteContent_foods_cache')||'null'); if (cached) updateFoodsPage(cached); }catch(_e){}
-          loadFallbackContent();
+          console.error('❌ Foods Firebase error:', err);
+          // Update with empty data to show defaults
+          updateFoodsPage({});
         });
       }
 
