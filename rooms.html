@@ -1230,8 +1230,8 @@ body {
 <section class="hero" aria-label="Agcararao mountain view resort">
     <div class="hero-content">
         <div class="hero-text-content">
-            <h1 class="hero-title">Discover Your Perfect Stay</h1>
-            <p class="hero-subtitle">Choose from our exclusive mountain view accommodations</p>
+            <h1 class="hero-title">Loading...</h1>
+            <p class="hero-subtitle"></p>
         </div>
         <div class="room-quick-nav" id="roomQuickNav">
             <div class="room-nav-loading" style="color: white; opacity: 0.7; font-size: 1rem;">Loading rooms...</div>
@@ -1961,11 +1961,27 @@ body {
 
   function updatePageMeta(content){
     try{
+      console.log('📝 Updating rooms page with data:', content);
+      
       const titleEl = document.querySelector('.agcararao-title');
       const subtitleEl = document.querySelector('.agcararao-subtitle');
       const heroEl = document.querySelector('.hero');
-      if (titleEl && content.pageTitle) titleEl.textContent = content.pageTitle;
-      if (subtitleEl && content.pageSubtitle) subtitleEl.textContent = content.pageSubtitle;
+      const heroTitleEl = document.querySelector('.hero-title');
+      const heroSubtitleEl = document.querySelector('.hero-subtitle');
+      
+      if (titleEl) titleEl.textContent = content.pageTitle || 'Rooms (Configure in Admin)';
+      if (subtitleEl) subtitleEl.textContent = content.pageSubtitle || '';
+      
+      // Update hero title and subtitle
+      if (heroTitleEl) {
+        heroTitleEl.textContent = content.heroTitle || 'Rooms (Configure in Admin)';
+        console.log('✅ Updated hero title:', heroTitleEl.textContent);
+      }
+      if (heroSubtitleEl) {
+        heroSubtitleEl.textContent = content.heroSubtitle || '';
+        console.log('✅ Updated hero subtitle');
+      }
+      
       if (heroEl && content.heroBg) {
         const img = new Image();
         img.onload = function(){ heroEl.style.backgroundImage = `url('${content.heroBg}')`; };
