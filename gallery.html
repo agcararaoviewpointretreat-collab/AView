@@ -1101,8 +1101,8 @@
     <section class="hero">
         <div class="container">
             <div class="hero-content">
-                <h1 id="galleryHeroTitle">A Photo Gallery of The Nature</h1>
-                <p id="galleryHeroSubtitle">The Nature is Beautiful find your favorite picture around the world.</p>
+                <h1 id="galleryHeroTitle">Loading...</h1>
+                <p id="galleryHeroSubtitle"></p>
             </div>
             <div class="hero-bg-grid" id="heroBgGrid"></div>
         </div>
@@ -1112,8 +1112,8 @@
     <section class="gallery-section">
         <div class="container">
             <div class="section-title">
-                <h2 id="gallerySectionTitle">Photo Showcase</h2>
-                <p id="gallerySectionDesc">Wander through a handpicked gallery of unforgettable views and serene moments.</p>
+                <h2 id="gallerySectionTitle">Loading...</h2>
+                <p id="gallerySectionDesc"></p>
             </div>
 
             <!-- Month and Year Filter Dropdown -->
@@ -1123,9 +1123,9 @@
                     <option value="all">All Years</option>
                 </select>
                 
-                <label id="galleryFilterLabel" for="monthSelect">Month:</label>
+                <label id="galleryFilterLabel" for="monthSelect">Loading...</label>
                 <select id="monthSelect" class="month-select">
-                    <option id="galleryAllPhotosOption" value="all">All Months</option>
+                    <option id="galleryAllPhotosOption" value="all">Loading...</option>
                     <option value="1">January</option>
                     <option value="2">February</option>
                     <option value="3">March</option>
@@ -1171,7 +1171,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+import { getDatabase, ref, onValue, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBAE0ieuAJRp_rF4I90qXP8zPr4TQW_rIg",
@@ -1394,6 +1394,50 @@ monthSelect.addEventListener('change', function() {
 
 yearSelect.addEventListener('change', function() {
     filterByMonthAndYear();
+});
+
+// Listen for site content changes from dashboard
+onValue(siteContentRef, (snapshot) => {
+    console.log('📥 Gallery content listener fired');
+    console.log('Snapshot exists:', snapshot.exists());
+    
+    // Get elements
+    const t = document.getElementById('galleryHeroTitle');
+    const s = document.getElementById('galleryHeroSubtitle');
+    const st = document.getElementById('gallerySectionTitle');
+    const sd = document.getElementById('gallerySectionDesc');
+    const fl = document.getElementById('galleryFilterLabel');
+    const ap = document.getElementById('galleryAllPhotosOption');
+    const lt = document.getElementById('galleryLoadingText');
+    
+    if (snapshot.exists()) {
+        const data = snapshot.val();
+        console.log('📄 Loaded data:', data);
+        window.__galleryContent = data;
+        
+        // Update content on page
+        if (t) t.textContent = data.pageTitle || 'Gallery';
+        if (s) s.textContent = data.pageSubtitle || '';
+        if (st) st.textContent = data.sectionTitle || 'Photo Showcase';
+        if (sd) sd.textContent = data.sectionDescription || '';
+        if (fl) fl.textContent = data.filterLabel || 'Month:';
+        if (ap) ap.textContent = data.allPhotosLabel || 'All Months';
+        if (lt) lt.textContent = data.loadingText || 'Loading photos...';
+        
+        console.log('✅ Gallery content updated from Firebase!');
+    } else {
+        console.log('⚠️ No gallery content in Firebase - Using defaults');
+        // Show message when no Firebase data exists
+        if (t) t.textContent = 'Gallery (Configure in Admin)';
+        if (s) s.textContent = '';
+        if (st) st.textContent = 'Photo Showcase';
+        if (sd) sd.textContent = '';
+        if (fl) fl.textContent = 'Month:';
+        if (ap) ap.textContent = 'All Months';
+        if (lt) lt.textContent = 'Loading photos...';
+    }
+}, (error) => {
+    console.error('❌ Firebase error:', error);
 });
 
 window.addEventListener('load', () => {
@@ -1886,40 +1930,8 @@ window.closeLightbox = closeLightbox;
     });
   }catch(e){}
 })();
-
-// Load site content for gallery page
-onValue(siteContentRef, (snapshot)=>{
-    const data = snapshot.exists() ? snapshot.val() : {};
-    window.__galleryContent = data;
-    
-    const hero = document.querySelector('.hero');
-    if (hero && data.heroBg) {
-        hero.style.background = `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('${data.heroBg}')`;
-        hero.style.backgroundSize = 'cover';
-        hero.style.backgroundPosition = 'center';
-        hero.style.backgroundAttachment = 'fixed';
-    }
-    
-    const t = document.getElementById('galleryHeroTitle');
-    const s = document.getElementById('galleryHeroSubtitle');
-    if (t && data.pageTitle) t.textContent = data.pageTitle;
-    if (s && data.pageSubtitle) s.textContent = data.pageSubtitle;
-    
-    const st = document.getElementById('gallerySectionTitle');
-    const sd = document.getElementById('gallerySectionDesc');
-    if (st && data.sectionTitle) st.textContent = data.sectionTitle;
-    if (sd && data.sectionDescription) sd.textContent = data.sectionDescription;
-    
-    const fl = document.getElementById('galleryFilterLabel');
-    if (fl && data.filterLabel) fl.textContent = data.filterLabel;
-    
-    const ap = document.getElementById('galleryAllPhotosOption');
-    if (ap && data.allPhotosLabel) ap.textContent = data.allPhotosLabel;
-    
-    const lt = document.getElementById('galleryLoadingText');
-    if (lt && data.loadingText) lt.textContent = data.loadingText;
-});
 </script>
+
 <footer>
     <div class="footer-bottom">
         <p>&copy; 2025 Agcararao Mountain View Resort. All rights reserved.</p>
