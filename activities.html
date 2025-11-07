@@ -1982,8 +1982,8 @@ input:valid, select:valid, textarea:valid {
     <!-- Hero Section -->
     <section class="activities-hero">
         <div class="hero-content">
-            <h1>Where Adventure Meets Paradise</h1>
-            <p>Discover the ultimate mountain retreat with world-class amenities and breathtaking outdoor adventures</p>
+            <h1>Loading...</h1>
+            <p></p>
             
             <!-- Activity Highlights - Dynamically Loaded -->
             <div class="activity-highlights" id="dynamicActivityButtons">
@@ -2428,16 +2428,20 @@ input:valid, select:valid, textarea:valid {
                         const activitiesRef = ref(db, 'siteContent/activitiesPage');
                         
                         onValue(activitiesRef, (snapshot) => {
+                            console.log('Activities data listener fired');
                             const data = snapshot.val();
                             console.log('Activities data received:', data);
                             
-                            if (data) {
-                                updateActivitiesPage(data);
-                                
-                                // Generate dynamic hero buttons from activities
-                                if (data.items && Array.isArray(data.items)) {
-                                    generateHeroButtons(data.items);
-                                }
+                            // Always update page (will use defaults if no data)
+                            updateActivitiesPage(data || {});
+                            
+                            // Generate dynamic hero buttons from activities
+                            if (data && data.items && Array.isArray(data.items)) {
+                                generateHeroButtons(data.items);
+                            } else {
+                                // Clear buttons if no data
+                                const container = document.getElementById('dynamicActivityButtons');
+                                if (container) container.innerHTML = '';
                             }
                             
                             try{ 
@@ -2590,16 +2594,19 @@ input:valid, select:valid, textarea:valid {
 
                     // Update the activities page with dynamic content
                     function updateActivitiesPage(data) {
-                        // Update hero section (ensure visibility even if fields are missing)
+                        console.log('📝 Updating activities page with data:', data);
+                        
+                        // Update hero section
                         const heroTitle = document.querySelector('.activities-hero h1');
                         const heroSubtitle = document.querySelector('.activities-hero p');
+                        
                         if (heroTitle) {
-                            heroTitle.textContent = (data.pageTitle && String(data.pageTitle).trim()) || heroTitle.textContent || 'Adventure Begins Here';
-                            // Let CSS animation handle opacity
+                            heroTitle.textContent = (data.pageTitle && String(data.pageTitle).trim()) || 'Activities (Configure in Admin)';
+                            console.log('✅ Updated title:', heroTitle.textContent);
                         }
                         if (heroSubtitle) {
-                            heroSubtitle.textContent = (data.pageSubtitle && String(data.pageSubtitle).trim()) || heroSubtitle.textContent || 'Unleash your spirit of exploration and enjoy stunning experiences at Agcararao Mountain View Resort.';
-                            // Let CSS animation handle opacity
+                            heroSubtitle.textContent = (data.pageSubtitle && String(data.pageSubtitle).trim()) || '';
+                            console.log('✅ Updated subtitle');
                         }
                         
                         if (data.heroBg) {
