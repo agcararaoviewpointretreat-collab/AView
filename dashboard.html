@@ -3841,25 +3841,64 @@ function sendBookingEmail(booking, status, type = "room") {
                     <input type="text" id="gallerySearch" placeholder="Search by title or description" oninput="filterGalleryBySearch()">
                 </div>
             </div>
-
             <!-- Admin Panel Section -->
             <div class="admin-container" id="adminContainer">
                 <!-- Remove the duplicate header -->
 
                 <!-- Upload Section -->
                 <div class="upload-section">
-                    <h2>Upload New Images</h2>
-                    <form class="upload-form" id="uploadForm">
+                    <h2>Upload New Images & Videos</h2>
+                    
+                    <!-- Upload Method Tabs -->
+                    <div class="upload-tabs" style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e0e0e0;">
+                        <button type="button" class="upload-tab-btn active" data-tab="file" style="padding: 10px 20px; border: none; background: #2196F3; color: white; cursor: pointer; border-radius: 5px 5px 0 0; font-weight: 600;">📁 Upload File</button>
+                        <button type="button" class="upload-tab-btn" data-tab="url" style="padding: 10px 20px; border: none; background: #ddd; color: #333; cursor: pointer; border-radius: 5px 5px 0 0; font-weight: 600;">🔗 Add from URL</button>
+                    </div>
+                    
+                    <!-- File Upload Form -->
+                    <form class="upload-form upload-tab-content" id="uploadForm" data-tab-content="file">
                         <div class="file-input-wrapper">
-                            <label for="imageUpload" class="file-input-label">Choose Images</label>
-                            <input type="file" id="imageUpload" accept="image/*" multiple>
+                            <label for="imageUpload" class="file-input-label">Choose Images/Videos</label>
+                            <input type="file" id="imageUpload" accept="image/*,video/*" multiple>
                         </div>
                         <div class="selected-files" id="selectedFiles"></div>
-                        <div class="compression-info">Images will be compressed to ensure optimal loading times.</div>
+                        <div class="compression-info">Images will be compressed to ensure optimal loading times. Videos will be uploaded as-is.</div>
                         <div class="preview-section" id="previewSection"></div>
-                        <button type="submit" class="upload-btn" id="uploadBtn" disabled>Upload Images</button>
+                        <button type="submit" class="upload-btn" id="uploadBtn" disabled>Upload Files</button>
                         <div class="upload-status" id="uploadStatus"></div>
                     </form>
+                    
+                    <!-- URL Upload Form -->
+                    <div class="upload-form upload-tab-content" id="urlUploadForm" data-tab-content="url" style="display: none;">
+                        <div style="margin-bottom: 15px;">
+                            <p style="color: #666; font-size: 14px; margin-bottom: 10px;">
+                                📌 Add images or videos from URL (Google Drive, Facebook, direct links, etc.)
+                            </p>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Media URL</label>
+                            <input type="url" id="mediaUrlInput" placeholder="https://example.com/image.jpg or video link" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                            <small style="color: #888; display: block; margin-top: 5px;">
+                                ✅ Supported: Direct image/video URLs, Google Drive share links, Facebook image links
+                            </small>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Title (Optional)</label>
+                            <input type="text" id="urlMediaTitle" placeholder="Image or video title" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Media Type</label>
+                            <select id="urlMediaType" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                                <option value="image">Image</option>
+                                <option value="video">Video</option>
+                            </select>
+                        </div>
+                        
+                        <div id="urlPreviewSection" style="margin: 15px 0;"></div>
+                        
+                        <button type="button" class="upload-btn" id="addFromUrlBtn">➕ Add to Gallery</button>
+                        <div class="upload-status" id="urlUploadStatus"></div>
+                    </div>
                 </div>
 
                 <!-- Gallery Management Section -->
@@ -4260,10 +4299,10 @@ function sendBookingEmail(booking, status, type = "room") {
                     <div class="gallery-form">
                         <h3>Gallery Page</h3>
                         <label>Page Title
-                            <input type="text" id="galleryPageTitleInput" placeholder="Gallery page title" value="A Glimpse of Paradise">
+                            <input type="text" id="galleryPageTitleInput" placeholder="Gallery page title" value="A Photo Gallery of The Nature">
                         </label>
                         <label>Page Subtitle
-                            <input type="text" id="galleryPageSubtitleInput" placeholder="Gallery page subtitle" value="A Collection of Breathtaking Views and Unforgettable Moments.">
+                            <input type="text" id="galleryPageSubtitleInput" placeholder="Gallery page subtitle" value="The Nature is Beautiful find your favorite picture around the world.">
                         </label>
                         <label>Hero Background Image URL
                             <input type="text" id="galleryHeroBgInput" placeholder="Hero background image" value="lo.jpg">
@@ -4279,10 +4318,10 @@ function sendBookingEmail(booking, status, type = "room") {
 
                         <h4 style="margin-top:20px;">Filter & Messages</h4>
                         <label>Month Filter Label
-                            <input type="text" id="galleryFilterLabelInput" placeholder="Filter label" value="Filter by Month:">
+                            <input type="text" id="galleryFilterLabelInput" placeholder="Filter label" value="Month:">
                         </label>
                         <label>All Photos Option Label
-                            <input type="text" id="galleryAllPhotosLabelInput" placeholder="All option label" value="All Photos">
+                            <input type="text" id="galleryAllPhotosLabelInput" placeholder="All option label" value="All Months">
                         </label>
                         <label>Loading Text
                             <input type="text" id="galleryLoadingTextInput" placeholder="Loading text" value="Loading photos...">
@@ -8287,13 +8326,13 @@ function loadSiteContent(){
         e('aboutHistoryTextInput') && (e('aboutHistoryTextInput').value = (about.history && about.history.text) || 'Agcararao Mountain View is a tourist destination nestled in the highlands of Brgy. Magdungao, Sitio Agcararao, Passi City. It is owned by former Binibining Pintados Jo-nah Belle Capuy-Arcenal\'s family. The farm site is attractive and is seen to be a place where clouds freely dance so the family has decided to convert their property into a flower and vegetable farm where groups and families of Passi City and its neighboring towns can pay a visit to enjoy the mesmerizing view from the top over-looking the nature and sea of clouds. The family is motivated to propagate the land to make it more a wonderful place where guests can go trekking, have fun, relax, and contemplate how wonderful life can be. The resort officially opened to the public on February 18, 2020, offering visitors opportunities for trekking, relaxation, and photography amidst scenic landscapes.');
         // Gallery Page Content
         const galleryPage = data.gallery || {};
-        e('galleryPageTitleInput') && (e('galleryPageTitleInput').value = galleryPage.pageTitle || 'A Glimpse of Paradise');
-        e('galleryPageSubtitleInput') && (e('galleryPageSubtitleInput').value = galleryPage.pageSubtitle || 'A Collection of Breathtaking Views and Unforgettable Moments.');
+        e('galleryPageTitleInput') && (e('galleryPageTitleInput').value = galleryPage.pageTitle || 'A Photo Gallery of The Nature');
+        e('galleryPageSubtitleInput') && (e('galleryPageSubtitleInput').value = galleryPage.pageSubtitle || 'The Nature is Beautiful find your favorite picture around the world.');
         e('galleryHeroBgInput') && (e('galleryHeroBgInput').value = galleryPage.heroBg || 'lo.jpg');
         e('gallerySectionTitleInput') && (e('gallerySectionTitleInput').value = galleryPage.sectionTitle || 'Photo Showcase');
         e('gallerySectionDescInput') && (e('gallerySectionDescInput').value = galleryPage.sectionDescription || 'Wander through a handpicked gallery of unforgettable views and serene moments.');
-        e('galleryFilterLabelInput') && (e('galleryFilterLabelInput').value = galleryPage.filterLabel || 'Filter by Month:');
-        e('galleryAllPhotosLabelInput') && (e('galleryAllPhotosLabelInput').value = galleryPage.allPhotosLabel || 'All Photos');
+        e('galleryFilterLabelInput') && (e('galleryFilterLabelInput').value = galleryPage.filterLabel || 'Month:');
+        e('galleryAllPhotosLabelInput') && (e('galleryAllPhotosLabelInput').value = galleryPage.allPhotosLabel || 'All Months');
         e('galleryLoadingTextInput') && (e('galleryLoadingTextInput').value = galleryPage.loadingText || 'Loading photos...');
         e('galleryEmptyTitleInput') && (e('galleryEmptyTitleInput').value = galleryPage.emptyTitle || 'No Images Available');
         e('galleryEmptyDescInput') && (e('galleryEmptyDescInput').value = galleryPage.emptyDescription || 'Check back soon for our new collection of amazing photographs.');
@@ -8400,16 +8439,19 @@ document.addEventListener('DOMContentLoaded', () => {
                         emptyTitle: (document.getElementById('galleryEmptyTitleInput')?.value||'').trim(),
                         emptyDescription: (document.getElementById('galleryEmptyDescInput')?.value||'').trim()
                     };
+                    console.log('💾 Attempting to save gallery content:', payload);
                     btn.disabled = true; btn.textContent = 'Saving...';
                     set(ref(db, 'siteContent/gallery'), payload).then(()=>{
-                        console.log('Gallery content saved successfully');
+                        console.log('✅ Gallery content saved successfully to Firebase!');
+                        console.log('📄 Saved data:', payload);
                         showSuccessToast('Success!', 'Gallery saved successfully!');
                         try { localStorage.setItem('siteContent_gallery_cache', JSON.stringify(payload)); } catch(_e){}
                     }).catch((err)=>{
-                        console.error('Error saving gallery content:', err);
-                        showErrorToast('Error', 'Error saving gallery content');
+                        console.error('❌ Error saving gallery content:', err);
+                        console.error('Error details:', err.message, err.code);
+                        showErrorToast('Error', 'Error saving gallery content: ' + err.message);
                     }).finally(()=>{
-                        btn.disabled = false; btn.textContent = 'Save Gallery Content';
+                        btn.disabled = false; btn.textContent = '💾 Save Gallery Content';
                     });
                 }catch(err){
                     console.error('[Gallery] Save handler error:', err);
@@ -8658,6 +8700,111 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Load gallery images on page load
         loadGalleryImages();
+
+        // Tab switching for upload methods
+        document.querySelectorAll('.upload-tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const tab = this.getAttribute('data-tab');
+                
+                // Update buttons
+                document.querySelectorAll('.upload-tab-btn').forEach(b => {
+                    b.classList.remove('active');
+                    b.style.background = '#ddd';
+                    b.style.color = '#333';
+                });
+                this.classList.add('active');
+                this.style.background = '#2196F3';
+                this.style.color = 'white';
+                
+                // Update content
+                document.querySelectorAll('.upload-tab-content').forEach(content => {
+                    content.style.display = 'none';
+                });
+                document.querySelector(`[data-tab-content="${tab}"]`).style.display = 'block';
+            });
+        });
+
+        // URL Preview and Upload
+        document.getElementById('mediaUrlInput').addEventListener('input', function() {
+            const url = this.value.trim();
+            const previewSection = document.getElementById('urlPreviewSection');
+            const mediaType = document.getElementById('urlMediaType').value;
+            
+            if (url) {
+                previewSection.innerHTML = `
+                    <div style="padding: 10px; border: 1px solid #ddd; border-radius: 5px; background: #f9f9f9;">
+                        <p style="margin: 0 0 10px 0; font-weight: 600;">Preview:</p>
+                        ${mediaType === 'video' 
+                            ? `<video src="${url}" style="max-width: 100%; height: auto; border-radius: 5px;" controls></video>`
+                            : `<img src="${url}" style="max-width: 100%; height: auto; border-radius: 5px;" alt="Preview" onerror="this.src=''; this.alt='Could not load preview';"/>`
+                        }
+                    </div>
+                `;
+            } else {
+                previewSection.innerHTML = '';
+            }
+        });
+
+        document.getElementById('urlMediaType').addEventListener('change', function() {
+            // Trigger preview refresh
+            const event = new Event('input');
+            document.getElementById('mediaUrlInput').dispatchEvent(event);
+        });
+
+        // Add from URL button
+        document.getElementById('addFromUrlBtn').addEventListener('click', async function() {
+            const url = document.getElementById('mediaUrlInput').value.trim();
+            const title = document.getElementById('urlMediaTitle').value.trim();
+            const description = document.getElementById('urlMediaDescription').value.trim();
+            const mediaType = document.getElementById('urlMediaType').value;
+            
+            if (!url) {
+                showUrlStatus('Please enter a valid URL', 'error');
+                return;
+            }
+            
+            this.disabled = true;
+            showUrlStatus(`Adding ${mediaType} to gallery...`, 'success');
+            
+            try {
+                // Add to Firebase
+                const newImageRef = push(imagesRef);
+                await set(newImageRef, {
+                    url: url,
+                    name: title || `${mediaType === 'video' ? 'Video' : 'Image'} from URL`,
+                    description: description || '',
+                    type: mediaType,
+                    uploadedAt: Date.now(),
+                    source: 'url'
+                });
+                
+                showUrlStatus(`${mediaType === 'video' ? 'Video' : 'Image'} added successfully!`, 'success');
+                
+                // Clear form
+                document.getElementById('mediaUrlInput').value = '';
+                document.getElementById('urlMediaTitle').value = '';
+                document.getElementById('urlMediaDescription').value = '';
+                document.getElementById('urlPreviewSection').innerHTML = '';
+                
+            } catch (error) {
+                console.error('Error adding media from URL:', error);
+                showUrlStatus('Error adding media. Please try again.', 'error');
+            }
+            
+            this.disabled = false;
+        });
+
+        // Show URL upload status
+        function showUrlStatus(message, type) {
+            const uploadStatus = document.getElementById('urlUploadStatus');
+            uploadStatus.textContent = message;
+            uploadStatus.className = `upload-status ${type}`;
+            uploadStatus.style.display = 'block';
+            
+            setTimeout(() => {
+                uploadStatus.style.display = 'none';
+            }, 3000);
+        }
 
         // Add new functions for logging
         function addLogEntry(action, details) {
