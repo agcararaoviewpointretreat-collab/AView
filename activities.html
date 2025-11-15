@@ -2816,12 +2816,63 @@ input:valid, select:valid, textarea:valid {
                         }
                     }
 
+                    function getYouTubeEmbedId(url) {
+                        if (!url) return null;
+                        const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|v\/))([\w\-]+)/);
+                        return match ? match[1] : null;
+                    }
+
+                    function getVideoMimeType(url) {
+                        if (!url) return 'video/mp4';
+                        const cleanUrl = url.split('?')[0];
+                        const ext = cleanUrl.split('.').pop().toLowerCase();
+                        switch (ext) {
+                            case 'webm': return 'video/webm';
+                            case 'ogg': return 'video/ogg';
+                            case 'mp4':
+                            default: return 'video/mp4';
+                        }
+                    }
+
+                    function getFacebookVideoEmbedUrl(url) {
+                        if (!url) return null;
+                        try {
+                            const normalized = url.trim();
+                            if (normalized.includes('facebook.com') && normalized.includes('/videos/')) {
+                                return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(normalized)}&show_text=0&width=560`;
+                            }
+                        } catch (e) {
+                            console.warn('Failed to normalize Facebook URL', e);
+                        }
+                        return null;
+                    }
+
+                    function createActivityVideoHtml(url) {
+                        if (!url) return '';
+                        const trimmed = url.trim();
+                        const youtubeId = getYouTubeEmbedId(trimmed);
+                        if (youtubeId) {
+                            return `
+                                <iframe class="activity-video" src="https://www.youtube.com/embed/${youtubeId}" title="Activity Video" allowfullscreen></iframe>
+                            `;
+                        }
+                        const fbEmbed = getFacebookVideoEmbedUrl(trimmed);
+                        if (fbEmbed) {
+                            return `
+                                <iframe class="activity-video" src="${fbEmbed}" title="Activity Video" allowfullscreen></iframe>
+                            `;
+                        }
+                        const mime = getVideoMimeType(trimmed);
+                        return `
+                            <video controls class="activity-video">
+                                <source src="${trimmed}" type="${mime}">
+                                Your browser does not support the video tag.
+                            </video>`;
+                    }
+
                     // Render individual activity card
                     function renderActivityCard(activity) {
-                        const videoHtml = activity.videoUrl ? 
-                            `<video controls class="activity-video">
-                                <source src="${activity.videoUrl}" type="video/mp4">
-                            </video>` : '';
+                        const videoHtml = createActivityVideoHtml(activity.videoUrl);
 
                         const ratesHtml = activity.rates && activity.rates.length > 0 ? 
                             `<div class="price-list">
