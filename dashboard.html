@@ -4431,20 +4431,10 @@ function sendBookingEmail(booking, status, type = "room") {
                             <input type="text" id="cottageModalSubtitleInput" placeholder="Cottage modal subtitle" value="Agcararao Mountain View Resort">
                         </label>
                         <h4 style="margin-top:20px;">Cottage Settings</h4>
-                        <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
-                            <label>Cottage 1 Price (₱)
-                                <input type="number" id="cottage1PriceInput" min="0" step="1" placeholder="300" value="300">
-                            </label>
-                            <label>Cottage 2 Price (₱)
-                                <input type="number" id="cottage2PriceInput" min="0" step="1" placeholder="300" value="300">
-                            </label>
-                            <label>Cottage 3 Price (₱)
-                                <input type="number" id="cottage3PriceInput" min="0" step="1" placeholder="300" value="300">
-                            </label>
-                            <label>Big Cottage 4 Price (₱)
-                                <input type="number" id="cottage4PriceInput" min="0" step="1" placeholder="500" value="500">
-                            </label>
-                        </div>
+                        <div id="cottageSettingsList" style="display:flex; flex-direction:column; gap:12px; margin-bottom:8px;"></div>
+                        <button type="button" id="addCottageBtn" style="background:#2c5530;color:white;padding:8px 16px;border:none;border-radius:4px;cursor:pointer;align-self:flex-start;">+ Add Cottage</button>
+                        <p style="margin-top:6px;font-size:0.9rem;color:#555;">Change the cottage name (e.g., Cottage or Big Cottage) and price directly. Use the button above to add more cottages.</p>
+
                         <h4 style="margin-top:20px;">Activities Reservation Settings</h4>
                         <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
                             <label>Down Payment %
@@ -6791,6 +6781,17 @@ function initializeDefaultContent() {
                 const btn = document.getElementById('saveActivitiesBtn');
                 if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
                 const activities = collectActivitiesPageEditor();
+                const cottageSettings = collectCottageSettingsList();
+                const cottagePricesMap = {};
+                const cottagesPayload = {};
+                cottageSettings.forEach((item, idx) => {
+                    const key = item.id || String(idx + 1);
+                    const price = Number.isFinite(Number(item.price)) ? Number(item.price) : (key === '4' ? 500 : 300);
+                    const name = item.name || `Cottage ${key}`;
+                    cottagePricesMap[key] = price;
+                    cottagesPayload[key] = { id: key, name, price };
+                });
+
                 // Save to Firebase
                 set(ref(db, 'siteContent/activitiesPage'), {
                     pageTitle: document.getElementById('activitiesPageTitleInput')?.value || 'Adventure Begins Here',
@@ -6805,12 +6806,9 @@ function initializeDefaultContent() {
                     swimmingModalSubtitle: document.getElementById('swimmingModalSubtitleInput')?.value || 'Agcararao Viewpoint Retreat',
                     cottageModalTitle: document.getElementById('cottageModalTitleInput')?.value || 'Cottage Reservation',
                     cottageModalSubtitle: document.getElementById('cottageModalSubtitleInput')?.value || 'Agcararao Mountain View Resort',
-                    cottagePrices: {
-                        '1': parseInt(document.getElementById('cottage1PriceInput')?.value || '300') || 300,
-                        '2': parseInt(document.getElementById('cottage2PriceInput')?.value || '300') || 300,
-                        '3': parseInt(document.getElementById('cottage3PriceInput')?.value || '300') || 300,
-                        '4': parseInt(document.getElementById('cottage4PriceInput')?.value || '500') || 500
-                    },
+                    cottagePrices: cottagePricesMap,
+                    cottages: cottagesPayload,
+
                     downPaymentPercent: (function(){ const v=parseInt(document.getElementById('activitiesDownPaymentPercentInput')?.value||'30'); return isNaN(v)?30:Math.max(0,Math.min(100,v)); })(),
                     cottageAvailabilityMessages: {
                         available: document.getElementById('cottageAvailableMsgInput')?.value || 'This cottage is available on the selected date',
@@ -6818,9 +6816,12 @@ function initializeDefaultContent() {
                     },
                     items: activities
                 }).then(() => {
+                    return set(ref(db, 'siteContent/cottages'), cottagesPayload);
+                }).then(() => {
                     console.log('Activities content saved successfully');
                     showSuccessToast('Success!', 'Activities saved successfully!');
                 }).catch(error => {
+
                     console.error('Error saving activities:', error);
                     showErrorToast('Error', 'Error saving activities content');
                 }).finally(() => {
@@ -7288,7 +7289,114 @@ function collectActivitiesEditor(){
     return Array.from(map.keys()).sort((a,b)=>a-b).map(k=>map.get(k));
 }
 
-// -------- Rooms editors --------
+const defaultCottageSettings = [
+    { id: '1', name: 'Cottage 1', price: 300 },
+    { id: '2', name: 'Cottage 2', price: 300 },
+    { id: '3', name: 'Cottage 3', price: 300 },
+    { id: '4', name: 'Big Cottage 4', price: 500 }
+];
+
+function normalizeCottageEntries(entries, fallbackPrices = {}) {
+    return Object.keys(entries || {}).sort().map(key => {
+        const entry = entries[key] || {};
+        const numericPrice = parseInt(entry.price);
+        return {
+            id: String(entry.id || key),
+            name: entry.name || entry.displayName || `Cottage ${key}`,
+            price: Number.isFinite(numericPrice) ? numericPrice : (fallbackPrices[key] ?? (key === '4' ? 500 : 300))
+        };
+    });
+}
+
+function getCottageSettingsEditorData(siteContentData = {}, activitiesPageData = {}) {
+    const fallbackPrices = activitiesPageData.cottagePrices || {};
+    if (activitiesPageData.cottages && Object.keys(activitiesPageData.cottages).length > 0) {
+        return normalizeCottageEntries(activitiesPageData.cottages, fallbackPrices);
+    }
+    if (siteContentData.cottages && Object.keys(siteContentData.cottages).length > 0) {
+        return normalizeCottageEntries(siteContentData.cottages, fallbackPrices);
+    }
+    if (fallbackPrices && Object.keys(fallbackPrices).length > 0) {
+        return Object.keys(fallbackPrices).sort().map(key => ({
+            id: key,
+            name: `Cottage ${key}`,
+            price: fallbackPrices[key]
+        }));
+    }
+    return defaultCottageSettings.map(item => ({ ...item }));
+}
+
+function renderCottageSettingsList(items = []) {
+    const wrap = document.getElementById('cottageSettingsList');
+    if (!wrap) return;
+    const normalized = (items && items.length ? items : defaultCottageSettings).map((item, idx) => ({
+        id: item.id || String(idx + 1),
+        name: item.name || `Cottage ${idx + 1}`,
+        price: Number.isFinite(Number(item.price)) ? Number(item.price) : (idx === 3 ? 500 : 300)
+    }));
+
+    wrap.innerHTML = '';
+    normalized.forEach((item, idx) => {
+        const row = document.createElement('div');
+        row.className = 'cottage-setting-row';
+        row.dataset.cottageId = item.id;
+        row.dataset.cottageIndex = idx;
+        row.innerHTML = `
+            <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+                <label style="flex:1;min-width:200px;">
+                    Name
+                    <input type="text" data-cottage-key="name" value="${item.name.replace(/"/g,'&quot;')}" placeholder="Cottage name" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;">
+                </label>
+                <label style="flex:1;min-width:140px;">
+                    Price (₱)
+                    <input type="number" data-cottage-key="price" min="0" step="1" value="${item.price}" placeholder="300" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;">
+                </label>
+                <button type="button" class="remove-cottage-btn" style="background:#e74c3c;color:white;padding:8px 12px;border:none;border-radius:6px;cursor:pointer;">Remove</button>
+            </div>
+        `;
+        wrap.appendChild(row);
+    });
+
+    wrap.querySelectorAll('.remove-cottage-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const currentRow = this.closest('.cottage-setting-row');
+            if (!currentRow) return;
+            const remaining = Array.from(wrap.querySelectorAll('.cottage-setting-row')).filter(row => row !== currentRow);
+            const reconstructed = remaining.map(row => ({
+                id: row.dataset.cottageId,
+                name: row.querySelector('input[data-cottage-key="name"]')?.value || '',
+                price: parseInt(row.querySelector('input[data-cottage-key="price"]')?.value || '', 10)
+            }));
+            renderCottageSettingsList(reconstructed);
+        });
+    });
+}
+
+function collectCottageSettingsList() {
+    const wrap = document.getElementById('cottageSettingsList');
+    if (!wrap) return defaultCottageSettings.map(item => ({ ...item }));
+    const rows = Array.from(wrap.querySelectorAll('.cottage-setting-row'));
+    if (!rows.length) return defaultCottageSettings.map(item => ({ ...item }));
+    return rows.map((row, idx) => {
+        const name = row.querySelector('input[data-cottage-key="name"]')?.value?.trim() || `Cottage ${idx + 1}`;
+        const priceInput = row.querySelector('input[data-cottage-key="price"]');
+        const numericPrice = parseInt(priceInput?.value || '', 10);
+        return {
+            id: row.dataset.cottageId || `custom-${idx + 1}`,
+            name,
+            price: Number.isFinite(numericPrice) ? numericPrice : (idx === 3 ? 500 : 300)
+        };
+    });
+}
+
+function getNextCottageId(currentItems) {
+    const numericIds = currentItems
+        .map(item => parseInt(String(item.id || item.name).replace(/[^0-9]/g, ''), 10))
+        .filter(num => !isNaN(num));
+    const next = numericIds.length ? Math.max(...numericIds) + 1 : 1;
+    return String(next);
+}
+
 function renderRoomsEditor(items){
     const wrap = document.getElementById('roomsEditor');
     if (!wrap) return;
@@ -8188,6 +8296,8 @@ function loadSiteContent(){
         
         // Activities Page Content (separate from homepage activities)
         const activitiesPageData = data.activitiesPage || {};
+        const cottageEditorItems = getCottageSettingsEditorData(data, activitiesPageData);
+        renderCottageSettingsList(cottageEditorItems);
         e('activitiesPageTitleInput') && (e('activitiesPageTitleInput').value = activitiesPageData.pageTitle || 'Adventure Begins Here');
         e('activitiesPageSubtitleInput') && (e('activitiesPageSubtitleInput').value = activitiesPageData.pageSubtitle || 'Unleash your spirit of exploration');
         e('activitiesHeroBgInput') && (e('activitiesHeroBgInput').value = activitiesPageData.heroBg || 'her.jpg');
@@ -8200,12 +8310,6 @@ function loadSiteContent(){
         e('swimmingModalSubtitleInput') && (e('swimmingModalSubtitleInput').value = activitiesPageData.swimmingModalSubtitle || 'Agcararao Viewpoint Retreat');
         e('cottageModalTitleInput') && (e('cottageModalTitleInput').value = activitiesPageData.cottageModalTitle || 'Cottage Reservation');
         e('cottageModalSubtitleInput') && (e('cottageModalSubtitleInput').value = activitiesPageData.cottageModalSubtitle || 'Agcararao Mountain View Resort');
-        // Cottage/activities settings
-        const cp = activitiesPageData.cottagePrices || {};
-        e('cottage1PriceInput') && (e('cottage1PriceInput').value = cp['1'] ?? 300);
-        e('cottage2PriceInput') && (e('cottage2PriceInput').value = cp['2'] ?? 300);
-        e('cottage3PriceInput') && (e('cottage3PriceInput').value = cp['3'] ?? 300);
-        e('cottage4PriceInput') && (e('cottage4PriceInput').value = cp['4'] ?? 500);
         e('activitiesDownPaymentPercentInput') && (e('activitiesDownPaymentPercentInput').value = (activitiesPageData.downPaymentPercent ?? 30));
         const cav = (activitiesPageData.cottageAvailabilityMessages || {});
         e('cottageAvailableMsgInput') && (e('cottageAvailableMsgInput').value = cav.available || 'This cottage is available on the selected date');

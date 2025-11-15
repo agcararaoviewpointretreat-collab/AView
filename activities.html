@@ -2351,11 +2351,7 @@ input:valid, select:valid, textarea:valid {
                 <div class="form-group">
                     <label for="swimmingCottage">Cottage Selection</label>
                     <select id="swimmingCottage" name="swimmingCottage" required>
-                        <option value="">Select Cottage</option>
-                        <option value="1">Cottage 1 (₱300)</option>
-                        <option value="2">Cottage 2 (₱300)</option>
-                        <option value="3">Cottage 3 (₱300)</option>
-                        <option value="4">Big Cottage (₱500)</option>
+                        <option value="">Loading cottages...</option>
                     </select>
                     <div id="cottageNotifications" class="cottage-notifications"></div>
                     <div id="swimmingCottageAvailability" class="availability-message"></div>
@@ -2407,6 +2403,84 @@ input:valid, select:valid, textarea:valid {
                     const app = initializeApp(firebaseConfig);
                     const db = getDatabase(app);
 
+                    // Store cottage data
+                    let cottages = {};
+                    let activitiesDownPaymentPercent = 30;
+
+                    // Load cottages from Firebase
+                    function loadCottages() {
+                        const cottagesRef = ref(db, 'siteContent/cottages');
+                        onValue(cottagesRef, (snapshot) => {
+                            if (snapshot.exists()) {
+                                cottages = snapshot.val();
+                                console.log('Cottages loaded:', cottages);
+                                updateCottageDropdown();
+                            } else {
+                                // Fallback to default cottages if none found in database
+                                cottages = {
+                                    '1': { id: '1', name: 'Cottage 1', price: 300 },
+                                    '2': { id: '2', name: 'Cottage 2', price: 300 },
+                                    '3': { id: '3', name: 'Cottage 3', price: 300 },
+                                    '4': { id: '4', name: 'Big Cottage', price: 500 }
+                                };
+                                console.log('Using default cottages:', cottages);
+                                updateCottageDropdown();
+                            }
+                        }, (error) => {
+                            console.error('Error loading cottages:', error);
+                            // Fallback to default cottages on error
+                            cottages = {
+                                '1': { id: '1', name: 'Cottage 1', price: 300 },
+                                '2': { id: '2', name: 'Cottage 2', price: 300 },
+                                '3': { id: '3', name: 'Cottage 3', price: 300 },
+                                '4': { id: '4', name: 'Big Cottage', price: 500 }
+                            };
+                            console.log('Using default cottages:', cottages);
+                            updateCottageDropdown();
+                        });
+                    }
+
+                    // Update the cottage dropdown with loaded data
+                    function updateCottageDropdown() {
+                        const select = document.getElementById('swimmingCottage');
+                        if (!select) return;
+
+                        // Clear existing options except the first one
+                        while (select.options.length > 1) {
+                            select.remove(1);
+                        }
+
+                        // Add cottages to dropdown
+                        Object.values(cottages).forEach(cottage => {
+                            const option = document.createElement('option');
+                            option.value = cottage.id;
+                            option.textContent = `${cottage.name} (₱${cottage.price})`;
+                            select.appendChild(option);
+                        });
+
+                        // If no cottages were loaded, show a message
+                        if (select.options.length === 1) {
+                            select.innerHTML = '<option value="">No cottages available</option>';
+                        } else if (select.options[0].value === '') {
+                            select.options[0].textContent = 'Select Cottage';
+                        }
+
+                        // Trigger calculation when selection changes
+                        select.addEventListener('change', calculateSwimmingTotal);
+
+                        if (select.options.length > 1 && !select.value) {
+                            select.value = select.options[1].value;
+                            calculateSwimmingTotal();
+                        }
+                    }
+
+                    // Load cottages when the page loads (or immediately if already ready)
+                    if (document.readyState !== 'loading') {
+                        loadCottages();
+                    } else {
+                        document.addEventListener('DOMContentLoaded', loadCottages);
+                    }
+
                     // Ensure static activities content is visible immediately
                     document.addEventListener('DOMContentLoaded', function(){
                         try{
@@ -2418,6 +2492,7 @@ input:valid, select:valid, textarea:valid {
                             if (loadingPlaceholder) {
                                 loadingPlaceholder.remove();
                             }
+                            document.body.classList.remove('activities-loading'); 
                         }catch(e){}
                     });
 
@@ -2656,6 +2731,15 @@ input:valid, select:valid, textarea:valid {
                             if (cottageModalSubtitle) cottageModalSubtitle.textContent = data.cottageModalSubtitle;
                         }
 
+                        const percentFromData = Number.parseFloat(data.downPaymentPercent);
+                        activitiesDownPaymentPercent = Number.isFinite(percentFromData) ? percentFromData : 30;
+                        ['#swimmingModal', '#reservationModal'].forEach(selector => {
+                            const header = document.querySelector(`${selector} .down-payment .total-header`);
+                            if (header) {
+                                header.textContent = `${activitiesDownPaymentPercent}% Down Payment Required`;
+                            }
+                        });
+
                         // Update activities content with section titles
                         if (data.items && data.items.length > 0) {
                             renderActivitiesContent(data.items, data.adventureSectionTitle, data.leisureSectionTitle);
@@ -2868,8 +2952,9 @@ input:valid, select:valid, textarea:valid {
                         // Total includes base cost + additional guests
                         const total = baseCost + additionalGuestCost;
                         
-                        // 30% down payment calculated only from base cost (persons + tent), excluding additional guests
-                        const downPayment = Math.ceil(baseCost * 0.3);
+                        // Down payment computed from admin-configured percentage applied to base cost
+                        const downPayment = Math.ceil(baseCost * (activitiesDownPaymentPercent / 100));
+                        
                         const balance = total - downPayment;
                         
                         totalAmountElement.textContent = `₱${total}`;
@@ -3159,28 +3244,37 @@ input:valid, select:valid, textarea:valid {
                     // Set minimum date for swimming reservation to today
                     swimmingDateInput.min = new Date().toISOString().split('T')[0];
             
+                    function formatSwimmingAmount(value) {
+                        if (!Number.isFinite(value)) return '₱0';
+                        const fixed = value.toFixed(2);
+                        return `₱${fixed.replace(/\.00$/, '')}`;
+                    }
+
                     // Calculate swimming total
                     function calculateSwimmingTotal() {
-                        const cottageNumber = document.getElementById('swimmingCottage').value;
+                        const cottageId = document.getElementById('swimmingCottage').value;
+                        const cottage = cottages[cottageId];
                         
-                        const cottageRates = {
-                            '1': 300,
-                            '2': 300,
-                            '3': 300,
-                            '4': 500
-                        };
-                        
-                        let total = 0;
-                        if (cottageNumber) {
-                            total += cottageRates[cottageNumber];
+                        if (!cottage) {
+                            document.getElementById('swimmingTotalAmount').textContent = formatSwimmingAmount(0);
+                            document.getElementById('swimmingDownPayment').textContent = formatSwimmingAmount(0);
+                            document.getElementById('swimmingBalanceAmount').textContent = formatSwimmingAmount(0);
+                            return 0;
                         }
                         
-                        const downPayment = Math.ceil(total * 0.3);
+                        const numericPrice = Number.parseFloat(cottage.price);
+                        const total = Number.isFinite(numericPrice) ? numericPrice : 0;
+                        console.log('calculateSwimmingTotal', cottageId, cottage, total, activitiesDownPaymentPercent);
+                        
+                        const downPaymentRate = activitiesDownPaymentPercent / 100;
+                        const downPayment = total * downPaymentRate;
                         const balance = total - downPayment;
                         
-                        swimmingTotalAmountElement.textContent = `₱${total}`;
-                        document.getElementById('swimmingDownPayment').textContent = `₱${downPayment}`;
-                        document.getElementById('swimmingBalanceAmount').textContent = `₱${balance}`;
+                        document.getElementById('swimmingTotalAmount').textContent = formatSwimmingAmount(total);
+                        document.getElementById('swimmingDownPayment').textContent = formatSwimmingAmount(downPayment);
+                        document.getElementById('swimmingBalanceAmount').textContent = formatSwimmingAmount(balance);
+                        
+                        return total;
                     }
             
                     // Event listeners for swimming form
@@ -3222,7 +3316,7 @@ input:valid, select:valid, textarea:valid {
                         
                         // Calculate total amount and down payment
                         const totalAmount = parseInt(swimmingTotalAmountElement.textContent.replace('₱', ''));
-                        const downPayment = Math.ceil(totalAmount * 0.3);
+                        const downPayment = Math.ceil(totalAmount * (swimmingDownPaymentPercent / 100));
                         const balance = totalAmount - downPayment;
                         
                         // Get form data
