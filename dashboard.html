@@ -3996,10 +3996,7 @@ function sendBookingEmail(booking, status, type = "room") {
                         <label>Subtitle</label>
                         <input type="text" id="heroSubtitleInput" placeholder="Hero subtitle" value="Experience Majestic Views!">
                     </div>
-                    <div class="homepage-form-group">
-                        <label>Description</label>
-                        <textarea id="heroDescriptionInput" rows="2" placeholder="Hero description">Book Now & Explore</textarea>
-                    </div>
+                    
                     <div class="homepage-form-group">
                         <label>Background Image URL</label>
                         <input type="text" id="heroBackgroundImageInput" placeholder="Hero background image" value="jj.jpeg">
@@ -4173,9 +4170,6 @@ function sendBookingEmail(booking, status, type = "room") {
                         </label>
                         <label>Subtitle
                             <input type="text" id="aboutSubtitleInput" placeholder="About subtitle" value="Uncover the passion and vision that make our resort a true paradise.">
-                        </label>
-                        <label>Description
-                            <textarea id="aboutDescriptionInput" rows="4" placeholder="About page main description" style="width:100%;padding:10px;border:1px solid #e0e0e0;border-radius:6px;">Uncover the passion and vision that make our resort a true paradise.</textarea>
                         </label>
                         <label>Hero Image URL
                             <input type="text" id="aboutHeroImageInput" placeholder="https://... or image.jpg" value="nh.jpg">
@@ -4651,6 +4645,51 @@ function sendBookingEmail(booking, status, type = "room") {
 
         // Rooms editor: load saved content first, then fallback to defaults
         let roomsDataLoaded = false;
+        let roomsFallbackRendered = false;
+        const DEFAULT_ROOMS = [
+            { 
+                name: 'Casa De Amor', 
+                description: 'Escape to Casa De Amor, where breathtaking mountain views, misty mornings, and a sea of clouds create the perfect peaceful retreat. This charming A-frame bamboo hut offers a cozy escape, fresh mountain air, and stunning panoramic landscapes.',
+                price: '₱1,500 per night',
+                bookingPrice: '1500',
+                inclusions: ['Breakfast for 2 pax', 'Entrance/Overnight fee for 2 pax', 'Beddings', 'exclusive net', 'Bonfire'],
+                extraPax: '₱300.00 per head (can accommodate 2-4 pax)',
+                images: ['yag.jpg', 'iu.jpg', 'mon.jpg', 'we.jpg', 'am.jpg']
+            },
+            { 
+                name: 'Casa De Bella', 
+                description: 'Escape to Casa De Bella, a charming bamboo cabin nestled in the heart of Agcararao Mountain View Resort, Passi City. Relax in a beautifully crafted bamboo-inspired cabin featuring spacious interiors, cozy native furniture, and an open-concept design.',
+                price: '₱3,000 per night',
+                bookingPrice: '3000',
+                inclusions: ['Breakfast for 5 pax', 'Entrance/Overnight fee for 5 pax', 'Beddings', 'Own Toilet', 'Bonfire', 'Own Balcony'],
+                extraPax: '₱300.00 per head w/ breakfast (can accommodate 10 pax)',
+                images: ['ca.jpg', '----.jpg', 'sa.jpg', 'laa.jpg', 'bella.jpg']
+            },
+            { 
+                name: 'Casa De Arced', 
+                description: 'Escape to Casa De Arced, a serene haven tucked away in nature\'s embrace. This enchanting bamboo-inspired hideaway blends rustic charm with modern comforts, offering a truly authentic retreat.',
+                price: '₱3,500 per night',
+                bookingPrice: '3500',
+                inclusions: ['Breakfast for 5 pax', 'Entrance/Overnight fee for 5 pax', 'Beddings for 5 pax', 'Swimming'],
+                extraPax: '₱400.00 per head w/ breakfast (can accommodate 10 pax)',
+                images: ['aw.jpg', '8.jpg', 'ced.jpg', 'ar.jpg', 'jyg.jpg']
+            },
+            { 
+                name: 'Casa Y Agua', 
+                description: 'Experience a relaxing stay in Casa Y Agua, our traditional bamboo cottage designed with a blend of native charm and modern comfort. Built with nipa and bamboo materials, this spacious open-air cottage offers a refreshing tropical vibe.',
+                price: '₱4,999 per night',
+                bookingPrice: '4999',
+                inclusions: ['Breakfast for 5 pax', 'Entrance/Overnight stay fee for 5 pax', 'Beddings for 5 pax', 'Exclusive use of infinity pool', 'Bonfire', 'Own cr, Living & Dinning room, Griller'],
+                extraPax: '₱300.00 per head w/ breakfast (can accommodate 20 pax)',
+                images: ['agj.jpg', 'loi.jpg', 'jgz.jpg', 'sdl.jpg', 'sw.jpg']
+            }
+        ];
+        function renderRoomsFallback(){
+            if (roomsFallbackRendered) return;
+            console.log('Rendering rooms (fallback defaults):', DEFAULT_ROOMS);
+            renderRoomsEditor(DEFAULT_ROOMS);
+            roomsFallbackRendered = true;
+        }
         (function loadRoomsContent(){
             try{
                 const titleInput = document.getElementById('roomsPageTitleInput');
@@ -4664,6 +4703,7 @@ function sendBookingEmail(booking, status, type = "room") {
                     if (!snap.exists()) return;
                     const data = snap.val() || {};
                     roomsDataLoaded = true;
+
                     if (titleInput && data.pageTitle) titleInput.value = data.pageTitle;
                     if (subtitleInput && data.pageSubtitle) subtitleInput.value = data.pageSubtitle;
                     if (heroBgInput && data.heroBg) heroBgInput.value = data.heroBg;
@@ -4671,11 +4711,28 @@ function sendBookingEmail(booking, status, type = "room") {
                     if (heroSubtitleInput && data.heroSubtitle) heroSubtitleInput.value = data.heroSubtitle;
                     if (pageDescriptionInput && data.pageDescription) pageDescriptionInput.value = data.pageDescription;
                     if (roomsWrap) {
-                        renderRoomsEditor(Array.isArray(data.items) ? data.items : []);
+                        const items = Array.isArray(data.items) ? data.items : [];
+                        if (items.length) {
+                            renderRoomsEditor(items);
+                        } else {
+                            renderRoomsFallback();
+                        }
                     }
                 }).catch(()=>{});
             }catch(e){}
         })();
+        const roomsEditor = document.getElementById('roomsEditor');
+        if (roomsEditor && !roomsDataLoaded) {
+            renderRoomsFallback();
+        }
+
+        // Render rooms fallback if data is not loaded after 1 second
+        setTimeout(() => {
+            if (!roomsDataLoaded && !roomsFallbackRendered) {
+                renderRoomsFallback();
+                roomsFallbackRendered = true;
+            }
+        }, 1000);
 
         // Book page content: load existing
         (function loadBookContent(){
@@ -6746,6 +6803,7 @@ function initializeDefaultContent() {
         const addActivityBtn = document.getElementById('addActivityBtn');
         const saveActivitiesBtn = document.getElementById('saveActivitiesBtn');
         const addHomepageActivityBtn = document.getElementById('addHomepageActivityBtn');
+        const addCottageBtn = document.getElementById('addCottageBtn');
         
         if (addActivityBtn && !addActivityBtn.hasAttribute('data-listener-added')) {
             addActivityBtn.addEventListener('click', function() {
@@ -6755,6 +6813,17 @@ function initializeDefaultContent() {
             });
             addActivityBtn.setAttribute('data-listener-added', 'true');
         }
+
+        if (addCottageBtn && !addCottageBtn.hasAttribute('data-listener-added')) {
+            addCottageBtn.addEventListener('click', function() {
+                const current = collectCottageSettingsList();
+                const nextId = getNextCottageId(current);
+                current.push({ id: nextId, name: `Cottage ${nextId}`, price: 300 });
+                renderCottageSettingsList(current);
+            });
+            addCottageBtn.setAttribute('data-listener-added', 'true');
+        }
+        
         if (addHomepageActivityBtn && !addHomepageActivityBtn.hasAttribute('data-listener-added')) {
             addHomepageActivityBtn.addEventListener('click', function(){
                 const current = collectActivitiesEditor();
@@ -7571,7 +7640,8 @@ function renderActivitiesPageEditor(items){
                         </div>
                         <div class="form-group" style="margin-bottom:10px;">
                             <label style="display:block;margin-bottom:5px;font-weight:bold;">Video URL (optional)</label>
-                            <input type="text" data-activity-key="videoUrl" data-activity-index="${idx}" value="${safeVideoUrl}" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;">
+                            <input type="text" data-activity-key="videoUrl" data-activity-index="${idx}" value="${safeVideoUrl}" placeholder="e.g., https://www.facebook.com/watch/?v=..., https://fb.watch/..., https://youtu.be/..., or video.mp4" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;">
+                            <div class="video-preview" data-activity-index="${idx}" style="margin-top:8px;"></div>
                         </div>
                         <div class="form-group" style="margin-bottom:10px;">
                             <label style="display:block;margin-bottom:5px;font-weight:bold;">Rates (one per line, e.g., ₱150 (5 mins))</label>
@@ -7614,6 +7684,73 @@ function renderActivitiesPageEditor(items){
             const img = parent && parent.querySelector('img');
             if (img) img.src = this.value.trim();
         });
+    });
+    // Wire video preview updates
+    function getYouTubeEmbedId(url) {
+        if (!url) return null;
+        const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|v\/))([\w\-]+)/);
+        return match ? match[1] : null;
+    }
+    function getFacebookVideoEmbedUrl(url) {
+        if (!url) return null;
+        const trimmed = url.trim();
+        try {
+            if (trimmed.includes('facebook.com/plugins/video.php')) {
+                return trimmed;
+            }
+            let candidate = trimmed;
+            try {
+                const parsed = new URL(trimmed);
+                const hostname = parsed.hostname.toLowerCase();
+                if (hostname.includes('fb.watch')) {
+                    const slug = parsed.pathname.replace(/\//g, '');
+                    if (slug) {
+                        candidate = `https://www.facebook.com/watch/?v=${slug}`;
+                    }
+                } else if (hostname.includes('facebook.com')) {
+                    if (parsed.pathname.includes('/videos/')) {
+                        candidate = `https://www.facebook.com${parsed.pathname}`;
+                        if (parsed.search) candidate += parsed.search;
+                    } else if (parsed.pathname.includes('/watch')) {
+                        const videoId = parsed.searchParams.get('v');
+                        if (videoId) {
+                            candidate = `https://www.facebook.com/watch/?v=${videoId}`;
+                        }
+                    }
+                }
+            } catch (_) { /* ignore parse errors */ }
+            if (candidate.includes('facebook.com')) {
+                const encoded = encodeURIComponent(candidate);
+                return `https://www.facebook.com/plugins/video.php?href=${encoded}&show_text=0&width=560`;
+            }
+        } catch (_) { /* ignore */ }
+        return null;
+    }
+    function createActivityVideoPreviewHtml(url) {
+        if (!url) return '';
+        const trimmed = url.trim();
+        const yt = getYouTubeEmbedId(trimmed);
+        if (yt) {
+            return `<iframe style=\"width:100%;height:240px;border:0;border-radius:6px;\" src=\"https://www.youtube.com/embed/${yt}\" title=\"Activity Video\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" allowfullscreen></iframe>`;
+        }
+        const fb = getFacebookVideoEmbedUrl(trimmed);
+        if (fb) {
+            return `<iframe style=\"width:100%;height:240px;border:0;border-radius:6px;\" src=\"${fb}\" title=\"Activity Video\" allow=\"autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share\" allowfullscreen></iframe>`;
+        }
+        if (/(\.mp4|\.webm|\.ogg)(\?.*)?$/i.test(trimmed)) {
+            return `<video style=\"width:100%;height:240px;border:0;border-radius:6px;object-fit:cover;\" controls src=\"${trimmed}\"></video>`;
+        }
+        return '';
+    }
+    wrap.querySelectorAll('input[data-activity-key="videoUrl"]').forEach(inp => {
+        const idx = inp.getAttribute('data-activity-index');
+        const preview = wrap.querySelector(`.video-preview[data-activity-index="${idx}"]`);
+        function updatePreview(){
+            if (!preview) return;
+            preview.innerHTML = createActivityVideoPreviewHtml(inp.value.trim());
+        }
+        inp.addEventListener('input', updatePreview);
+        updatePreview();
     });
     // Wire toggle/hide and remove
     wrap.querySelectorAll('.activity-toggle').forEach(btn=>{
