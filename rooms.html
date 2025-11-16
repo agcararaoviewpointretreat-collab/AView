@@ -1965,12 +1965,14 @@ body {
       
       const titleEl = document.querySelector('.agcararao-title');
       const subtitleEl = document.querySelector('.agcararao-subtitle');
+      const descriptionEl = document.querySelector('.agcararao-description');
       const heroEl = document.querySelector('.hero');
       const heroTitleEl = document.querySelector('.hero-title');
       const heroSubtitleEl = document.querySelector('.hero-subtitle');
       
       if (titleEl) titleEl.textContent = content.pageTitle || 'Rooms (Configure in Admin)';
       if (subtitleEl) subtitleEl.textContent = content.pageSubtitle || '';
+      if (descriptionEl) descriptionEl.textContent = content.pageDescription || 'Thoughtfully curated spaces combine local charm with modern comforts for a serene retreat. Imagine waking to panoramic views of lush landscapes, crowned by an ethereal sea of clouds at dawn.';
       
       // Update hero title and subtitle
       if (heroTitleEl) {
