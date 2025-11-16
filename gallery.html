@@ -1199,7 +1199,17 @@ function loadHeroBackground() {
     onValue(imagesRef, (snapshot) => {
         if (snapshot.exists()) {
             const images = snapshot.val();
-            heroImages = Object.values(images);
+            // Use only images for hero backgrounds (avoid video/embeds)
+            heroImages = Object.values(images).filter(img => {
+                const urlStr = String(img && img.url || '');
+                const isVideoish = (img && img.type === 'video')
+                    || /(?:youtu\.be|youtube\.com|drive\.google\.com\/file\/d\/|drive\.google\.com\/uc\?)/i.test(urlStr)
+                    || /\.(mp4|webm|ogg)(\?|$)/i.test(urlStr);
+                const looksImage = urlStr.startsWith('data:image/')
+                    || /\.(png|jpe?g|gif|webp|svg)(\?|$)/i.test(urlStr)
+                    || (img && img.type === 'image');
+                return !isVideoish && looksImage;
+            });
             heroImages.sort((a, b) => b.uploadedAt - a.uploadedAt);
             
             // Display initial 8 random images
@@ -1316,7 +1326,7 @@ function loadGalleryImages() {
             // Sort month groups by date (oldest first - January to December)
             const sortedMonths = Object.keys(imagesByMonth).sort((a, b) => a.localeCompare(b));
             
-            // Render images grouped by month
+            // Render images/videos for this month
             sortedMonths.forEach(monthYear => {
                 const monthData = imagesByMonth[monthYear];
                 
@@ -1326,17 +1336,51 @@ function loadGalleryImages() {
                 monthHeader.innerHTML = `<h3>${monthData.monthName}</h3>`;
                 galleryGrid.appendChild(monthHeader);
                 
-                // Render images for this month
+                // Render images/videos for this month
                 monthData.images.forEach((image) => {
                     const galleryItem = document.createElement('div');
                     galleryItem.className = 'gallery-item';
                     const uploadDate = new Date(image.uploadedAt);
                     const formattedDate = uploadDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-                    
+
+                    const urlStr = String(image && image.url || '');
+                    const ytIdMatch = urlStr.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{6,})/i);
+                    const isDrivePreview = /drive\.google\.com\/file\/d\//i.test(urlStr);
+                    const driveUcMatch = urlStr.match(/drive\.google\.com\/uc\?[^#]*id=([^&]+)/i);
+                    const isVideoExt = /\.(mp4|webm|ogg)(\?|$)/i.test(urlStr);
+                    const itemType = image.type || (ytIdMatch || isDrivePreview || driveUcMatch || isVideoExt ? 'video' : 'image');
+
+                    // Normalize Google Drive uc? links to preview for video playback
+                    let mediaUrl = urlStr;
+                    if (driveUcMatch) {
+                        const id = driveUcMatch[1];
+                        mediaUrl = `https://drive.google.com/file/d/${id}/preview`;
+                    }
+
+                    let mediaHtml = '';
+                    if (itemType === 'video') {
+                        if (ytIdMatch) {
+                            const embedUrl = `https://www.youtube.com/embed/${ytIdMatch[1]}`;
+                            mediaUrl = embedUrl;
+                            mediaHtml = `<iframe src="${embedUrl}" style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;" allowfullscreen></iframe>`;
+                        } else if (isDrivePreview || driveUcMatch) {
+                            mediaHtml = `<iframe src="${mediaUrl}" style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+                        } else if (isVideoExt) {
+                            mediaHtml = `<video src="${urlStr}" style="width:100%;height:auto;border-radius:8px;" controls></video>`;
+                        } else {
+                            // Fallback to opening in new tab if type uncertain
+                            mediaHtml = `<div class="video-placeholder" style="width:100%;aspect-ratio:16/9;border-radius:8px;background:#000;display:flex;align-items:center;justify-content:center;color:#fff;">Video</div>`;
+                        }
+                    } else {
+                        mediaHtml = `<img src="${urlStr}" alt="Gallery image">`;
+                    }
+
                     galleryItem.setAttribute('data-month', monthData.month.toString());
                     galleryItem.setAttribute('data-year', monthData.year.toString());
+                    galleryItem.setAttribute('data-type', itemType);
+                    galleryItem.setAttribute('data-media-url', mediaUrl);
                     galleryItem.innerHTML = `
-                        <img src="${image.url}" alt="Gallery image">
+                        ${mediaHtml}
                         <div class="image-info">
                             ${image.name ? `<div class="image-title">${image.name}</div>` : ''}
                             ${image.description ? `<div class="image-description">${image.description}</div>` : ''}
@@ -1474,12 +1518,19 @@ let currentIndex = 0;
 function setupGalleryLightbox() {
     const galleryItems = Array.from(document.querySelectorAll('.gallery-item'));
     galleryItems.forEach((item, idx) => {
-        item.addEventListener('click', function() {
-            openLightbox(idx);
-        });
+        const hasImg = !!item.querySelector('img');
+        const mediaUrl = item.getAttribute('data-media-url') || '';
+        const handler = function() {
+            if (hasImg) {
+                openLightbox(idx);
+            } else if (mediaUrl) {
+                window.open(mediaUrl, '_blank');
+            }
+        };
+        item.addEventListener('click', handler);
         item.setAttribute('tabindex', '0');
         item.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' || e.key === ' ') openLightbox(idx);
+            if (e.key === 'Enter' || e.key === ' ') handler();
         });
     });
 }
@@ -1489,6 +1540,10 @@ function openLightbox(index) {
     const galleryItems = Array.from(document.querySelectorAll('.gallery-item'));
     const item = galleryItems[index];
     const img = item.querySelector('img');
+    if (!img) {
+        // No image inside (likely a video item) – do nothing here; click handler opens new tab
+        return;
+    }
     const title = item.querySelector('.image-title') ? item.querySelector('.image-title').textContent : '';
     const desc = item.querySelector('.image-description') ? item.querySelector('.image-description').textContent : '';
     const date = item.querySelector('.image-date') ? item.querySelector('.image-date').textContent : '';
