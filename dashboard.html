@@ -139,87 +139,196 @@ async function sendBookingEmail(booking, status, type = "room") {
     console.log("   - booking.amount:", booking.amount);
     console.log("   - booking.price:", booking.price);
     
-    // Try to get from existing calculated fields first
-    const existingAmount = parseFloat(
-      booking.totalAmount || 
-      booking.total || 
-      booking.amount || 
-      booking.price || 
-      0
-    );
-    
-    if (existingAmount > 0) {
-      totalAmount = existingAmount;
-      console.log("   Using existing total amount:", totalAmount);
-    } else {
-      // Calculate based on room type, number of rooms, nights, and extra pax
-      const roomType = (booking.roomType || booking.selectedRoom || "").toLowerCase();
-      const numberOfRooms = parseInt(booking.numberOfRooms || 1);
-      const numberOfNights = parseInt(booking.nights || booking.numberOfNights || 1);
-      const extraPax = parseInt(booking.extraPax || booking.extraPerson || booking.additionalPerson || 0);
-      
-      let roomRate = 0;
-      let maxRoomsForType = 1; // Default max rooms
-      
-      console.log("   Room details:");
-      console.log("   - Room type:", roomType);
-      console.log("   - Number of rooms:", numberOfRooms);
-      console.log("   - Number of nights:", numberOfNights);
-      console.log("   - Extra pax:", extraPax);
-      
-      // ✅ ACTUAL ROOM RATES
-      if (roomType.includes("casa de amor") || roomType.includes("amor")) {
-        roomRate = 1500;
-        maxRoomsForType = 3; // Casa de Amor has 3 rooms available
-        console.log("   Casa de Amor selected: ₱1,500 per night");
-      } else if (roomType.includes("casa de bella") || roomType.includes("bella")) {
-        roomRate = 3000;
-        maxRoomsForType = 1; // Only 1 Casa de Bella
-        console.log("   Casa de Bella selected: ₱3,000 per night");
-      } else if (roomType.includes("casa de arced") || roomType.includes("arced")) {
-        roomRate = 3500;
-        maxRoomsForType = 1; // Only 1 Casa de Arced
-        console.log("   Casa de Arced selected: ₱3,500 per night");
-      } else if (roomType.includes("casa y agua") || roomType.includes("agua")) {
-        roomRate = 4999;
-        maxRoomsForType = 1; // Only 1 Casa y Agua
-        console.log("   Casa y Agua selected: ₱4,999 per night");
-      } else {
-        // Default to Casa de Amor rate if room type is unclear
-        roomRate = 1500;
-        console.log("   Unknown room type, defaulting to Casa de Amor rate: ₱1,500");
-      }
-      
-      // Ensure we don't book more rooms than available for the type
-      const actualRooms = Math.min(numberOfRooms, maxRoomsForType);
-      if (actualRooms < numberOfRooms) {
-        console.log(`   ⚠️  Requested ${numberOfRooms} rooms but only ${maxRoomsForType} available for ${roomType}`);
-      }
-      
-      // Calculate base room cost (for down payment)
-      const roomCost = roomRate * actualRooms * numberOfNights;
-      baseCost = roomCost; // Store base cost for down payment calculation
-      
-      // Calculate extra pax cost (₱300 per head)
-      const extraPaxCost = extraPax * 300;
-      
-      // Total amount = room cost + extra pax cost
-      totalAmount = roomCost + extraPaxCost;
-      
-      console.log(`   Room calculation: ${roomRate} × ${actualRooms} rooms × ${numberOfNights} nights = ₱${roomCost}`);
-      if (extraPax > 0) {
-        console.log(`   Extra pax: ${extraPax} × ₱300 = ₱${extraPaxCost}`);
-      }
-      console.log(`   Base cost (for down payment): ₱${baseCost}`);
-      console.log(`   Total amount: ₱${roomCost} + ₱${extraPaxCost} = ₱${totalAmount}`);
-      
-      // If calculation still results in 0, use fallback
-      if (totalAmount === 0) {
-        totalAmount = 1500; // Minimum Casa de Amor rate
-        baseCost = 1500;
-        console.log("   Using fallback minimum rate:", totalAmount);
-      }
-    }
+        // Try to get from existing calculated fields first (prefer explicit booking totals)
+        const existingAmount = parseFloat(
+            booking.totalAmount || 
+            booking.total || 
+            booking.amount || 
+            booking.price || 
+            0
+        );
+
+        if (existingAmount > 0) {
+            totalAmount = existingAmount;
+            // If an existing total is present, use it as the base cost for down payment calculations
+            baseCost = existingAmount;
+            console.log("   Using existing total amount:", totalAmount);
+        } else {
+            // Prefer explicit per-room pricing saved on the booking (admin may add rooms with custom prices)
+            // Supported booking formats (robust detection):
+            // - booking.rooms: array of { name, price, nights, quantity }
+            // - booking.roomPrice: object mapping { "Casa De Amor": 1500, ... } with booking.selectedRoom
+            // - booking.bookingPrice or booking.price: numeric single-price fallback
+
+            let computedRoomCost = 0;
+            let roomBreakdownParts = [];
+
+            // 1) booking.rooms array (preferred if present)
+            if (Array.isArray(booking.rooms) && booking.rooms.length > 0) {
+                booking.rooms.forEach(r => {
+                    const qty = parseInt(r.quantity || r.numberOfRooms || r.qty || 1) || 1;
+                    const nights = parseInt(r.nights || booking.nights || r.numberOfNights || 1) || 1;
+                    const price = parseFloat(r.price || r.bookingPrice || r.unitPrice || r.pricePerNight || 0) || 0;
+                    const itemTotal = price * qty * nights;
+                    computedRoomCost += itemTotal;
+                    const name = r.name || r.type || booking.roomType || booking.selectedRoom || 'Room';
+                    roomBreakdownParts.push(`${name} × ${qty} × ${nights} nights @ ${formatCurrency(price)} = ${formatCurrency(itemTotal)}`);
+                });
+            }
+
+            // 2) booking.roomPrice mapping + booking.selectedRoom (admin-set mapping)
+            else if (booking.roomPrice && typeof booking.roomPrice === 'object' && (booking.selectedRoom || booking.roomType)) {
+                const key = booking.selectedRoom || booking.roomType;
+                const priceFromMap = booking.roomPrice[key] != null ? parseFloat(booking.roomPrice[key]) : NaN;
+                const qty = parseInt(booking.numberOfRooms || 1) || 1;
+                const nights = parseInt(booking.nights || booking.numberOfNights || 1) || 1;
+                if (!isNaN(priceFromMap) && priceFromMap > 0) {
+                    computedRoomCost = priceFromMap * qty * nights;
+                    roomBreakdownParts.push(`${key} × ${qty} × ${nights} nights @ ${formatCurrency(priceFromMap)} = ${formatCurrency(computedRoomCost)}`);
+                }
+            }
+
+            // 3) booking.bookingPrice / booking.price (single-price fallback)
+            else if (booking.bookingPrice || booking.price) {
+                const price = parseFloat(booking.bookingPrice || booking.price || 0) || 0;
+                const qty = parseInt(booking.numberOfRooms || 1) || 1;
+                const nights = parseInt(booking.nights || booking.numberOfNights || 1) || 1;
+                computedRoomCost = price * qty * nights;
+                roomBreakdownParts.push(`${booking.roomType || booking.selectedRoom || 'Room'} × ${qty} × ${nights} nights @ ${formatCurrency(price)} = ${formatCurrency(computedRoomCost)}`);
+            }
+
+                    // 4) Try admin-configured room prices from siteContent/book.roomPrice if nothing explicit found in booking
+                    if (computedRoomCost === 0 && (booking.selectedRoom || booking.roomType)) {
+                        try {
+                            const roomPriceSnap = await get(ref(db, 'siteContent/book/roomPrice'));
+                            if (roomPriceSnap && roomPriceSnap.exists()) {
+                                const roomPriceMap = roomPriceSnap.val() || {};
+                                const key = booking.selectedRoom || booking.roomType || '';
+                                const qty = parseInt(booking.numberOfRooms || 1) || 1;
+                                const nights = parseInt(booking.nights || booking.numberOfNights || 1) || 1;
+
+                                // Normalize helper (lowercase, trim, collapse spaces, remove non-alphanum except spaces)
+                                const normalize = (s) => String(s || '').toLowerCase().trim().replace(/\s+/g, ' ').replace(/[^a-z0-9 ]/g, '');
+                                const keyNorm = normalize(key);
+
+                                // Try direct key, then case-insensitive normalized lookup, then partial matches
+                                let mappedPrice = roomPriceMap[key];
+                                if (mappedPrice == null) {
+                                    const lowerMap = {};
+                                    Object.keys(roomPriceMap).forEach(k => lowerMap[normalize(k)] = roomPriceMap[k]);
+                                    mappedPrice = lowerMap[keyNorm];
+                                }
+                                if (mappedPrice == null) {
+                                    // try partial matches (either way)
+                                    const foundKey = Object.keys(roomPriceMap).find(k => {
+                                        const kn = normalize(k);
+                                        return kn === keyNorm || kn.includes(keyNorm) || keyNorm.includes(kn);
+                                    });
+                                    if (foundKey) mappedPrice = roomPriceMap[foundKey];
+                                }
+
+                                console.log('   Admin roomPrice keys available:', Object.keys(roomPriceMap));
+                                console.log('   Lookup:', { rawKey: key, normalizedKey: keyNorm, mappedPrice });
+
+                                if (mappedPrice != null && !isNaN(parseFloat(mappedPrice))) {
+                                    const priceNum = parseFloat(mappedPrice);
+                                    computedRoomCost = priceNum * qty * nights;
+                                    roomBreakdownParts.push(`${key} × ${qty} × ${nights} nights @ ${formatCurrency(priceNum)} = ${formatCurrency(computedRoomCost)}`);
+                                    console.log('   Using admin-configured room price from siteContent/book/roomPrice for', key, priceNum);
+                                }
+                            }
+                        } catch (e) {
+                            console.warn('Could not read admin room price mapping:', e);
+                        }
+                    }
+
+                    // 5) Fallback to legacy hard-coded rates (if nothing explicit found)
+                    if (computedRoomCost === 0) {
+                const roomType = (booking.roomType || booking.selectedRoom || "").toLowerCase();
+                const numberOfRooms = parseInt(booking.numberOfRooms || 1);
+                const numberOfNights = parseInt(booking.nights || booking.numberOfNights || 1);
+                const extraPax = parseInt(booking.extraPax || booking.extraPerson || booking.additionalPerson || 0);
+
+                let roomRate = 0;
+                let maxRoomsForType = 1; // Default max rooms
+
+                console.log("   Room details:");
+                console.log("   - Room type:", roomType);
+                console.log("   - Number of rooms:", numberOfRooms);
+                console.log("   - Number of nights:", numberOfNights);
+                console.log("   - Extra pax:", extraPax);
+
+                // ✅ ACTUAL ROOM RATES
+                if (roomType.includes("casa de amor") || roomType.includes("amor")) {
+                    roomRate = 1500;
+                    maxRoomsForType = 3; // Casa de Amor has 3 rooms available
+                    console.log("   Casa de Amor selected: ₱1,500 per night");
+                } else if (roomType.includes("casa de bella") || roomType.includes("bella")) {
+                    roomRate = 3000;
+                    maxRoomsForType = 1; // Only 1 Casa de Bella
+                    console.log("   Casa de Bella selected: ₱3,000 per night");
+                } else if (roomType.includes("casa de arced") || roomType.includes("arced")) {
+                    roomRate = 3500;
+                    maxRoomsForType = 1; // Only 1 Casa de Arced
+                    console.log("   Casa de Arced selected: ₱3,500 per night");
+                } else if (roomType.includes("casa y agua") || roomType.includes("agua")) {
+                    roomRate = 4999;
+                    maxRoomsForType = 1; // Only 1 Casa y Agua
+                    console.log("   Casa y Agua selected: ₱4,999 per night");
+                } else {
+                    // Default to Casa de Amor rate if room type is unclear
+                    roomRate = 1500;
+                    console.log("   Unknown room type, defaulting to Casa de Amor rate: ₱1,500");
+                }
+
+                // Ensure we don't book more rooms than available for the type
+                const actualRooms = Math.min(numberOfRooms, maxRoomsForType);
+                if (actualRooms < numberOfRooms) {
+                    console.log(`   ⚠️  Requested ${numberOfRooms} rooms but only ${maxRoomsForType} available for ${roomType}`);
+                }
+
+                // Calculate base room cost (for down payment)
+                const roomCost = roomRate * actualRooms * numberOfNights;
+                computedRoomCost = roomCost;
+
+                // Calculate extra pax cost (₱300 per head)
+                const extraPaxCost = extraPax * 300;
+
+                // add extra pax into total later
+                if (extraPax > 0) {
+                    roomBreakdownParts.push(`Extra pax: ${extraPax} × ₱300 = ${formatCurrency(extraPaxCost)}`);
+                }
+
+                roomBreakdownParts.unshift(`${roomRate} × ${actualRooms} rooms × ${numberOfNights} nights = ${formatCurrency(roomCost)}`);
+            }
+
+            // Now computedRoomCost contains the rooms subtotal (excluding extras that may be included above)
+            baseCost = computedRoomCost;
+
+            // If extras are present as explicit fields, include them
+            const extraPaxCostExplicit = parseFloat(booking.extraPaxCost || 0) || 0;
+            const extraPaxCount = parseInt(booking.extraPax || booking.extraPerson || 0) || 0;
+            const extraPaxCostFromCount = extraPaxCount * (parseFloat(booking.extraPaxPrice || 300) || 300);
+
+            const extraPaxCost = extraPaxCostExplicit || extraPaxCostFromCount || 0;
+
+            totalAmount = computedRoomCost + extraPaxCost;
+
+            // If still zero, fallback to minimum
+            if (totalAmount === 0) {
+                totalAmount = 1500;
+                baseCost = 1500;
+                roomBreakdownParts = [`Fallback: Casa de Amor @ ${formatCurrency(1500)}`];
+                console.log("   Using fallback minimum rate:", totalAmount);
+            }
+
+            console.log("   Computed room breakdown:", roomBreakdownParts);
+            console.log(`   Base cost (for down payment): ₱${baseCost}`);
+            console.log(`   Total amount: ₱${totalAmount}`);
+
+            // Attach breakdown to booking for template use
+            booking._roomBreakdown = roomBreakdownParts.join(' | ');
+        }
   } else if (type === "activity") {
     // Determine activity type first
     const activityType = booking.activityName || booking.activityType || "activity";
@@ -400,15 +509,18 @@ async function sendBookingEmail(booking, status, type = "room") {
     }
   }
   
-  // Calculate down payment from base cost only (excluding extra pax/additional guests)
-  const downPaymentRaw = baseCost > 0 ? baseCost * 0.3 : 0;
-  const balanceRaw = totalAmount > 0 ? totalAmount - downPaymentRaw : 0;
-  
-  console.log("💰 FINAL PAYMENT CALCULATIONS:");
-  console.log("   Base Cost (for down payment):", baseCost);
-  console.log("   Total Amount:", totalAmount);
-  console.log("   Down Payment (30% of base cost):", downPaymentRaw);
-  console.log("   Balance (Total - Down Payment):", balanceRaw);
+    // Calculate down payment from base cost only (excluding extra pax/additional guests)
+    // Use admin-configured percentage (fetched earlier into `downPaymentPercent`)
+    const downPaymentRate = (typeof downPaymentPercent === 'number' && !isNaN(downPaymentPercent)) ? (downPaymentPercent / 100) : 0.3;
+    // Round up to nearest whole peso to avoid fractional PHP amounts
+    const downPaymentRaw = baseCost > 0 ? Math.ceil(baseCost * downPaymentRate) : 0;
+    const balanceRaw = totalAmount > 0 ? Math.max(0, totalAmount - downPaymentRaw) : 0;
+
+    console.log("💰 FINAL PAYMENT CALCULATIONS:");
+    console.log("   Base Cost (for down payment):", baseCost);
+    console.log("   Total Amount:", totalAmount);
+    console.log(`   Down Payment (${downPaymentPercent}% of base cost):`, downPaymentRaw);
+    console.log("   Balance (Total - Down Payment):", balanceRaw);
   
   // Set status color based on status
   const statusColor = status === "confirmed" ? "#28a745" : 
@@ -428,6 +540,11 @@ async function sendBookingEmail(booking, status, type = "room") {
     status_color: statusColor,
     totalAmount: formatCurrency(totalAmount),
     downPayment: formatCurrency(downPaymentRaw),
+    downPaymentPercent: `${downPaymentPercent}%`,
+    // Human-friendly formula and room breakdown for EmailJS templates
+    downPaymentFormula: `${downPaymentPercent}% of ${formatCurrency(baseCost)} = ${formatCurrency(downPaymentRaw)}`,
+    roomSubtotal: formatCurrency(baseCost),
+    roomBreakdown: booking._roomBreakdown || "",
     balance: formatCurrency(balanceRaw),
     room_section_style: isRoomType ? "display: block;" : "display: none;",
     activity_section_style: isRoomType ? "display: none;" : "display: block;",
@@ -4372,13 +4489,6 @@ async function sendBookingEmail(booking, status, type = "room") {
 
                         
 
-                
-
-                        <h4 style="margin-top:14px;">Payment Settings</h4>
-                        <label>Down Payment Percent (0-100)
-                            <input type="number" id="bookDownPaymentPercent" placeholder="30" value="30" min="0" max="100">
-                        </label>
-
                         
 
                         <h4 style="margin-top:14px;">Rooms Settings (auto from Rooms Content)</h4>
@@ -4451,9 +4561,7 @@ async function sendBookingEmail(booking, status, type = "room") {
 
                         <h4 style="margin-top:20px;">Activities Reservation Settings</h4>
                         <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
-                            <label>Down Payment %
-                                <input type="number" id="activitiesDownPaymentPercentInput" min="0" max="100" step="1" placeholder="30" value="30">
-                            </label>
+                           
                             <label>Cottage Available Message
                                 <input type="text" id="cottageAvailableMsgInput" placeholder="This cottage is available on the selected date" value="This cottage is available on the selected date">
                             </label>
