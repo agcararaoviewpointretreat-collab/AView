@@ -615,6 +615,13 @@ window.hideNotification = function() {
             }
             try {
                 const bookingsRef = ref(db, "bookings");
+                // Capture the per-room unit price at booking time so emails and later calculations use the exact price
+                const unitPrice = (bookContent && bookContent.roomPrice && bookContent.roomPrice[selectedRoom] != null)
+                    ? (parseInt(bookContent.roomPrice[selectedRoom]) || 0)
+                    : 0;
+                // roomSubtotal stored as integer pesos (room only, excluding extras)
+                const roomSubtotal = parseInt(document.getElementById("totalAmount").dataset.roomTotal) || (unitPrice * (parseInt(numberOfRooms)||1) * (parseInt(numberOfNights)||1));
+
                 await push(bookingsRef, {
                     fullName,
                     email,
@@ -630,6 +637,10 @@ window.hideNotification = function() {
                     extraChildren,
                     numberOfNights,
                     totalAmount,
+                    // store the unit price per night when the booking was made
+                    bookingPrice: unitPrice,
+                    // store the room subtotal (numeric) for easier later calculations
+                    roomSubtotal,
                     paymentType,
                     paymentAmount,
                     status: "pending",
