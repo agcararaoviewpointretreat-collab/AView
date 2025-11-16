@@ -4022,6 +4022,11 @@ async function sendBookingEmail(booking, status, type = "room") {
                             <label style="display: block; margin-bottom: 5px; font-weight: 600;">Title (Optional)</label>
                             <input type="text" id="urlMediaTitle" placeholder="Image or video title" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
                         </div>
+
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Description (Optional)</label>
+                            <textarea id="urlMediaDescription" placeholder="Add a short description" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"></textarea>
+                        </div>
                         
                         <div style="margin-bottom: 15px;">
                             <label style="display: block; margin-bottom: 5px; font-weight: 600;">Media Type</label>
@@ -8845,8 +8850,22 @@ document.addEventListener('DOMContentLoaded', () => {
                         const galleryCard = document.createElement('div');
                         galleryCard.className = 'gallery-card';
                         galleryCard.dataset.uploadDate = uploadDate.toISOString();
+                        const inferredType = image.type || (typeof image.url === 'string' && image.url.startsWith('data:image/') ? 'image' : (/(\.mp4|\.webm|\.ogg)(\?|$)/i.test(image.url||'') ? 'video' : 'image'));
+                        let mediaHtml = '';
+                        if (inferredType === 'video') {
+                            const urlStr = String(image.url||'');
+                            const ytMatch = urlStr.match(/(?:youtu\.be\/|v=)([\w-]{6,})/);
+                            if (ytMatch) {
+                                const embedUrl = `https://www.youtube.com/embed/${ytMatch[1]}`;
+                                mediaHtml = `<iframe src="${embedUrl}" style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;" allowfullscreen></iframe>`;
+                            } else {
+                                mediaHtml = `<video src="${urlStr}" style="width:100%;height:auto;border-radius:8px;" controls></video>`;
+                            }
+                        } else {
+                            mediaHtml = `<img src="${image.url}" alt="${image.name || 'Gallery image'}">`;
+                        }
                         galleryCard.innerHTML = `
-                            <img src="${image.url}" alt="${image.name || 'Gallery image'}">
+                            ${mediaHtml}
                             <div class="image-info">
                                 <div class="image-title">${image.name || ''}</div>
                                 ${image.description ? `<div class="image-description">${image.description}</div>` : ''}
@@ -8900,50 +8919,51 @@ document.addEventListener('DOMContentLoaded', () => {
         let compressedPreviews = [];
         
         document.getElementById('imageUpload').addEventListener('change', async function(e) {
-            const files = Array.from(e.target.files);
-            selectedFiles = files;
+            const files = Array.from(e.target.files || []);
+            // Only support images when running from file://; videos should be added via URL
+            const imageFiles = files.filter(f => f && f.type && f.type.startsWith('image/'));
+            if (imageFiles.length !== files.length) {
+                showStatus('Only images can be uploaded from files. For videos, please use Add from URL.', 'error');
+            }
+            selectedFiles = imageFiles;
             compressedPreviews = [];
-            
+
             // Update selected files text
-            const selectedFilesText = files.map(f => f.name).join(', ');
-            document.getElementById('selectedFiles').textContent = `Selected: ${selectedFilesText}`;
-            
+            const selectedFilesText = imageFiles.map(f => f.name).join(', ');
+            document.getElementById('selectedFiles').textContent = selectedFilesText ? `Selected: ${selectedFilesText}` : '';
+
             // Clear previous previews
             const previewSection = document.getElementById('previewSection');
             previewSection.innerHTML = '';
-            
-            // Create preview for each file
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
+
+            for (let i = 0; i < imageFiles.length; i++) {
+                const file = imageFiles[i];
                 const reader = new FileReader();
-                
-                const readerPromise = new Promise((resolve) => {
-                    reader.onload = async function(e) {
-                        // Compress the image
-                        const compressed = await compressImage(e.target.result);
-                        compressedPreviews[i] = compressed;
-                        
-                        const previewItem = document.createElement('div');
-                        previewItem.className = 'preview-item';
-                        previewItem.innerHTML = `
-                            <img src="${compressed}" alt="Preview">
-                            <div class="image-info">
-                                <input type="text" placeholder="Enter image title" class="image-title" data-index="${i}">
-                                <textarea placeholder="Enter image description" class="image-description" data-index="${i}"></textarea>
-                            </div>
-                            <button class="remove-btn" onclick="window.removePreview(${i})">Remove</button>
-                        `;
-                        previewSection.appendChild(previewItem);
+                await new Promise((resolve) => {
+                    reader.onload = async function(ev) {
+                        try {
+                            const compressed = await compressImage(ev.target.result);
+                            compressedPreviews[i] = compressed; // data URL
+                            const previewItem = document.createElement('div');
+                            previewItem.className = 'preview-item';
+                            previewItem.innerHTML = `
+                                <img src="${compressed}" alt="Preview">
+                                <div class="image-info">
+                                    <input type="text" placeholder="Enter image title" class="image-title" data-index="${i}">
+                                    <textarea placeholder="Enter image description" class="image-description" data-index="${i}"></textarea>
+                                </div>
+                                <button class="remove-btn" onclick="window.removePreview(${i})">Remove</button>`;
+                            previewSection.appendChild(previewItem);
+                        } catch (err) {
+                            console.error('Error preparing image preview:', err);
+                        }
                         resolve();
                     };
                     reader.readAsDataURL(file);
                 });
-                
-                await readerPromise;
             }
-            
-            // Enable upload button
-            document.getElementById('uploadBtn').disabled = files.length === 0;
+
+            document.getElementById('uploadBtn').disabled = imageFiles.length === 0;
         });
 
         // Remove preview
@@ -9001,8 +9021,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     await set(newImageRef, {
                         url: compressedDataUrl,
                         name: title || file.name,
-                        description: description,
-                        uploadedAt: Date.now()
+                        description: description || '',
+                        type: 'image',
+                        uploadedAt: Date.now(),
+                        source: 'inline'
                     });
                 }
                 
@@ -9050,18 +9072,53 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // URL Preview and Upload
         document.getElementById('mediaUrlInput').addEventListener('input', function() {
-            const url = this.value.trim();
+            const rawUrl = this.value.trim();
             const previewSection = document.getElementById('urlPreviewSection');
-            const mediaType = document.getElementById('urlMediaType').value;
-            
-            if (url) {
+            const preferred = (document.getElementById('urlMediaType') && document.getElementById('urlMediaType').value) || 'image';
+
+            function detectAndNormalizeUrl(u, pref) {
+                const s = String(u || '').trim();
+                let type = pref === 'video' ? 'video' : 'image';
+                let provider = '';
+                let urlOut = s;
+                const ytMatch = s.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{6,})/i);
+                if (ytMatch) {
+                    provider = 'youtube';
+                    type = 'video';
+                    urlOut = `https://www.youtube.com/embed/${ytMatch[1]}`;
+                    return { url: urlOut, type, provider };
+                }
+                const driveMatch = s.match(/drive\.google\.com\/file\/d\/([^/]+)/i);
+                if (driveMatch) {
+                    const id = driveMatch[1];
+                    urlOut = `https://drive.google.com/uc?export=view&id=${id}`;
+                    // Heuristic: treat as image if extension hints, else honor pref
+                    type = /\.(mp4|webm|ogg)(\?|$)/i.test(s) ? 'video' : (pref === 'video' ? 'video' : 'image');
+                    provider = 'gdrive';
+                    return { url: urlOut, type, provider };
+                }
+                if (/\.(mp4|webm|ogg)(\?|$)/i.test(s)) {
+                    type = 'video';
+                }
+                return { url: s, type, provider };
+            }
+
+            function buildPreview(n) {
+                if (n.type === 'video') {
+                    if (n.url.includes('youtube.com/embed/')) {
+                        return `<iframe src="${n.url}" style="width:100%;aspect-ratio:16/9;border:0;border-radius:5px;" allowfullscreen></iframe>`;
+                    }
+                    return `<video src="${n.url}" style="max-width: 100%; height: auto; border-radius: 5px;" controls></video>`;
+                }
+                return `<img src="${n.url}" style="max-width: 100%; height: auto; border-radius: 5px;" alt="Preview" onerror="this.src=''; this.alt='Could not load preview';"/>`;
+            }
+
+            if (rawUrl) {
+                const norm = detectAndNormalizeUrl(rawUrl, preferred);
                 previewSection.innerHTML = `
                     <div style="padding: 10px; border: 1px solid #ddd; border-radius: 5px; background: #f9f9f9;">
                         <p style="margin: 0 0 10px 0; font-weight: 600;">Preview:</p>
-                        ${mediaType === 'video' 
-                            ? `<video src="${url}" style="max-width: 100%; height: auto; border-radius: 5px;" controls></video>`
-                            : `<img src="${url}" style="max-width: 100%; height: auto; border-radius: 5px;" alt="Preview" onerror="this.src=''; this.alt='Could not load preview';"/>`
-                        }
+                        ${buildPreview(norm)}
                     </div>
                 `;
             } else {
@@ -9077,44 +9134,64 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Add from URL button
         document.getElementById('addFromUrlBtn').addEventListener('click', async function() {
-            const url = document.getElementById('mediaUrlInput').value.trim();
+            const rawUrl = document.getElementById('mediaUrlInput').value.trim();
             const title = document.getElementById('urlMediaTitle').value.trim();
             const description = document.getElementById('urlMediaDescription').value.trim();
-            const mediaType = document.getElementById('urlMediaType').value;
-            
-            if (!url) {
+            const preferred = (document.getElementById('urlMediaType') && document.getElementById('urlMediaType').value) || 'image';
+
+            function detectAndNormalizeUrl(u, pref) {
+                const s = String(u || '').trim();
+                let type = pref === 'video' ? 'video' : 'image';
+                let provider = '';
+                let urlOut = s;
+                const ytMatch = s.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{6,})/i);
+                if (ytMatch) {
+                    provider = 'youtube';
+                    type = 'video';
+                    urlOut = `https://www.youtube.com/embed/${ytMatch[1]}`;
+                    return { url: urlOut, type, provider };
+                }
+                const driveMatch = s.match(/drive\.google\.com\/file\/d\/([^/]+)/i);
+                if (driveMatch) {
+                    const id = driveMatch[1];
+                    urlOut = `https://drive.google.com/uc?export=view&id=${id}`;
+                    type = /\.(mp4|webm|ogg)(\?|$)/i.test(s) ? 'video' : (pref === 'video' ? 'video' : 'image');
+                    provider = 'gdrive';
+                    return { url: urlOut, type, provider };
+                }
+                if (/\.(mp4|webm|ogg)(\?|$)/i.test(s)) {
+                    type = 'video';
+                }
+                return { url: s, type, provider };
+            }
+
+            if (!rawUrl) {
                 showUrlStatus('Please enter a valid URL', 'error');
                 return;
             }
-            
+
+            const norm = detectAndNormalizeUrl(rawUrl, preferred);
             this.disabled = true;
-            showUrlStatus(`Adding ${mediaType} to gallery...`, 'success');
-            
+            showUrlStatus(`Adding ${norm.type} to gallery...`, 'success');
             try {
-                // Add to Firebase
                 const newImageRef = push(imagesRef);
                 await set(newImageRef, {
-                    url: url,
-                    name: title || `${mediaType === 'video' ? 'Video' : 'Image'} from URL`,
+                    url: norm.url,
+                    name: title || `${norm.type === 'video' ? 'Video' : 'Image'} from URL`,
                     description: description || '',
-                    type: mediaType,
+                    type: norm.type,
                     uploadedAt: Date.now(),
                     source: 'url'
                 });
-                
-                showUrlStatus(`${mediaType === 'video' ? 'Video' : 'Image'} added successfully!`, 'success');
-                
-                // Clear form
+                showUrlStatus(`${norm.type === 'video' ? 'Video' : 'Image'} added successfully!`, 'success');
                 document.getElementById('mediaUrlInput').value = '';
                 document.getElementById('urlMediaTitle').value = '';
                 document.getElementById('urlMediaDescription').value = '';
                 document.getElementById('urlPreviewSection').innerHTML = '';
-                
             } catch (error) {
                 console.error('Error adding media from URL:', error);
                 showUrlStatus('Error adding media. Please try again.', 'error');
             }
-            
             this.disabled = false;
         });
 
