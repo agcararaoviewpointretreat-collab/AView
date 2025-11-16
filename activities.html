@@ -2837,9 +2837,33 @@ input:valid, select:valid, textarea:valid {
                     function getFacebookVideoEmbedUrl(url) {
                         if (!url) return null;
                         try {
-                            const normalized = url.trim();
-                            if (normalized.includes('facebook.com') && normalized.includes('/videos/')) {
-                                return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(normalized)}&show_text=0&width=560`;
+                            const trimmed = url.trim();
+                            let candidate = trimmed;
+                            try {
+                                const parsed = new URL(trimmed);
+                                const hostname = parsed.hostname.toLowerCase();
+                                if (hostname.includes('fb.watch')) {
+                                    const slug = parsed.pathname.replace(/\//g, '');
+                                    if (slug) {
+                                        candidate = `https://www.facebook.com/watch/?v=${slug}`;
+                                    }
+                                } else if (hostname.includes('facebook.com')) {
+                                    if (parsed.pathname.includes('/videos/')) {
+                                        candidate = `https://www.facebook.com${parsed.pathname}`;
+                                        if (parsed.search) candidate += parsed.search;
+                                    } else if (parsed.pathname.includes('/watch')) {
+                                        const videoId = parsed.searchParams.get('v');
+                                        if (videoId) {
+                                            candidate = `https://www.facebook.com/watch/?v=${videoId}`;
+                                        }
+                                    }
+                                }
+                            } catch (inner) {
+                                // ignore URL parse failures (maybe relative link)
+                            }
+                            if (candidate.includes('facebook.com')) {
+                                const encoded = encodeURIComponent(candidate);
+                                return `https://www.facebook.com/plugins/video.php?href=${encoded}&show_text=0&width=560`;
                             }
                         } catch (e) {
                             console.warn('Failed to normalize Facebook URL', e);
