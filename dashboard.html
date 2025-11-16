@@ -64,7 +64,7 @@
         }, 400);
       };
 
-function sendBookingEmail(booking, status, type = "room") {
+async function sendBookingEmail(booking, status, type = "room") {
   // Determine template ID based on status
   let templateId;
   if (status === "confirmed") {
@@ -98,6 +98,26 @@ function sendBookingEmail(booking, status, type = "room") {
           day: "numeric",
         });
   };
+  
+  // Fetch down payment percentage from Firebase
+  let downPaymentPercent = 30; // Default fallback
+  try {
+    if (type === "room") {
+      const bookSnapshot = await get(ref(db, 'siteContent/book/downPaymentPercent'));
+      if (bookSnapshot.exists()) {
+        downPaymentPercent = bookSnapshot.val();
+      }
+    } else if (type === "activity") {
+      const actSnapshot = await get(ref(db, 'siteContent/activitiesPage/downPaymentPercent'));
+      if (actSnapshot.exists()) {
+        downPaymentPercent = actSnapshot.val();
+      }
+    }
+  } catch (error) {
+    console.warn("Could not fetch down payment percentage, using default 30%:", error);
+  }
+  
+  console.log("📊 Down Payment Percentage:", downPaymentPercent + "%");
   
   let totalAmount = 0;
   let baseCost = 0; // Track base cost for down payment calculation
