@@ -1191,6 +1191,8 @@ let galleryImages = [];
 let availableYears = new Set();
 let heroImages = [];
 let currentHeroIndex = 0;
+const HERO_BG_OVERLAY = 'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6))';
+const DEFAULT_GALLERY_HERO_BG = 'lo.jpg';
 
 // Load Hero Background Images
 function loadHeroBackground() {
@@ -1256,6 +1258,26 @@ function rotateHeroImages() {
     }, 1000);
     
     currentHeroIndex++;
+}
+
+function updateGalleryHeroBackground(url) {
+    const heroSection = document.querySelector('.hero');
+    if (!heroSection) return;
+    const setBackground = (src) => {
+        heroSection.style.backgroundImage = `${HERO_BG_OVERLAY}, url('${src}')`;
+        heroSection.style.backgroundSize = 'cover';
+        heroSection.style.backgroundPosition = 'center';
+    };
+
+    if (!url) {
+        setBackground(DEFAULT_GALLERY_HERO_BG);
+        return;
+    }
+
+    const heroImage = new Image();
+    heroImage.onload = () => setBackground(url);
+    heroImage.onerror = () => setBackground(DEFAULT_GALLERY_HERO_BG);
+    heroImage.src = url;
 }
 
 function loadGalleryImages() {
@@ -1423,6 +1445,7 @@ onValue(siteContentRef, (snapshot) => {
         if (fl) fl.textContent = data.filterLabel || 'Month:';
         if (ap) ap.textContent = data.allPhotosLabel || 'All Months';
         if (lt) lt.textContent = data.loadingText || 'Loading photos...';
+        updateGalleryHeroBackground(data.heroBg);
         
         console.log('✅ Gallery content updated from Firebase!');
     } else {
@@ -1435,6 +1458,7 @@ onValue(siteContentRef, (snapshot) => {
         if (fl) fl.textContent = 'Month:';
         if (ap) ap.textContent = 'All Months';
         if (lt) lt.textContent = 'Loading photos...';
+        updateGalleryHeroBackground();
     }
 }, (error) => {
     console.error('❌ Firebase error:', error);
