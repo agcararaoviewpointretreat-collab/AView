@@ -3385,13 +3385,17 @@ input:valid, select:valid, textarea:valid {
                             const isAvailable = await checkCottageAvailability(cottageNumber, date);
                             if (!isAvailable) {
                                 alert('The selected cottage is already reserved for this date. Please choose a different cottage or date.');
+                                // Re-enable button so user can try again
+                                submitBtn.disabled = false;
+                                submitBtn.textContent = 'Submit Reservation';
                                 return;
                             }
                         }
-                        
+
                         // Calculate total amount and down payment
-                        const totalAmount = parseInt(swimmingTotalAmountElement.textContent.replace('₱', ''));
-                        const downPayment = Math.ceil(totalAmount * (swimmingDownPaymentPercent / 100));
+                        const totalAmount = parseInt(swimmingTotalAmountElement.textContent.replace(/[^0-9\-\.]/g, '')) || 0;
+                        // Use the activities-wide down payment percent (variable defined earlier)
+                        const downPayment = Math.ceil(totalAmount * (activitiesDownPaymentPercent / 100));
                         const balance = totalAmount - downPayment;
                         
                         // Get form data
@@ -3425,8 +3429,12 @@ input:valid, select:valid, textarea:valid {
                         } catch (error) {
                             console.error("Error saving reservation:", error);
                             showNotification('Failed to submit reservation. Please try again.', 'info', 15000);
+                            // Re-enable submit button to allow retry
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = 'Submit Reservation';
+                            return;
                         }
-                        // Do not re-enable the button; only one submission per modal open
+                        // Intent: normally we leave the button disabled after a successful submission to avoid duplicates
                     });
             
                     // Initialize swimming total
