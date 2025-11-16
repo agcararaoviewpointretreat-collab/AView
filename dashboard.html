@@ -4138,14 +4138,7 @@ async function sendBookingEmail(booking, status, type = "room") {
                         <label>Background Image URL</label>
                         <input type="text" id="heroBackgroundImageInput" placeholder="Hero background image" value="jj.jpeg">
                     </div>
-                <div class="homepage-form-group">
-                    <label>Body Background Image URL</label>
-                    <input type="text" id="heroBodyBackgroundInput" placeholder="Body background image (optional)">
-                </div>
-                    <div class="homepage-form-group">
-                        <label>CTA URL</label>
-                        <input type="text" id="heroCtaUrlInput" placeholder="/rooms.html" value="rooms.html">
-                    </div>
+                
                 </div>
 
                 <div class="homepage-form-section">
@@ -4163,10 +4156,7 @@ async function sendBookingEmail(booking, status, type = "room") {
                         <label>Operating Hours</label>
                         <input type="text" id="entranceTimeInput" placeholder="7 AM - 6 PM" value="7 AM - 6 PM">
                     </div>
-                    <div class="homepage-form-group">
-                        <label>Section Background Image URL</label>
-                        <input type="text" id="entranceBackgroundInput" placeholder="Entrance section background (optional)">
-                    </div>
+                    
                     <div class="homepage-form-row">
                         <div class="homepage-form-group">
                             <label>Adult (₱)</label>
@@ -4189,10 +4179,7 @@ async function sendBookingEmail(booking, status, type = "room") {
                         <label>Swimming Hours</label>
                         <input type="text" id="poolTimeInput" placeholder="Day/Night Swimming" value="Day/Night Swimming">
                     </div>
-                    <div class="homepage-form-group">
-                        <label>Section Background Image URL</label>
-                        <input type="text" id="poolBackgroundInput" placeholder="Pool section background (optional)">
-                    </div>
+            
                     <div class="homepage-form-row">
                         <div class="homepage-form-group">
                             <label>Adult (₱)</label>
@@ -4252,14 +4239,7 @@ async function sendBookingEmail(booking, status, type = "room") {
                 <div class="homepage-form-section">
                     <h3>📍 Contact & Location</h3>
                     <div class="homepage-form-row">
-                        <div class="homepage-form-group">
-                            <label>Rooms to show</label>
-                            <input type="number" id="accomDisplayCountInput" min="0" step="1" placeholder="e.g. 4">
-                        </div>
-                        <div class="homepage-form-group">
-                            <label>Activities to show</label>
-                            <input type="number" id="activitiesDisplayCountInput" min="0" step="1" placeholder="e.g. 4">
-                        </div>
+                        
                     </div>
                     <div class="homepage-form-group">
                         <label>Resort Name</label>
@@ -4457,12 +4437,7 @@ async function sendBookingEmail(booking, status, type = "room") {
                         <label>Loading Text
                             <input type="text" id="galleryLoadingTextInput" placeholder="Loading text" value="Loading photos...">
                         </label>
-                        <label>Empty State Title
-                            <input type="text" id="galleryEmptyTitleInput" placeholder="Empty title" value="No Images Available">
-                        </label>
-                        <label>Empty State Description
-                            <input type="text" id="galleryEmptyDescInput" placeholder="Empty description" value="Check back soon for our new collection of amazing photographs.">
-                        </label>
+                        
                         <div style="margin-top:20px;">
                             <button type="button" id="saveGalleryContentBtn" class="save-btn">💾 Save Gallery Content</button>
                         </div>
@@ -4480,9 +4455,7 @@ async function sendBookingEmail(booking, status, type = "room") {
                         <label>Page Title
                             <input type="text" id="bookPageTitleInput" placeholder="Book page title" value="Stay With Us!">
                         </label>
-                        <label>Page Subtitle
-                            <input type="text" id="bookPageSubtitleInput" placeholder="Book page subtitle" value="Reserve your unforgettable mountain stay">
-                        </label>
+                       
                         <label>Hero Background Image URL
                             <input type="text" id="bookHeroBgInput" placeholder="Hero background image" value="jjk.jpg">
                         </label>
@@ -4530,11 +4503,7 @@ async function sendBookingEmail(booking, status, type = "room") {
                         <div id="activitiesEditor"></div>
                         <button type="button" id="addActivityBtn" style="background:#2c5530;color:white;padding:8px 16px;border:none;border-radius:4px;cursor:pointer;margin-top:10px;">+ Add Activity</button>
                         
-                        <h4 style="margin-top:20px;">Footer Content</h4>
-                        <label>Footer Copyright Text
-                            <input type="text" id="footerCopyrightInput" placeholder="Footer copyright text" value="&copy; 2025 Agcararao Mountain View Resort. All rights reserved.">
-                        </label>
-
+                        
                         <h4 style="margin-top:20px;">Reservation Modal Content</h4>
                         <label>Camping Modal Title
                             <input type="text" id="campingModalTitleInput" placeholder="Camping modal title" value="Camping Reservation">
@@ -4548,27 +4517,13 @@ async function sendBookingEmail(booking, status, type = "room") {
                         <label>Swimming Modal Subtitle
                             <input type="text" id="swimmingModalSubtitleInput" placeholder="Swimming modal subtitle" value="Agcararao Viewpoint Retreat">
                         </label>
-                        <label>Cottage Modal Title
-                            <input type="text" id="cottageModalTitleInput" placeholder="Cottage modal title" value="Cottage Reservation">
-                        </label>
-                        <label>Cottage Modal Subtitle
-                            <input type="text" id="cottageModalSubtitleInput" placeholder="Cottage modal subtitle" value="Agcararao Mountain View Resort">
-                        </label>
+                    
                         <h4 style="margin-top:20px;">Cottage Settings</h4>
                         <div id="cottageSettingsList" style="display:flex; flex-direction:column; gap:12px; margin-bottom:8px;"></div>
                         <button type="button" id="addCottageBtn" style="background:#2c5530;color:white;padding:8px 16px;border:none;border-radius:4px;cursor:pointer;align-self:flex-start;">+ Add Cottage</button>
                         <p style="margin-top:6px;font-size:0.9rem;color:#555;">Change the cottage name (e.g., Cottage or Big Cottage) and price directly. Use the button above to add more cottages.</p>
 
-                        <h4 style="margin-top:20px;">Activities Reservation Settings</h4>
-                        <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
-                           
-                            <label>Cottage Available Message
-                                <input type="text" id="cottageAvailableMsgInput" placeholder="This cottage is available on the selected date" value="This cottage is available on the selected date">
-                            </label>
-                            <label>Cottage Unavailable Message
-                                <input type="text" id="cottageUnavailableMsgInput" placeholder="This cottage is already reserved for the selected date" value="This cottage is already reserved for the selected date">
-                            </label>
-                        </div>
+                       
                         
                         <div style="margin-top:20px;">
                             <button type="button" id="saveActivitiesBtn" class="save-btn">💾 Save Activities Content</button>
