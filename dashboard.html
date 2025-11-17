@@ -17,6 +17,7 @@
         } catch (error) {
           console.error("EmailJS initialization failed:", error);
         }
+
       })();
 
       // Homepage Content Notification System
@@ -4974,6 +4975,13 @@ async function sendBookingEmail(booking, status, type = "room") {
                     const items = Array.isArray(roomsData.items) ? roomsData.items : [];
                     renderDynamicBookRoomsSettings(items, loadedBookData);
                 }).catch(()=>{});
+                // Refresh dynamic settings live after Rooms are saved
+                document.addEventListener('roomsSaved', (ev) => {
+                    try {
+                        const items = Array.isArray(ev && ev.detail) ? ev.detail : [];
+                        renderDynamicBookRoomsSettings(items, loadedBookData);
+                    } catch (e) {}
+                });
             }catch(e){}
         })();
         const imagesRef = ref(db, 'gallery/images');
@@ -6704,7 +6712,8 @@ function initializeDefaultContent() {
                 const extraChildrenPrice = Object.assign({}, bookData.extraChildrenPrice || {});
 
                 (rooms || []).forEach((r, idx) => {
-                    const key = (r && r.name) ? r.name : `Room #${idx + 1}`;
+                    const key = (r && typeof r.name === 'string' && r.name.trim()) ? r.name.trim() : null;
+                    if (!key) return; // skip unnamed placeholders
                     if (roomDisplayName[key] == null || roomDisplayName[key] === '') roomDisplayName[key] = key;
                     const priceNum = parseInt((r && r.bookingPrice) || '');
                     if (roomPrice[key] == null && !isNaN(priceNum)) roomPrice[key] = priceNum;
@@ -6750,6 +6759,8 @@ function initializeDefaultContent() {
                     }
                     // Also update Book content maps for any new rooms
                     await syncRoomsToBook(rooms, { silent: true });
+                    // Notify other sections to refresh dynamic UI
+                    document.dispatchEvent(new CustomEvent('roomsSaved', { detail: rooms }));
                 }).catch(error => {
                     if (!silent) {
                         console.error('Error saving rooms:', error);
