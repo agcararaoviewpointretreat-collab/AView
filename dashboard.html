@@ -6676,16 +6676,64 @@ function initializeDefaultContent() {
                 const current = collectRoomsEditor();
                 current.push({ name: '', description: '', price: '', bookingPrice: '', inclusions: [], extraPax: '', images: [] });
                 renderRoomsEditor(current);
+                scheduleRoomsAutosave();
             });
             addRoomBtn.setAttribute('data-listener-added', 'true');
         }
         
+        // Debounced autosave timer for Rooms editor
+        let __roomsAutosaveTO = null;
+        function scheduleRoomsAutosave() {
+            clearTimeout(__roomsAutosaveTO);
+            __roomsAutosaveTO = setTimeout(() => handleSaveRooms({ silent: true, autosave: true }), 1200);
+        }
+
+        // Sync Rooms -> Book content (merge new rooms without deleting existing settings)
+        async function syncRoomsToBook(rooms, opts = {}) {
+            const silent = !!opts.silent;
+            try {
+                const snap = await get(ref(db, 'siteContent/book'));
+                const bookData = snap.exists() ? (snap.val() || {}) : {};
+
+                const roomDisplayName = Object.assign({}, bookData.roomDisplayName || {});
+                const roomPrice = Object.assign({}, bookData.roomPrice || {});
+                const maxRooms = Object.assign({}, bookData.maxRooms || {});
+                const maxPersons = Object.assign({}, bookData.maxPersons || {});
+                const maxExtraPax = Object.assign({}, bookData.maxExtraPax || {});
+                const extraPaxPrice = Object.assign({}, bookData.extraPaxPrice || {});
+                const extraChildrenPrice = Object.assign({}, bookData.extraChildrenPrice || {});
+
+                (rooms || []).forEach((r, idx) => {
+                    const key = (r && r.name) ? r.name : `Room #${idx + 1}`;
+                    if (roomDisplayName[key] == null || roomDisplayName[key] === '') roomDisplayName[key] = key;
+                    const priceNum = parseInt((r && r.bookingPrice) || '');
+                    if (roomPrice[key] == null && !isNaN(priceNum)) roomPrice[key] = priceNum;
+                    const maxR = parseInt((r && r.maxRooms) || '');
+                    if (maxRooms[key] == null && !isNaN(maxR)) maxRooms[key] = maxR;
+                });
+
+                await update(ref(db, 'siteContent/book'), {
+                    roomDisplayName,
+                    roomPrice,
+                    maxRooms,
+                    maxPersons,
+                    maxExtraPax,
+                    extraPaxPrice,
+                    extraChildrenPrice
+                });
+                if (!silent) console.log('[Rooms→Book] Book content synced with rooms');
+            } catch (e) {
+                if (!silent) console.error('[Rooms→Book] Sync error:', e);
+            }
+        }
+
         // Define a reusable save function to make binding robust
-        function handleSaveRooms(){
+        function handleSaveRooms(opts = {}){
             try{
-                console.log('[Rooms] Save button clicked');
+                const silent = !!opts.silent;
+                if (!silent) console.log('[Rooms] Save button clicked');
                 const btn = document.getElementById('saveRoomsBtn');
-                if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
+                if (!silent && btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
                 const rooms = collectRoomsEditor();
                 set(ref(db, 'siteContent/rooms'), {
                     pageTitle: document.getElementById('roomsPageTitleInput')?.value || 'Our Accommodations',
@@ -6695,17 +6743,25 @@ function initializeDefaultContent() {
                     heroSubtitle: document.getElementById('roomsHeroSubtitleInput')?.value || 'Choose from our exclusive mountain view accommodations',
                     pageDescription: document.getElementById('roomsPageDescriptionInput')?.value || 'Thoughtfully curated spaces combine local charm with modern comforts for a serene retreat. Imagine waking to panoramic views of lush landscapes, crowned by an ethereal sea of clouds at dawn.',
                     items: rooms
-                }).then(() => {
-                    console.log('Rooms content saved successfully');
-                    showSuccessToast('Success!', 'Rooms saved successfully!');
+                }).then(async () => {
+                    if (!silent) {
+                        console.log('Rooms content saved successfully');
+                        showSuccessToast('Success!', 'Rooms saved successfully!');
+                    }
+                    // Also update Book content maps for any new rooms
+                    await syncRoomsToBook(rooms, { silent: true });
                 }).catch(error => {
-                    console.error('Error saving rooms:', error);
-                    showErrorToast('Error', 'Error saving rooms content');
+                    if (!silent) {
+                        console.error('Error saving rooms:', error);
+                        showErrorToast('Error', 'Error saving rooms content');
+                    } else {
+                        console.warn('[Rooms][autosave] Save failed:', error);
+                    }
                 }).finally(() => {
-                    if (btn) { btn.disabled = false; btn.textContent = 'Save Rooms Content'; }
+                    if (!silent && btn) { btn.disabled = false; btn.textContent = 'Save Rooms Content'; }
                 });
             }catch(err){
-                console.error('[Rooms] Save handler error:', err);
+                if (!opts.silent) console.error('[Rooms] Save handler error:', err);
             }
         }
 
@@ -6727,6 +6783,21 @@ function initializeDefaultContent() {
                 }
             });
             document.body.setAttribute('data-rooms-save-delegated','true');
+        }
+
+        // Autosave on Rooms editor input changes
+        const roomsEditorWrap = document.getElementById('roomsEditor');
+        if (roomsEditorWrap && !roomsEditorWrap.hasAttribute('data-autosave-listener')) {
+            const maybeSchedule = (ev) => {
+                const t = ev && ev.target;
+                if (!t) return;
+                if (t.getAttribute && t.getAttribute('data-room-key') != null) {
+                    scheduleRoomsAutosave();
+                }
+            };
+            roomsEditorWrap.addEventListener('input', maybeSchedule, { passive: true });
+            roomsEditorWrap.addEventListener('change', maybeSchedule, { passive: true });
+            roomsEditorWrap.setAttribute('data-autosave-listener', 'true');
         }
         
         // Book buttons
@@ -7637,6 +7708,10 @@ function renderRoomsEditor(items){
             const idx = parseInt(this.getAttribute('data-room-index'));
             const next = current.filter((_,i)=> i !== idx);
             renderRoomsEditor(next);
+            // ensure deletion persists without manual save
+            if (typeof scheduleRoomsAutosave === 'function') {
+                scheduleRoomsAutosave();
+            }
         });
     });
 }
